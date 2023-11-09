@@ -476,7 +476,9 @@ export default function Astrolabe() {
         return {
           name:
             pItem.name === "僕役" ? "交友宮" : pItem.name === "官祿" ? "事業宮" : pItem.name === "命宮" ? pItem.name : `${pItem.name}宮`,
-          ages: pItem.ages.concat(pItem.ages.map((age) => age + 84)),
+          ages: pItem.ages
+            .map((age, index) => (pIndex < 6 ? age + ((6 - pIndex) % 6) * -2 : age + (pIndex % 6) * 2))
+            .concat(pItem.ages.map((age) => age + 84)),
           decadal: { ...pItem.decadal, earthlyBranch: pItem.decadal.earthlyBranch.replaceAll("醜", "丑") },
           majorStars: majorStars,
           minorStars: minorStars,
@@ -513,12 +515,12 @@ export default function Astrolabe() {
 
     let currentDecadalIndex = myAstrolabe.palaces.findIndex(
       (palace) =>
-        new Date().getFullYear() - myAstrolabe.lunarYear >= palace.decadal.range[0] &&
-        new Date().getFullYear() - myAstrolabe.lunarYear <= palace.decadal.range[1]
+        new Date().getFullYear() - myAstrolabe.lunarYear + 1 >= palace.decadal.range[0] &&
+        new Date().getFullYear() - myAstrolabe.lunarYear + 1 <= palace.decadal.range[1]
     );
     if (currentDecadalIndex > -1) clickDecadal(currentDecadalIndex);
 
-    // console.log(myAstrolabe);
+    console.log(myAstrolabe);
   };
 
   useEffect(() => {
@@ -640,12 +642,12 @@ export default function Astrolabe() {
   return (
     <>
       <Head>
-        <title>曜靈</title>
+        <title>曜靈飛星紫微</title>
       </Head>
       <div className="header">
         <div className="logo">
           <img src={"logo.png"} alt="logo" />
-          <div className="name">曜靈</div>
+          <div className="name">曜靈飛星紫微</div>
         </div>
         <button>排盤</button>
         <button variant="text">關於我們</button>
@@ -1150,7 +1152,7 @@ export default function Astrolabe() {
                             onClick={() => clickAge(palaceIndex)}
                           >
                             <div>{getDecadalAge(palaceItem.ages)}</div>
-                            <div>{`(${astrolabe.lunarYear + getDecadalAge(palaceItem.ages)})`}</div>
+                            <div>{`(${astrolabe.lunarYear + getDecadalAge(palaceItem.ages) - 1})`}</div>
                           </button>
                         ) : null}
                       </div>
