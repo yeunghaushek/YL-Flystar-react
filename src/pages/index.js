@@ -50,7 +50,7 @@ const modalStyle = {
   transform: "translate(-50%, -50%)",
   borderRadius: "10px",
   border: "0",
-  width: "70%",
+  width: "80%",
   maxWidth: "900px",
   backgroundColor: "#ddd",
   boxShadow: 24,
@@ -446,16 +446,6 @@ export default function Astrolabe() {
       time: astrolabe.time,
       timeRange: astrolabe.timeRange,
       palaces: astrolabe.palaces.map((pItem, pIndex) => {
-        let ages = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1].map(
-          (item, index) =>
-            astrolabe.rawDates.lunarDate.lunarYear -
-            (astrolabe.rawDates.lunarDate.lunarYear % 12) +
-            6 +
-            pIndex +
-            index * 12 -
-            astrolabe.rawDates.lunarDate.lunarYear +
-            1
-        );
 
         let majorStars = pItem.majorStars.flatMap((star) => {
           if (starList.includes(star.name)) {
@@ -705,12 +695,12 @@ export default function Astrolabe() {
           <Box sx={modalStyle}>
             <br />
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={12} md={3}>
                 <FormControl fullWidth>
                   <TextField label="姓名" name="name" value={name} onChange={handleName} />
                 </FormControl>
               </Grid>
-              <Grid item xs={3} sx={{ marginTop: -1, textAlign: "center" }}>
+              <Grid item xs={4} md={3} sx={{ marginTop: -1, textAlign: "center" }}>
                 <FormControl>
                   <RadioGroup aria-labelledby="gender-radio" name="gender-radio-group" value={gender} onChange={handleGender}>
                     <FormControlLabel
@@ -742,7 +732,7 @@ export default function Astrolabe() {
                   </RadioGroup>
                 </FormControl>
               </Grid>
-              <Grid item xs={3} sx={{ marginTop: -1 }}>
+              <Grid item xs={4} md={3} sx={{ marginTop: -1 }}>
                 <FormControl>
                   <RadioGroup aria-labelledby="calendar-radio" name="calendar-radio-group" value={calendar} onChange={handleCalendar}>
                     <FormControlLabel
@@ -774,7 +764,7 @@ export default function Astrolabe() {
                   </RadioGroup>
                 </FormControl>
               </Grid>
-              <Grid item xs={2} sx={{ marginTop: -1 }}>
+              <Grid item xs={4} md={2} sx={{ marginTop: -1 }}>
                 <FormControl>
                   <FormControlLabel
                     control={
@@ -790,12 +780,12 @@ export default function Astrolabe() {
                   />
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} md={4}>
                 <FormControl fullWidth>
                   <TextField label="年" name="year" value={year} onChange={handleYear} />
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={6} md={4}>
                 {calendar == 1 ? (
                   <FormControl fullWidth>
                     <InputLabel id="lunarMonth-label">月</InputLabel>
@@ -824,7 +814,7 @@ export default function Astrolabe() {
                   </FormControl>
                 )}
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={6} md={4}>
                 {calendar == 1 ? (
                   <FormControl fullWidth>
                     <InputLabel id="lunarDay-label">日</InputLabel>
