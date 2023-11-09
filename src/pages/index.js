@@ -282,12 +282,6 @@ export default function Astrolabe() {
     return ages.find((age) => age >= range[0] && age <= range[1]);
   };
 
-  const isChild = (palaceIndex) => {
-    if (currentDecadalIndex !== lifePalaceIndex) return false;
-    if (getDecadalAge(astrolabe.palaces[palaceIndex].ages) <= astrolabe.palaces[lifePalaceIndex].decadal.range[1]) return true;
-    return false;
-  };
-
   const clickAge = (palaceIndex) => {
     setCurrentAgeIndex(palaceIndex);
     if (!showSmallLuck) setShowSmallLuck(true);
@@ -399,8 +393,8 @@ export default function Astrolabe() {
 
   const handleYear = (event) => {
     if (event.target.value.length > 4) return;
-    let yystr = event.target.value.replace(/[+\-e]/g, "");
-    if (!yystr) {
+    let yystr = event.target.value.replace(/[^\d]/g, "");
+    if (!yystr || yystr === "") {
       setYear("");
     } else setYear(yystr);
   };
@@ -452,6 +446,17 @@ export default function Astrolabe() {
       time: astrolabe.time,
       timeRange: astrolabe.timeRange,
       palaces: astrolabe.palaces.map((pItem, pIndex) => {
+        let ages = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1].map(
+          (item, index) =>
+            astrolabe.rawDates.lunarDate.lunarYear -
+            (astrolabe.rawDates.lunarDate.lunarYear % 12) +
+            6 +
+            pIndex +
+            index * 12 -
+            astrolabe.rawDates.lunarDate.lunarYear +
+            1
+        );
+
         let majorStars = pItem.majorStars.flatMap((star) => {
           if (starList.includes(star.name)) {
             return [
@@ -491,15 +496,17 @@ export default function Astrolabe() {
         return {
           name:
             pItem.name === "僕役" ? "交友宮" : pItem.name === "官祿" ? "事業宮" : pItem.name === "命宮" ? pItem.name : `${pItem.name}宮`,
-          ages: pItem.ages
-            .map((age, index) =>
-              pIndex < 6
-                ? age + ((6 - pIndex) % 6) * -2
-                : age + (pIndex % 6) * 2 > 12 * (index + 1) // first element appear 18 (should be 6)
-                ? age + (pIndex % 6) * 2 - 12
-                : age + (pIndex % 6) * 2
-            )
-            .concat(pItem.ages.map((age) => age + 84)),
+          ages: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1].map(
+            (item, index) =>
+              astrolabe.rawDates.lunarDate.lunarYear -
+              (astrolabe.rawDates.lunarDate.lunarYear % 12) +
+              6 +
+              pIndex +
+              index * 12 -
+              astrolabe.rawDates.lunarDate.lunarYear +
+              1
+          ),
+
           decadal: { ...pItem.decadal, earthlyBranch: pItem.decadal.earthlyBranch.replaceAll("醜", "丑") },
           majorStars: majorStars,
           minorStars: minorStars,
@@ -550,11 +557,13 @@ export default function Astrolabe() {
         new Date().toLocalDate().year - myAstrolabe.lunarYear + 1 >= palace.decadal.range[0] &&
         new Date().toLocalDate().year - myAstrolabe.lunarYear + 1 <= palace.decadal.range[1]
     );
-    if (currentDecadalIndex > -1) clickDecadal(currentDecadalIndex);
+
+    if (currentDecadalIndex > -1 && currentDecadalIndex !== lifePalaceIndex) clickDecadal(currentDecadalIndex);
     else {
+      // not find -> less than liftPalace Range
+      // <= lifePalace -> childLuck
       clickDecadal(couplePalaceIndex);
-      clickDecadal(couplePalaceIndex);
-      setShowChildLuck(true);
+      setShowChildLuck(true)
     }
   };
 
@@ -779,7 +788,7 @@ export default function Astrolabe() {
               </Grid>
               <Grid item xs={4}>
                 <FormControl fullWidth>
-                  <TextField label="年" name="year" value={year} onChange={handleYear} type="number" />
+                  <TextField label="年" name="year" value={year} onChange={handleYear} />
                 </FormControl>
               </Grid>
               <Grid item xs={4}>
