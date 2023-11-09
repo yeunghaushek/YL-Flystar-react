@@ -413,9 +413,16 @@ export default function Astrolabe() {
     // console.log(`${year}-${month}-${day}`, birthTime);
     let astrolabe;
     if (calendar == 0) {
-      astrolabe = astro.astrolabeBySolarDate(`${year}-${month}-${day}`, birthTime, gender, true, "zh-TW");
+      astrolabe = astro.astrolabeBySolarDate(`${year}-${month}-${day}`, birthTime, gender == 0 ? "male" : "female", true, "zh-TW");
     } else {
-      astrolabe = astro.astrolabeByLunarDate(`${year}-${month}-${day}`, birthTime, gender, isLeapMonth, true, "zh-TW");
+      astrolabe = astro.astrolabeByLunarDate(
+        `${year}-${month}-${day}`,
+        birthTime,
+        gender == 0 ? "male" : "female",
+        isLeapMonth,
+        true,
+        "zh-TW"
+      );
     }
     let lifePalaceIndex = astrolabe.palaces.findIndex((pItem) => pItem.name === "命宮");
     let lifePalaceMutagenStars = heavenlyStemToStarIndex[astrolabe.palaces[lifePalaceIndex].decadal.heavenlyStem].map(
@@ -622,14 +629,14 @@ export default function Astrolabe() {
     setUpdateCounter(updateCounter + 1);
   }, []);
 
-  /* useEffect(() => {
-    let ast1 = astro.astrolabeByLunarDate(`1999-09-20`, birthTime, gender, true, true, "zh-TW");
-    let ast2 = astro.astrolabeByLunarDate(`1999-09-20`, birthTime, gender, false, true, "zh-TW");
+  useEffect(() => {
+    /* let ast1 = astro.astrolabeByLunarDate(`1999-07-15`, birthTime, gender, true, true, "zh-TW");
+    let ast2 = astro.astrolabeByLunarDate(`1999-07-15`, birthTime, gender, false, true, "zh-TW");
 
     console.log(ast1);
-    console.log(ast2);
+    console.log(ast2); */
   }, []);
- */
+
   return (
     <>
       <Head>
@@ -1123,7 +1130,7 @@ export default function Astrolabe() {
                                         : arrow[2] === 3
                                         ? "#00d"
                                         : "#111",
-                                    strokeWidth: 1,
+                                    strokeWidth: 2,
                                   },
                                 },
                               ]}
