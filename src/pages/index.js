@@ -523,7 +523,16 @@ export default function Astrolabe() {
       }),
       lunarYear: astrolabe.rawDates.lunarDate.lunarYear,
       name: name,
-      gender: gender == 0 ? "男命" : gender == 1 ? "女命" : "",
+      gender:
+        gender == 0
+          ? astrolabe.rawDates.lunarDate.lunarYear % 2 == 0
+            ? "陽男"
+            : "陰男"
+          : gender == 1
+          ? astrolabe.rawDates.lunarDate.lunarYear % 2 == 0
+            ? "陽女"
+            : "陰女"
+          : "",
       isLeapMonth: isLeapMonth,
     };
 
@@ -538,11 +547,15 @@ export default function Astrolabe() {
 
     let currentDecadalIndex = myAstrolabe.palaces.findIndex(
       (palace) =>
-        new Date().getFullYear() - myAstrolabe.lunarYear + 1 >= palace.decadal.range[0] &&
-        new Date().getFullYear() - myAstrolabe.lunarYear + 1 <= palace.decadal.range[1]
+        new Date().toLocalDate().year - myAstrolabe.lunarYear + 1 >= palace.decadal.range[0] &&
+        new Date().toLocalDate().year - myAstrolabe.lunarYear + 1 <= palace.decadal.range[1]
     );
     if (currentDecadalIndex > -1) clickDecadal(currentDecadalIndex);
-    else clickDecadal(lifePalaceIndex);
+    else {
+      clickDecadal(couplePalaceIndex);
+      clickDecadal(couplePalaceIndex);
+      setShowChildLuck(true);
+    }
   };
 
   useEffect(() => {
