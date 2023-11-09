@@ -917,7 +917,7 @@ export default function Astrolabe() {
                 return (
                   <div className={palaceStyle.palace} style={{ gridArea: `g${palaceIndex}` }} key={`key-palace-${palaceIndex}`}>
                     <div className={palaceStyle.header}>
-                      <div className={palaceStyle.left}>{palaceIndex}</div>
+                      <div className={palaceStyle.left}>{/* {palaceIndex} */}</div>
                       <div className={palaceStyle.right}>
                         {palaceItem.minorStars.map((star, sIndex) => {
                           return (
