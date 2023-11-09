@@ -25,10 +25,6 @@ import {
   Modal,
 } from "@mui/material";
 import Select from "@mui/material/Select";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-
 import { ArcherContainer, ArcherElement } from "react-archer";
 
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
@@ -37,9 +33,19 @@ import InfoIcon from "@mui/icons-material/Info";
 import MobiledataOffIcon from "@mui/icons-material/MobiledataOff";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 
+Date.prototype.toLocalDate = function () {
+  let tzoffset = this.getTimezoneOffset() * 60000; //offset in milliseconds
+  let formattedDateStr = new Date(this.getTime() - tzoffset).toISOString();
+  return {
+    year: formattedDateStr.substring(0, 4),
+    month: parseInt(formattedDateStr.substring(5, 7)),
+    day: parseInt(formattedDateStr.substring(8, 10)),
+  };
+};
+
 const modalStyle = {
   position: "absolute",
-  top: "50%",
+  top: "47.5%",
   left: "50%",
   transform: "translate(-50%, -50%)",
   borderRadius: "10px",
@@ -247,20 +253,31 @@ const getMutagenStyle = (mutagenIndex) => {
 export default function Astrolabe() {
   const [astrolabe, setAstrolabe] = useState(null);
   const [lifePalaceIndex, setLifePalaceIndex] = useState(-1);
+  const [couplePalaceIndex, setCouplePalaceIndex] = useState(-1);
   const [currentDecadalIndex, setCurrentDecadalIndex] = useState(-1);
   const [currentAgeIndex, setCurrentAgeIndex] = useState(-1);
   const [showBigLuck, setShowBigLuck] = useState(false);
   const [showSmallLuck, setShowSmallLuck] = useState(false);
+  const [showChildLuck, setShowChildLuck] = useState(false);
 
   const clickDecadal = (palaceIndex) => {
-    setCurrentDecadalIndex(palaceIndex);
-    if (!showBigLuck) setShowBigLuck(true);
-    if (showSmallLuck) setShowSmallLuck(false);
-    if (currentAgeIndex > -1) setCurrentAgeIndex(-1);
+    if (palaceIndex === couplePalaceIndex && currentDecadalIndex === couplePalaceIndex) {
+      setShowChildLuck(!showChildLuck);
+    } else {
+      setCurrentDecadalIndex(palaceIndex);
+      if (!showBigLuck) setShowBigLuck(true);
+      if (showSmallLuck) setShowSmallLuck(false);
+      if (showChildLuck) setShowChildLuck(false);
+      if (currentAgeIndex > -1) setCurrentAgeIndex(-1);
+    }
   };
 
   const getDecadalAge = (ages) => {
     if (currentDecadalIndex < 0) return -1;
+    if (showChildLuck) {
+      let range = astrolabe.palaces[lifePalaceIndex].decadal.range;
+      return ages.find((age) => age >= range[0] && age <= range[1]);
+    }
     let range = astrolabe.palaces[currentDecadalIndex].decadal.range;
     return ages.find((age) => age >= range[0] && age <= range[1]);
   };
@@ -351,10 +368,15 @@ export default function Astrolabe() {
     setShowSearch(!showSearch);
   };
 
+  const [name, setName] = useState("");
   const [gender, setGender] = useState(0);
   const [calendar, setCalendar] = useState(0);
   const [isLeapMonth, setIsLeapMonth] = useState(false);
   const [birthTime, setBirthTime] = useState(0);
+
+  const handleName = (event) => {
+    setName(event.target.value);
+  };
 
   const handleGender = (event) => {
     setGender(event.target.value);
@@ -369,18 +391,15 @@ export default function Astrolabe() {
     setIsLeapMonth(event.target.checked);
   };
 
-  const handleBirthday = (event) => {
-    if (!event.target.value && event.target.value != 0) {
-      setBirthday("");
-    } else {
-      setBirthday(event.target.value);
-    }
-  };
+  const today = new Date().toLocalDate();
+  const [year, setYear] = useState(today.year);
+  const [month, setMonth] = useState(today.month);
+  const [day, setDay] = useState(today.day);
+  const [isValidBirthday, setIsValidBirthday] = useState(true);
 
   const handleYear = (event) => {
     if (event.target.value.length > 4) return;
     let yystr = event.target.value.replace(/[+\-e]/g, "");
-    console.log(yystr);
     if (!yystr) {
       setYear("");
     } else setYear(yystr);
@@ -398,11 +417,6 @@ export default function Astrolabe() {
     setBirthTime(event.target.value);
   };
 
-  const [year, setYear] = useState("1999");
-  const [month, setMonth] = useState(7);
-  const [day, setDay] = useState(15);
-  const [isValidBirthday, setIsValidBirthday] = useState(true);
-
   useEffect(() => {
     if (calendar == 1) {
       if (day > 30) setDay(30);
@@ -410,7 +424,6 @@ export default function Astrolabe() {
   }, [calendar]);
 
   const generateAstrolabe = () => {
-    // console.log(`${year}-${month}-${day}`, birthTime);
     let astrolabe;
     if (calendar == 0) {
       astrolabe = astro.astrolabeBySolarDate(`${year}-${month}-${day}`, birthTime, gender == 0 ? "male" : "female", true, "zh-TW");
@@ -428,6 +441,8 @@ export default function Astrolabe() {
     let lifePalaceMutagenStars = heavenlyStemToStarIndex[astrolabe.palaces[lifePalaceIndex].decadal.heavenlyStem].map(
       (item) => starList[item]
     );
+
+    let couplePalaceIndex = astrolabe.palaces.findIndex((pItem) => pItem.name === "夫妻" || pItem.name === "夫妻宮");
 
     let myAstrolabe = {
       chineseDate: astrolabe.chineseDate.replaceAll("醜", "丑"),
@@ -477,7 +492,13 @@ export default function Astrolabe() {
           name:
             pItem.name === "僕役" ? "交友宮" : pItem.name === "官祿" ? "事業宮" : pItem.name === "命宮" ? pItem.name : `${pItem.name}宮`,
           ages: pItem.ages
-            .map((age, index) => (pIndex < 6 ? age + ((6 - pIndex) % 6) * -2 : age + (pIndex % 6) * 2))
+            .map((age, index) =>
+              pIndex < 6
+                ? age + ((6 - pIndex) % 6) * -2
+                : age + (pIndex % 6) * 2 > 12 * (index + 1) // first element appear 18 (should be 6)
+                ? age + (pIndex % 6) * 2 - 12
+                : age + (pIndex % 6) * 2
+            )
             .concat(pItem.ages.map((age) => age + 84)),
           decadal: { ...pItem.decadal, earthlyBranch: pItem.decadal.earthlyBranch.replaceAll("醜", "丑") },
           majorStars: majorStars,
@@ -501,11 +522,13 @@ export default function Astrolabe() {
         };
       }),
       lunarYear: astrolabe.rawDates.lunarDate.lunarYear,
+      name: name,
       gender: gender == 0 ? "男命" : gender == 1 ? "女命" : "",
       isLeapMonth: isLeapMonth,
     };
 
     setLifePalaceIndex(lifePalaceIndex);
+    setCouplePalaceIndex(couplePalaceIndex);
     setAstrolabe(myAstrolabe);
     setShowSearch(false);
     setShowInfo(true);
@@ -519,8 +542,7 @@ export default function Astrolabe() {
         new Date().getFullYear() - myAstrolabe.lunarYear + 1 <= palace.decadal.range[1]
     );
     if (currentDecadalIndex > -1) clickDecadal(currentDecadalIndex);
-
-    console.log(myAstrolabe);
+    else clickDecadal(lifePalaceIndex);
   };
 
   useEffect(() => {
@@ -655,209 +677,215 @@ export default function Astrolabe() {
       <div className="container">
         <Modal open={showSearch} onClose={toggleSearch} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
           <Box sx={modalStyle}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Grid container spacing={2}>
-                <Grid item xs={3}>
-                  <FormControl>
-                    <RadioGroup row aria-labelledby="gender-radio" name="gender-radio-group" value={gender} onChange={handleGender}>
-                      <FormControlLabel
-                        value={0}
-                        control={
-                          <Radio
-                            sx={{
-                              "& .MuiSvgIcon-root": {
-                                fontSize: 18,
-                              },
-                            }}
-                          />
-                        }
-                        label="男"
-                      />
-                      <FormControlLabel
-                        value={1}
-                        control={
-                          <Radio
-                            sx={{
-                              "& .MuiSvgIcon-root": {
-                                fontSize: 18,
-                              },
-                            }}
-                          />
-                        }
-                        label="女"
-                      />
-                    </RadioGroup>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={4}>
-                  <FormControl>
-                    <RadioGroup row aria-labelledby="calendar-radio" name="calendar-radio-group" value={calendar} onChange={handleCalendar}>
-                      <FormControlLabel
-                        value={0}
-                        control={
-                          <Radio
-                            sx={{
-                              "& .MuiSvgIcon-root": {
-                                fontSize: 18,
-                              },
-                            }}
-                          />
-                        }
-                        label="陽曆"
-                      />
-                      <FormControlLabel
-                        value={1}
-                        control={
-                          <Radio
-                            sx={{
-                              "& .MuiSvgIcon-root": {
-                                fontSize: 18,
-                              },
-                            }}
-                          />
-                        }
-                        label="農曆"
-                      />
-                    </RadioGroup>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={3}>
-                  <FormControl>
+            <br />
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <FormControl fullWidth>
+                  <TextField label="姓名" name="name" value={name} onChange={handleName} />
+                </FormControl>
+              </Grid>
+              <Grid item xs={3} sx={{ marginTop: -1, textAlign: "center" }}>
+                <FormControl>
+                  <RadioGroup aria-labelledby="gender-radio" name="gender-radio-group" value={gender} onChange={handleGender}>
                     <FormControlLabel
+                      value={0}
                       control={
-                        <Checkbox
-                          checked={isLeapMonth}
-                          onChange={handleLeapMonth}
-                          name="leap-month"
-                          disabled={calendar == 0}
-                          sx={{ "& .MuiSvgIcon-root": { fontSize: 20 } }}
+                        <Radio
+                          sx={{
+                            "& .MuiSvgIcon-root": {
+                              fontSize: 18,
+                            },
+                          }}
                         />
                       }
-                      label="閏月"
+                      label="男"
                     />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={4}>
+                    <FormControlLabel
+                      value={1}
+                      control={
+                        <Radio
+                          sx={{
+                            "& .MuiSvgIcon-root": {
+                              fontSize: 18,
+                            },
+                          }}
+                        />
+                      }
+                      label="女"
+                    />
+                  </RadioGroup>
+                </FormControl>
+              </Grid>
+              <Grid item xs={3} sx={{ marginTop: -1 }}>
+                <FormControl>
+                  <RadioGroup aria-labelledby="calendar-radio" name="calendar-radio-group" value={calendar} onChange={handleCalendar}>
+                    <FormControlLabel
+                      value={0}
+                      control={
+                        <Radio
+                          sx={{
+                            "& .MuiSvgIcon-root": {
+                              fontSize: 18,
+                            },
+                          }}
+                        />
+                      }
+                      label="陽曆"
+                    />
+                    <FormControlLabel
+                      value={1}
+                      control={
+                        <Radio
+                          sx={{
+                            "& .MuiSvgIcon-root": {
+                              fontSize: 18,
+                            },
+                          }}
+                        />
+                      }
+                      label="農曆"
+                    />
+                  </RadioGroup>
+                </FormControl>
+              </Grid>
+              <Grid item xs={2} sx={{ marginTop: -1 }}>
+                <FormControl>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={isLeapMonth}
+                        onChange={handleLeapMonth}
+                        name="leap-month"
+                        disabled={calendar == 0}
+                        sx={{ "& .MuiSvgIcon-root": { fontSize: 20 } }}
+                      />
+                    }
+                    label="閏月"
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={4}>
+                <FormControl fullWidth>
+                  <TextField label="年" name="year" value={year} onChange={handleYear} type="number" />
+                </FormControl>
+              </Grid>
+              <Grid item xs={4}>
+                {calendar == 1 ? (
                   <FormControl fullWidth>
-                    <TextField label="年" name="year" value={year} onChange={handleYear} type="number" />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={4}>
-                  {calendar == 1 ? (
-                    <FormControl fullWidth>
-                      <InputLabel id="lunarMonth-label">月</InputLabel>
-                      <Select labelId="lunarMonth-label" id="lunarMonth" name="lunarMonth" value={month} label="月" onChange={handleMonth}>
-                        {lunarMonthList.map((item, index) => {
-                          return (
-                            <MenuItem value={index + 1} key={`key-lunarMonth-${index}`}>
-                              {item}
-                            </MenuItem>
-                          );
-                        })}
-                      </Select>
-                    </FormControl>
-                  ) : (
-                    <FormControl fullWidth>
-                      <InputLabel id="solarMonth-label">月</InputLabel>
-                      <Select labelId="solarMonth-label" id="solarMonth" name="solarMonth" value={month} label="月" onChange={handleMonth}>
-                        {solarMonthList.map((item, index) => {
-                          return (
-                            <MenuItem value={index + 1} key={`key-solarMonth-${index}`}>
-                              {item}
-                            </MenuItem>
-                          );
-                        })}
-                      </Select>
-                    </FormControl>
-                  )}
-                </Grid>
-                <Grid item xs={4}>
-                  {calendar == 1 ? (
-                    <FormControl fullWidth>
-                      <InputLabel id="lunarDay-label">日</InputLabel>
-                      <Select
-                        labelId="lunarDay-label"
-                        id="lunarDay"
-                        name="lunarDay"
-                        value={day}
-                        label="日"
-                        onChange={handleDay}
-                        MenuProps={{ PaperProps: { sx: { maxHeight: 450 } } }}
-                      >
-                        {lunarDayList.map((item, index) => {
-                          return (
-                            <MenuItem value={index + 1} key={`key-lunarDay-${index}`}>
-                              {item}
-                            </MenuItem>
-                          );
-                        })}
-                      </Select>
-                    </FormControl>
-                  ) : (
-                    <FormControl fullWidth>
-                      <InputLabel id="solarDay-label">日</InputLabel>
-                      <Select
-                        labelId="solarDay-label"
-                        id="solarDay"
-                        name="solarDay"
-                        value={day}
-                        label="日"
-                        onChange={handleDay}
-                        MenuProps={{ PaperProps: { sx: { maxHeight: 450 } } }}
-                      >
-                        {solarDayList.map((item, index) => {
-                          return (
-                            <MenuItem value={index + 1} key={`key-solarDay-${index}`}>
-                              {item}
-                            </MenuItem>
-                          );
-                        })}
-                      </Select>
-                    </FormControl>
-                  )}
-                </Grid>
-                <Grid item xs={4}></Grid>
-                <Grid item xs={12}>
-                  <FormControl fullWidth>
-                    <TextField label="出生日期" name="birthday" value={`${year}-${month}-${day}`} onChange={() => {}} />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12}>
-                  <FormControl fullWidth>
-                    <InputLabel id="birthTime-label">時辰</InputLabel>
-                    <Select
-                      labelId="birthTime-label"
-                      id="birthTime"
-                      name="birthTime"
-                      value={birthTime}
-                      label="時辰"
-                      onChange={handleBirthTime}
-                    >
-                      {birthTimeList.map((item, index) => {
+                    <InputLabel id="lunarMonth-label">月</InputLabel>
+                    <Select labelId="lunarMonth-label" id="lunarMonth" name="lunarMonth" value={month} label="月" onChange={handleMonth}>
+                      {lunarMonthList.map((item, index) => {
                         return (
-                          <MenuItem value={index} key={`key-birthTime-${index}`}>
+                          <MenuItem value={index + 1} key={`key-lunarMonth-${index}`}>
                             {item}
                           </MenuItem>
                         );
                       })}
                     </Select>
                   </FormControl>
-                </Grid>
+                ) : (
+                  <FormControl fullWidth>
+                    <InputLabel id="solarMonth-label">月</InputLabel>
+                    <Select labelId="solarMonth-label" id="solarMonth" name="solarMonth" value={month} label="月" onChange={handleMonth}>
+                      {solarMonthList.map((item, index) => {
+                        return (
+                          <MenuItem value={index + 1} key={`key-solarMonth-${index}`}>
+                            {item}
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
+                  </FormControl>
+                )}
+              </Grid>
+              <Grid item xs={4}>
+                {calendar == 1 ? (
+                  <FormControl fullWidth>
+                    <InputLabel id="lunarDay-label">日</InputLabel>
+                    <Select
+                      labelId="lunarDay-label"
+                      id="lunarDay"
+                      name="lunarDay"
+                      value={day}
+                      label="日"
+                      onChange={handleDay}
+                      MenuProps={{ PaperProps: { sx: { maxHeight: 450 } } }}
+                    >
+                      {lunarDayList.map((item, index) => {
+                        return (
+                          <MenuItem value={index + 1} key={`key-lunarDay-${index}`}>
+                            {item}
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
+                  </FormControl>
+                ) : (
+                  <FormControl fullWidth>
+                    <InputLabel id="solarDay-label">日</InputLabel>
+                    <Select
+                      labelId="solarDay-label"
+                      id="solarDay"
+                      name="solarDay"
+                      value={day}
+                      label="日"
+                      onChange={handleDay}
+                      MenuProps={{ PaperProps: { sx: { maxHeight: 450 } } }}
+                    >
+                      {solarDayList.map((item, index) => {
+                        return (
+                          <MenuItem value={index + 1} key={`key-solarDay-${index}`}>
+                            {item}
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
+                  </FormControl>
+                )}
+              </Grid>
+              <Grid item xs={4}></Grid>
+              {/* 
                 <Grid item xs={12}>
                   <FormControl fullWidth>
-                    <Button
-                      variant="contained"
-                      color="success"
-                      sx={{ height: "55px" }}
-                      disabled={!isValidBirthday}
-                      onClick={() => setUpdateCounter(updateCounter + 1)}
-                    >
-                      <AssignmentIcon />
-                    </Button>
+                    <TextField label="出生日期" name="birthday" value={`${year}-${month}-${day}`} onChange={() => {}} />
                   </FormControl>
-                </Grid>
+                </Grid> */}
+              <Grid item xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel id="birthTime-label">時辰</InputLabel>
+                  <Select
+                    labelId="birthTime-label"
+                    id="birthTime"
+                    name="birthTime"
+                    value={birthTime}
+                    label="時辰"
+                    onChange={handleBirthTime}
+                  >
+                    {birthTimeList.map((item, index) => {
+                      return (
+                        <MenuItem value={index} key={`key-birthTime-${index}`}>
+                          {item}
+                        </MenuItem>
+                      );
+                    })}
+                  </Select>
+                </FormControl>
               </Grid>
-            </LocalizationProvider>
+              <Grid item xs={12}>
+                <FormControl fullWidth>
+                  <Button
+                    variant="contained"
+                    color="success"
+                    sx={{ height: "55px" }}
+                    disabled={!isValidBirthday}
+                    onClick={() => setUpdateCounter(updateCounter + 1)}
+                  >
+                    <AssignmentIcon />
+                  </Button>
+                </FormControl>
+              </Grid>
+            </Grid>
+            <br />
           </Box>
         </Modal>
         <ArcherContainer lineStyle={"straight"} strokeWidth={1} svgContainerStyle={{ zIndex: 10 }}>
@@ -1162,7 +1190,11 @@ export default function Astrolabe() {
                             {`流年${astrolabe.palaces[(lifePalaceIndex - currentAgeIndex + palaceIndex + 12) % 12].name.slice(0, 2)}`}
                           </div>
                         ) : null}
-                        {showBigLuck ? (
+                        {showChildLuck ? (
+                          <div className={palaceStyle.childLuck}>
+                            {`少小運${astrolabe.palaces[(lifePalaceIndex - currentDecadalIndex + palaceIndex + 12) % 12].name.slice(0, 2)}`}
+                          </div>
+                        ) : showBigLuck ? (
                           <div className={palaceStyle.bigLuck}>
                             {`大運${astrolabe.palaces[(lifePalaceIndex - currentDecadalIndex + palaceIndex + 12) % 12].name.slice(0, 2)}`}
                           </div>
@@ -1550,17 +1582,20 @@ export default function Astrolabe() {
                 <div className={centerPalaceStyle.body}>
                   {showInfo ? (
                     <>
-                      {`四柱: ${astrolabe.chineseDate}`}
+                      {`姓名: ${astrolabe.name}`}
+                      <br />
+                      {`性別: ${astrolabe.gender}`}
                       <br />
                       {`陽曆: ${astrolabe.solarDate}`}
-                      <br />
-                      {`五行局: ${astrolabe.fiveElementsClass}`}
                       <br />
                       {`農曆: ${astrolabe.lunarDate} ${astrolabe.isLeapMonth ? `(閏月)` : ``}`}
                       <br />
                       {`時辰: ${astrolabe.time} (${astrolabe.timeRange})`}
                       <br />
-                      {`性別: ${astrolabe.gender}`}
+                      {`五行局: ${astrolabe.fiveElementsClass}`}
+                      <br />
+                      {`四柱: ${astrolabe.chineseDate}`}
+                      <br />
                     </>
                   ) : null}
                 </div>
