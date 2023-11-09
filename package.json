@@ -1,0 +1,29 @@
+{
+  "name": "astrolabe",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.16",
+    "@mui/material": "^5.14.16",
+    "@mui/x-date-pickers": "^6.18.0",
+    "dayjs": "^1.11.10",
+    "iztro": "^2.0.2",
+    "next": "14.0.1",
+    "react": "^18",
+    "react-archer": "^4.3.0",
+    "react-dom": "^18",
+    "sass": "^1.69.5"
+  },
+  "devDependencies": {
+    "eslint": "^8",
+    "eslint-config-next": "14.0.1"
+  }
+}

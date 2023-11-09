@@ -1,0 +1,292 @@
+.palace {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 220px;
+    min-width: 180px;
+    border: 1px solid #eee;
+
+    .header {
+        flex: 3;
+        /* background-color: #ddd; */
+        display: flex;
+
+        .left {
+            flex: 1;
+            /* background-color: #aaa; */
+        }
+
+        .right {
+            flex: 3;
+            /* background-color: #bbb; */
+            display: flex;
+            justify-content: flex-end;
+
+            .star {
+                color: #39f;
+                font-size: 18px;
+                margin: 0 4px;
+                background-color: transparent;
+                border: 0;
+                cursor: pointer;
+            }
+
+            .major {
+                .star {
+                    color: #33f;
+                    font-weight: bold;
+                }
+            }
+
+            .mutagen {
+                text-align: center;
+                margin: 1px 2px;
+                color: #fff;
+                font-size: 14px;
+                border-radius: 4px;
+                padding: 1px 0;
+
+                &.green {
+                    background-color: #181;
+                }
+
+                &.red {
+                    background-color: #d00;
+                }
+
+                &.yellow {
+                    background-color: #cc0;
+                }
+
+                &.blue {
+                    background-color: #00d;
+                }
+            }
+
+            .hollowMutagen {
+                text-align: center;
+                margin: 1px 3px;
+                font-size: 14px;
+                padding: 0;
+
+                &.green {
+                    color: #181;
+                    border: 1px solid #181;
+                }
+
+                &.red {
+                    color: #d00;
+                    border: 1px solid #d00;
+                }
+
+                &.yellow {
+                    color: #cc0;
+                    border: 1px solid #cc0;
+                }
+
+                &.blue {
+                    color: #00d;
+                    border: 1px solid #00d;
+                }
+            }
+        }
+
+    }
+
+    .body {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* background-color: #ccc; */
+    }
+
+    .footer {
+        flex: 3;
+        /* background-color: #ddd; */
+        display: flex;
+
+        .left {
+            flex: 1;
+            /* background-color: #aaa; */
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-end;
+
+            .age {
+                cursor: pointer;
+                background-color: transparent;
+                border: 0;
+                border-radius: 4px;
+                font-size: 14px;
+                padding: 2px 4px;
+
+                &.selected {
+                    background-color: #ddd;
+                    font-weight: bold;
+                }
+            }
+        }
+
+        .middle {
+            flex: 2;
+            /* background-color: #bbb; */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+
+            .smallLuck {
+                color: #f69;
+                font-size: 14px;
+            }
+
+            .bigLuck {
+                color: #cc5200;
+                font-size: 16px;
+                margin-bottom: 2px;
+            }
+
+            .decadal {
+                cursor: pointer;
+                background-color: transparent;
+                border: 0;
+                border-radius: 4px;
+                font-size: 14px;
+                padding: 2px 8px;
+
+                &.selected {
+                    background-color: #ddd;
+                    font-weight: bold;
+                }
+            }
+
+            .name {
+                background-color: transparent;
+                border: 0;
+                color: #2929a3;
+                font-size: 22px;
+                font-weight: bold;
+                letter-spacing: 2px;
+                cursor: pointer;
+
+            }
+        }
+
+        .right {
+            flex: 1;
+            /* background-color: #aaa; */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-end;
+
+            .decadal {
+                margin: 0 4px;
+                color: #29ad29;
+                font-size: 18px;
+            }
+        }
+    }
+
+    .arrow {
+        position: absolute;
+        display: block;
+        font-size: 14px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        &.leftTop {
+            flex-direction: column;
+            top: 0;
+            left: 0;
+            transform: translate(-100%, -100%);
+
+            &.outside {
+                height: 100%;
+                transform: translate(-100%, -50%);
+            }
+        }
+
+        &.leftMiddle {
+            flex-direction: column;
+            height: 100%;
+            left: 0;
+            transform: translate(-100%, 0);
+            /* font-size: 12px; */
+        }
+
+        &.leftBottom {
+            flex-direction: column;
+            bottom: 0;
+            left: 0;
+            transform: translate(-100%, 100%);
+
+            &.outside {
+                height: 100%;
+                transform: translate(-100%, 50%);
+            }
+        }
+
+        &.middleTop {
+            width: 100%;
+            top: 0;
+            transform: translate(0%, -100%);
+        }
+
+        &.middleBottom {
+            width: 100%;
+            bottom: 0;
+            transform: translate(0%, 100%);
+        }
+
+        &.rightTop {
+            flex-direction: column;
+            top: 0;
+            right: 0;
+            transform: translate(100%, -100%);
+
+            &.outside {
+                height: 100%;
+                transform: translate(100%, -50%);
+            }
+        }
+
+        &.rightMiddle {
+            flex-direction: column;
+            height: 100%;
+            right: 0;
+            transform: translate(100%, 0);
+            /* font-size: 12px; */
+        }
+
+        &.rightBottom {
+            flex-direction: column;
+            bottom: 0;
+            right: 0;
+            transform: translate(100%, 100%);
+
+            &.outside {
+                height: 100%;
+                transform: translate(100%, 50%);
+            }
+        }
+
+        .green {
+            color: #181;
+        }
+
+        .red {
+            color: #d00;
+        }
+
+        .yellow {
+            color: #cc0;
+        }
+
+        .blue {
+            color: #00d;
+        }
+    }
+}
