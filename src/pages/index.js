@@ -676,11 +676,15 @@ export default function Astrolabe() {
   }, []);
 
   useEffect(() => {
-    /* let ast1 = astro.astrolabeByLunarDate(`1999-07-15`, birthTime, gender, true, true, "zh-TW");
-    let ast2 = astro.astrolabeByLunarDate(`1999-07-15`, birthTime, gender, false, true, "zh-TW");
+    let ast1 = astro.astrolabeByLunarDate(`1999-07-19`, birthTime, gender, true, true, "zh-TW");
+    let ast2 = astro.astrolabeByLunarDate(`1999-07-19`, birthTime, gender, false, true, "zh-TW");
+    let ast3 = astro.astrolabeByLunarDate(`1999-07-19`, birthTime, gender, true, false, "zh-TW");
+    let ast4 = astro.astrolabeByLunarDate(`1999-07-19`, birthTime, gender, false, false, "zh-TW");
 
     console.log(ast1);
-    console.log(ast2); */
+    //console.log(ast2);
+    console.log(ast3);
+    //console.log(ast4);
   }, []);
 
   return (
