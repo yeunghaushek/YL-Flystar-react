@@ -1130,7 +1130,7 @@ export default function Astrolabe() {
                                         : arrow[2] === 3
                                         ? "#00d"
                                         : "#111",
-                                    strokeWidth: 2,
+                                    strokeWidth: 1.5,
                                   },
                                 },
                               ]}
