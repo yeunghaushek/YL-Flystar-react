@@ -31,6 +31,8 @@ import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import InfoIcon from "@mui/icons-material/Info";
 import MobiledataOffIcon from "@mui/icons-material/MobiledataOff";
+import StarIcon from "@mui/icons-material/Star";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 
 Date.prototype.toLocalDate = function () {
@@ -554,6 +556,8 @@ export default function Astrolabe() {
       clickDecadal(couplePalaceIndex);
       setShowChildLuck(true);
     }
+
+    if (inFavList() === -1) setCurrentFavIndex(-1);
   };
 
   useEffect(() => {
@@ -645,6 +649,65 @@ export default function Astrolabe() {
       setUpdateCounter(updateCounter + 1);
     }
   };
+
+  const [favList, setFavList] = useState([]);
+  const [currentFavIndex, setCurrentFavIndex] = useState(-1);
+  const addFavList = () => {
+    let favs = favList.slice();
+    favs.push({ name, gender, calendar, year, month, day, birthTime, isLeapMonth });
+    setFavList(favs);
+    setCurrentFavIndex(favs.length - 1);
+    localStorage.setItem("favList", JSON.stringify(favs));
+  };
+
+  const inFavList = () => {
+    return favList.findIndex((fav) => {
+      return (
+        fav.name === name &&
+        fav.gender === gender &&
+        fav.calendar === calendar &&
+        fav.year === year &&
+        fav.month === month &&
+        fav.day === day &&
+        fav.birthTime === birthTime &&
+        fav.isLeapMonth === isLeapMonth
+      );
+    });
+  };
+
+  const removeFavList = () => {
+    let favs = favList.slice();
+    let targetFavIndex = inFavList();
+    if (targetFavIndex > -1) {
+      favs.splice(targetFavIndex, 1);
+      setFavList(favs);
+      setCurrentFavIndex(-1);
+      localStorage.setItem("favList", JSON.stringify(favs));
+    }
+  };
+
+  const selectFav = (event) => {
+    setCurrentFavIndex(event.target.value);
+  };
+
+  useEffect(() => {
+    let savedFavList = localStorage.getItem("favList");
+    if (savedFavList) setFavList(JSON.parse(savedFavList));
+  }, []);
+
+  useEffect(() => {
+    if (currentFavIndex > -1) {
+      setName(favList[currentFavIndex].name);
+      setGender(favList[currentFavIndex].gender);
+      setCalendar(favList[currentFavIndex].calendar);
+      setYear(favList[currentFavIndex].year);
+      setMonth(favList[currentFavIndex].month);
+      setDay(favList[currentFavIndex].day);
+      setBirthTime(favList[currentFavIndex].birthTime);
+      setIsLeapMonth(favList[currentFavIndex].isLeapMonth);
+      setUpdateCounter(updateCounter + 1);
+    }
+  }, [currentFavIndex]);
 
   const [updateCounter, setUpdateCounter] = useState(0);
   useEffect(() => {
@@ -1592,6 +1655,15 @@ export default function Astrolabe() {
                   <button className={centerPalaceStyle.arrow} onClick={cleanArrows}>
                     <MobiledataOffIcon />
                   </button>
+                  {inFavList() === -1 ? (
+                    <button className={centerPalaceStyle.star} onClick={addFavList}>
+                      <StarBorderIcon />
+                    </button>
+                  ) : (
+                    <button className={centerPalaceStyle.star} onClick={removeFavList}>
+                      <StarIcon />
+                    </button>
+                  )}
                 </div>
                 <div className={centerPalaceStyle.body}>
                   {showInfo ? (
@@ -1622,6 +1694,21 @@ export default function Astrolabe() {
             </div>
           ) : null}
         </ArcherContainer>
+        <br />
+        <Select value={currentFavIndex} onChange={selectFav} sx={{ width: "130px" }}>
+          <MenuItem disabled value={-1}>
+            <em>已收藏</em>
+          </MenuItem>
+          {favList.map((fav, index) => {
+            return (
+              <MenuItem value={index} key={`key-astrolabe-list-${index}`}>
+                {`${fav.name} ${fav.gender == 0 ? "男" : fav.gender == 1 ? "女" : ""} ${
+                  fav.calendar == 0 ? "陽曆" : fav.calendar == 1 ? "農曆" : ""
+                } ${fav.year}-${fav.month}-${fav.day} ${birthTimeList[fav.birthTime]}`}
+              </MenuItem>
+            );
+          })}
+        </Select>
       </div>
     </>
   );
