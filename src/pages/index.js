@@ -1,5 +1,5 @@
 import Head from "next/head";
-
+import { redirect } from "next/navigation";
 import { astro } from "iztro";
 import { useEffect, useState } from "react";
 
@@ -741,16 +741,25 @@ export default function Astrolabe() {
   return (
     <>
       <Head>
-        <title>曜靈飛星紫微</title>
+        <title>曜靈飛星排盤</title>
       </Head>
       <div className="header">
-        <div className="logo">
-          <img src={"logo.png"} alt="logo" />
-          <div className="name">曜靈飛星紫微</div>
+        <div className="left">
+          <div className="logo">
+            <img src={"logo.png"} alt="logo" />
+            <div className="name">曜靈飛星排盤</div>
+          </div>
+          <button>排盤</button>
+          <button>關於我們</button>
         </div>
-        <button>排盤</button>
-        <button variant="text">關於我們</button>
+        <div className="right">
+          <a target="_blank" href="https://buy.stripe.com/cN2cPsa6XaLMauQ001">
+            支持我們
+          </a>
+        </div>
       </div>
+      <div className="Box"></div>
+
       <div className="container">
         <Modal open={showSearch} onClose={toggleSearch} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
           <Box sx={modalStyle}>

@@ -43,12 +43,57 @@ a {
   border-bottom: 1px solid #ddd;
   background-color: #ffe;
   display: flex;
-  justify-content: flex-start;
-  align-items: flex-end;
+  justify-content: space-between;
   font-family: 'Noto Sans TC', sans-serif;
   z-index: 99;
-  
 
+  .left {
+    display: flex;
+    align-items: flex-end;
+
+    button {
+      margin: 4px;
+      padding: 6px 8px;
+      min-width: 64px;
+      background-color: transparent;
+      border: 0;
+      border-radius: 4px;
+      color: #69f;
+      font-size: 16px;
+      letter-spacing: 1px;
+      cursor: pointer;
+    }
+  }
+
+  .right {
+    display: flex;
+    align-items: center;
+
+    a  {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 8px;
+      height: 40px;
+      width: 128px;
+      border: 0;
+      border-radius: 8px;
+      font-size: 16px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      background-color: #f90;
+      color: #fff;
+
+    }
+
+    @media only screen and (max-width: 767px) {
+      a {
+        width: 84px;
+      }
+    }
+
+  }
+  
   .logo {
     display: flex;
     justify-content: center;
@@ -66,7 +111,6 @@ a {
       font-weight: bold;
       color: #009;
 
-      
     }
 
     @media only screen and (max-width: 767px) {
@@ -75,19 +119,8 @@ a {
       }
     }
 
-  }
 
-  button {
-    margin: 4px;
-    padding: 6px 8px;
-    min-width: 64px;
-    background-color: transparent;
-    border: 0;
-    border-radius: 4px;
-    color: #69f;
-    font-size: 16px;
-    letter-spacing: 1px;
-    cursor: pointer;
+
   }
 }
 
