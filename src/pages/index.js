@@ -442,11 +442,10 @@ export default function Astrolabe() {
       chineseDate: astrolabe.chineseDate.replaceAll("醜", "丑"),
       solarDate: astrolabe.solarDate,
       fiveElementsClass: astrolabe.fiveElementsClass,
-      lunarDate: `${astrolabe.lunarDate.replaceAll("腊", "臘")}`,
+      lunarDate: `${astrolabe.lunarDate.replaceAll("腊", "臘").replaceAll("闰", "閏")}`,
       time: astrolabe.time,
       timeRange: astrolabe.timeRange,
       palaces: astrolabe.palaces.map((pItem, pIndex) => {
-
         let majorStars = pItem.majorStars.flatMap((star) => {
           if (starList.includes(star.name)) {
             return [
@@ -553,7 +552,7 @@ export default function Astrolabe() {
       // not find -> less than liftPalace Range
       // <= lifePalace -> childLuck
       clickDecadal(couplePalaceIndex);
-      setShowChildLuck(true)
+      setShowChildLuck(true);
     }
   };
 
@@ -670,7 +669,6 @@ export default function Astrolabe() {
     let ast2 = astro.astrolabeByLunarDate(`1999-07-19`, birthTime, gender, false, true, "zh-TW");
     let ast3 = astro.astrolabeByLunarDate(`1999-07-19`, birthTime, gender, true, false, "zh-TW");
     let ast4 = astro.astrolabeByLunarDate(`1999-07-19`, birthTime, gender, false, false, "zh-TW"); */
-
     //console.log(ast1);
     //console.log(ast2);
     //console.log(ast3);
