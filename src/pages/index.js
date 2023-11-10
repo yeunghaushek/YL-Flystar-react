@@ -1695,7 +1695,7 @@ export default function Astrolabe() {
           ) : null}
         </ArcherContainer>
         <br />
-        <Select value={currentFavIndex} onChange={selectFav} sx={{ width: "130px" }}>
+        <Select value={currentFavIndex} onChange={selectFav} autoWidth>
           <MenuItem disabled value={-1}>
             <em>已收藏</em>
           </MenuItem>
