@@ -1677,18 +1677,27 @@ export default function Astrolabe() {
                   ) : null}
                 </div>
                 <div className={centerPalaceStyle.footer}>
-                  <button className={centerPalaceStyle.search} onClick={toggleSearch}>
-                    <AssignmentIcon />
-                  </button>
-                  {inFavList() === -1 ? (
-                    <button className={centerPalaceStyle.star} onClick={addFavList}>
-                      <StarBorderIcon />
+                  {/*  <div className={centerPalaceStyle.searchBox}>
+                    <button className={centerPalaceStyle.search} onClick={toggleSearch}>
+                      <AssignmentIcon />
                     </button>
-                  ) : (
-                    <button className={centerPalaceStyle.star} onClick={removeFavList}>
-                      <StarIcon />
+                  </div> */}
+                  <div className={centerPalaceStyle.starBox}>
+                    {inFavList() === -1 ? (
+                      <button className={centerPalaceStyle.star} onClick={addFavList}>
+                        <StarBorderIcon />
+                      </button>
+                    ) : (
+                      <button className={centerPalaceStyle.star} onClick={removeFavList}>
+                        <StarIcon />
+                      </button>
+                    )}
+                  </div>
+                  <div className={centerPalaceStyle.searchBox}>
+                    <button className={centerPalaceStyle.search} onClick={toggleSearch}>
+                      <AssignmentIcon />
                     </button>
-                  )}
+                  </div>
                 </div>
               </div>
             </div>
