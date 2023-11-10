@@ -1643,11 +1643,11 @@ export default function Astrolabe() {
               })}
               <div className={centerPalaceStyle.centerPalace}>
                 <div className={centerPalaceStyle.header}>
-                  <button className={centerPalaceStyle.previous} onClick={reduceBirthTime}>
-                    <RemoveCircleIcon />
-                  </button>
                   <button className={centerPalaceStyle.next} onClick={addBirthTime}>
                     <AddCircleIcon />
+                  </button>
+                  <button className={centerPalaceStyle.previous} onClick={reduceBirthTime}>
+                    <RemoveCircleIcon />
                   </button>
                   <button className={centerPalaceStyle.info} onClick={toggleInfo}>
                     <InfoIcon />
@@ -1655,15 +1655,6 @@ export default function Astrolabe() {
                   <button className={centerPalaceStyle.arrow} onClick={cleanArrows}>
                     <MobiledataOffIcon />
                   </button>
-                  {inFavList() === -1 ? (
-                    <button className={centerPalaceStyle.star} onClick={addFavList}>
-                      <StarBorderIcon />
-                    </button>
-                  ) : (
-                    <button className={centerPalaceStyle.star} onClick={removeFavList}>
-                      <StarIcon />
-                    </button>
-                  )}
                 </div>
                 <div className={centerPalaceStyle.body}>
                   {showInfo ? (
@@ -1689,6 +1680,15 @@ export default function Astrolabe() {
                   <button className={centerPalaceStyle.search} onClick={toggleSearch}>
                     <AssignmentIcon />
                   </button>
+                  {inFavList() === -1 ? (
+                    <button className={centerPalaceStyle.star} onClick={addFavList}>
+                      <StarBorderIcon />
+                    </button>
+                  ) : (
+                    <button className={centerPalaceStyle.star} onClick={removeFavList}>
+                      <StarIcon />
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

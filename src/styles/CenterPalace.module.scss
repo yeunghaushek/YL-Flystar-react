@@ -41,9 +41,7 @@
             background-color: #c9f;
         }
 
-        .star {
-            background-color: #fc0;
-        }
+
     }
 
     .body {
@@ -58,7 +56,7 @@
     .footer {
         flex: 1;
         display: inline-flex;
-        justify-content: center;
+        justify-content: space-around;
         align-items: center;
 
                 button {
@@ -79,6 +77,10 @@
             width: 164px;
             margin: 8px 2px;
             background-color: #f63;
+        }
+
+        .star {
+            background-color: #fc0;
         }
 
     }
