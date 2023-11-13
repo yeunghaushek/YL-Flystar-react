@@ -403,7 +403,7 @@ export default function Astrolabe() {
     setShowInfo(!showInfo);
   };
 
-  const [pluginSmallMonth, setPluginSmallMonth] = useState(false);
+  const [pluginSmallMonth, setPluginSmallMonth] = useState(true);
   const togglePluginSmallMonth = () => {
     if (pluginSmallMonth) {
       setShowSmallMonth(false);
