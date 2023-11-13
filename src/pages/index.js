@@ -1327,22 +1327,24 @@ export default function Astrolabe() {
                     <div className={palaceStyle.footer}>
                       <div className={palaceStyle.left}>
                         {pluginSmallMonth && currentAgeIndex > -1 ? (
-                          <button
-                            className={`${palaceStyle.month} ${currentMonthIndex === palaceIndex ? palaceStyle.selected : ``}`}
-                            onClick={() => clickMonth(palaceIndex)}
-                          >
-                            {lunarMonthList[(palaceIndex - currentAgeIndex + 9 + 12) % 12]}
-                          </button>
+                          <div className={`${palaceStyle.month} ${currentMonthIndex === palaceIndex ? palaceStyle.selected : ``}`}>
+                            <button onClick={() => clickMonth(palaceIndex)}>
+                              {lunarMonthList[(palaceIndex - currentAgeIndex + 9 + 12) % 12]}
+                            </button>
+                          </div>
                         ) : null}
                         {currentDecadalIndex > -1 && getDecadalAge(palaceItem.ages) ? (
-                          <button
-                            className={`${palaceStyle.age} ${currentAgeIndex === palaceIndex ? palaceStyle.selected : ``}`}
-                            onClick={() => clickAge(palaceIndex)}
-                          >
-                            <div>{getDecadalAge(palaceItem.ages)}</div>
-                            <div>{`(${astrolabe.lunarYear + getDecadalAge(palaceItem.ages) - 1})`}</div>
-                          </button>
-                        ) : null}
+                          <div className={`${palaceStyle.age} ${currentAgeIndex === palaceIndex ? palaceStyle.selected : ``}`}>
+                            <button onClick={() => clickAge(palaceIndex)}>
+                              <div>{getDecadalAge(palaceItem.ages)}</div>
+                              <div>{`(${astrolabe.lunarYear + getDecadalAge(palaceItem.ages) - 1})`}</div>
+                            </button>
+                          </div>
+                        ) : (
+                          <div className={`${palaceStyle.age} ${palaceStyle.empty}`}>
+                            <button></button>
+                          </div>
+                        )}
                       </div>
                       <div className={palaceStyle.middle}>
                         {showSmallMonth ? (
