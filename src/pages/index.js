@@ -816,7 +816,7 @@ export default function Astrolabe() {
             <div className="name">曜靈飛星排盤</div>
           </div>
           <button>排盤</button>
-          <button>關於我們</button>
+          {/* <button>關於我們</button> */}
         </div>
         <div className="right">
           <a target="_blank" href="https://buy.stripe.com/cN2cPsa6XaLMauQ001">
