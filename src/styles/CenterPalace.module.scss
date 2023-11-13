@@ -25,16 +25,20 @@
             color: #fff;
         }
 
-        .previous {
+        /* .previous {
             background-color: #f99;
         }
 
         .next {
             background-color: #9f9;
-        }
+        } */
 
         .info {
             background-color: #9cf;
+
+            &.selected {
+                background-color: #39f;
+            }
         }
 
         .arrow {
@@ -47,19 +51,47 @@
     .body {
         flex: 4;
         display: flex;
-        font-size: 16px;
-        line-height: 35px;
+        font-size: 14px;
+        line-height: 30px;
         letter-spacing: 2px;
         color: #666;
         margin: 0 auto;
         width: 85%;
     }
 
+    .timePanel {
+        flex: 1;
+        display: inline-flex;
+        justify-content: center;
+        align-items: flex-end;
+
+        button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 40px;
+            width: 100%;
+            margin: 2px;
+            border: 0;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .previous {
+            background-color: #f99;
+        }
+
+        .next {
+            background-color: #9f9;
+        }
+    }
+
     .footer {
         flex: 1;
         display: inline-flex;
         justify-content: center;
-        align-items: center;
+        align-items: flex-start;
 
         .searchBox {
             margin: 2px;

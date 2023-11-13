@@ -30,6 +30,8 @@ import { ArcherContainer, ArcherElement } from "react-archer";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import InfoIcon from "@mui/icons-material/Info";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import SwitchAccessShortcutAddIcon from "@mui/icons-material/SwitchAccessShortcutAdd";
 import MobiledataOffIcon from "@mui/icons-material/MobiledataOff";
 import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
@@ -258,9 +260,12 @@ export default function Astrolabe() {
   const [couplePalaceIndex, setCouplePalaceIndex] = useState(-1);
   const [currentDecadalIndex, setCurrentDecadalIndex] = useState(-1);
   const [currentAgeIndex, setCurrentAgeIndex] = useState(-1);
+  const [currentMonthIndex, setCurrentMonthIndex] = useState(-1);
+
   const [showBigLuck, setShowBigLuck] = useState(false);
   const [showSmallLuck, setShowSmallLuck] = useState(false);
   const [showChildLuck, setShowChildLuck] = useState(false);
+  const [showSmallMonth, setShowSmallMonth] = useState(false);
 
   const clickDecadal = (palaceIndex) => {
     if (palaceIndex === couplePalaceIndex && currentDecadalIndex === couplePalaceIndex) {
@@ -270,7 +275,9 @@ export default function Astrolabe() {
       if (!showBigLuck) setShowBigLuck(true);
       if (showSmallLuck) setShowSmallLuck(false);
       if (showChildLuck) setShowChildLuck(false);
+      if (showSmallMonth) setShowSmallMonth(false);
       if (currentAgeIndex > -1) setCurrentAgeIndex(-1);
+      if (currentMonthIndex > -1) setCurrentMonthIndex(-1);
     }
   };
 
@@ -287,6 +294,13 @@ export default function Astrolabe() {
   const clickAge = (palaceIndex) => {
     setCurrentAgeIndex(palaceIndex);
     if (!showSmallLuck) setShowSmallLuck(true);
+    if (showSmallMonth) setShowSmallMonth(false);
+    if (currentMonthIndex > -1) setCurrentMonthIndex(-1);
+  };
+
+  const clickMonth = (palaceIndex) => {
+    setCurrentMonthIndex(palaceIndex);
+    if (!showSmallMonth) setShowSmallMonth(true);
   };
 
   const [currentArrows, setCurrentArrows] = useState([]);
@@ -295,6 +309,24 @@ export default function Astrolabe() {
     let targetArrowIndex = arrows.findIndex((arr) => arr[0] === palaceIndex && arr[1] === targetStarIndex);
     if (targetArrowIndex === -1) {
       arrows.push([palaceIndex, targetStarIndex, mutagenIndex]);
+
+      // handle plugin arrow
+      if (pluginQuickArrow && (mutagenIndex == 0 || mutagenIndex == 3)) {
+        let pluginPalaceIndex = astrolabe.palaces.findIndex(
+          (palace) =>
+            palace.majorStars.findIndex((star) => star.name === starList[targetStarIndex]) > -1 ||
+            palace.minorStars.findIndex((star) => star.name === starList[targetStarIndex]) > -1
+        );
+
+        if (pluginPalaceIndex > -1) {
+          let pluginStarIndex = starList.findIndex((star) => star === astrolabe.palaces[pluginPalaceIndex].mutagenStars[3]);
+          let pluginArrowIndex = arrows.findIndex((arr) => arr[0] === pluginPalaceIndex && arr[1] === pluginStarIndex);
+          if (pluginArrowIndex === -1) {
+            arrows.push([pluginPalaceIndex, pluginStarIndex, 3]);
+          }
+        }
+      }
+      // --------------------
     } else {
       arrows.splice(targetArrowIndex, 1);
     }
@@ -338,6 +370,24 @@ export default function Astrolabe() {
       if (existArrowIndexes === targetPalaceIndexes.length) {
         arrows = arrows.filter((arr) => !(targetPalaceIndexes.includes(arr[0]) && arr[2] === mutagenIndex));
       }
+
+      // handle plugin arrow
+      if (pluginQuickArrow && (mutagenIndex == 0 || mutagenIndex == 3)) {
+        let pluginPalaceIndex = astrolabe.palaces.findIndex(
+          (palace) =>
+            palace.majorStars.findIndex((star) => star.name === starList[targetStarIndex]) > -1 ||
+            palace.minorStars.findIndex((star) => star.name === starList[targetStarIndex]) > -1
+        );
+
+        if (pluginPalaceIndex > -1) {
+          let pluginStarIndex = starList.findIndex((star) => star === astrolabe.palaces[pluginPalaceIndex].mutagenStars[3]);
+          let pluginArrowIndex = arrows.findIndex((arr) => arr[0] === pluginPalaceIndex && arr[1] === pluginStarIndex);
+          if (pluginArrowIndex === -1) {
+            arrows.push([pluginPalaceIndex, pluginStarIndex, 3]);
+          }
+        }
+      }
+      // --------------------
       setCurrentArrows(arrows);
     }
     closeMutagenPanel();
@@ -351,6 +401,20 @@ export default function Astrolabe() {
   const [showInfo, setShowInfo] = useState(true);
   const toggleInfo = () => {
     setShowInfo(!showInfo);
+  };
+
+  const [pluginSmallMonth, setPluginSmallMonth] = useState(false);
+  const togglePluginSmallMonth = () => {
+    if (pluginSmallMonth) {
+      setShowSmallMonth(false);
+      setCurrentMonthIndex(-1);
+    }
+    setPluginSmallMonth(!pluginSmallMonth);
+  };
+
+  const [pluginQuickArrow, setPluginQuickArrow] = useState(false);
+  const togglePluginQuickArrow = () => {
+    setPluginQuickArrow(!pluginQuickArrow);
   };
 
   const cleanArrows = () => {
@@ -540,7 +604,9 @@ export default function Astrolabe() {
     setShowSearch(false);
     setShowInfo(true);
     setShowSmallLuck(false);
+    setShowSmallMonth(false);
     setCurrentAgeIndex(-1);
+    setCurrentMonthIndex(-1);
     setCurrentArrows([]);
 
     let currentDecadalIndex = myAstrolabe.palaces.findIndex(
@@ -1260,6 +1326,14 @@ export default function Astrolabe() {
                     </div>
                     <div className={palaceStyle.footer}>
                       <div className={palaceStyle.left}>
+                        {pluginSmallMonth && currentAgeIndex > -1 ? (
+                          <button
+                            className={`${palaceStyle.month} ${currentMonthIndex === palaceIndex ? palaceStyle.selected : ``}`}
+                            onClick={() => clickMonth(palaceIndex)}
+                          >
+                            {lunarMonthList[(palaceIndex - currentAgeIndex + 9 + 12) % 12]}
+                          </button>
+                        ) : null}
                         {currentDecadalIndex > -1 && getDecadalAge(palaceItem.ages) ? (
                           <button
                             className={`${palaceStyle.age} ${currentAgeIndex === palaceIndex ? palaceStyle.selected : ``}`}
@@ -1271,6 +1345,11 @@ export default function Astrolabe() {
                         ) : null}
                       </div>
                       <div className={palaceStyle.middle}>
+                        {showSmallMonth ? (
+                          <div className={palaceStyle.smallMonth}>
+                            {`流月${astrolabe.palaces[(lifePalaceIndex - currentMonthIndex + palaceIndex + 12) % 12].name.slice(0, 2)}`}
+                          </div>
+                        ) : null}
                         {showSmallLuck ? (
                           <div className={palaceStyle.smallLuck}>
                             {`流年${astrolabe.palaces[(lifePalaceIndex - currentAgeIndex + palaceIndex + 12) % 12].name.slice(0, 2)}`}
@@ -1652,14 +1731,27 @@ export default function Astrolabe() {
               })}
               <div className={centerPalaceStyle.centerPalace}>
                 <div className={centerPalaceStyle.header}>
-                  <button className={centerPalaceStyle.next} onClick={addBirthTime}>
+                  {/* <button className={centerPalaceStyle.next} onClick={addBirthTime}>
                     <AddCircleIcon />
                   </button>
                   <button className={centerPalaceStyle.previous} onClick={reduceBirthTime}>
                     <RemoveCircleIcon />
-                  </button>
-                  <button className={centerPalaceStyle.info} onClick={toggleInfo}>
+                  </button> */}
+
+                  <button className={`${centerPalaceStyle.info} ${showInfo ? centerPalaceStyle.selected : ``}`} onClick={toggleInfo}>
                     <InfoIcon />
+                  </button>
+                  <button
+                    className={`${centerPalaceStyle.info} ${pluginSmallMonth ? centerPalaceStyle.selected : ``}`}
+                    onClick={togglePluginSmallMonth}
+                  >
+                    <CalendarMonthIcon />
+                  </button>
+                  <button
+                    className={`${centerPalaceStyle.info} ${pluginQuickArrow ? centerPalaceStyle.selected : ``}`}
+                    onClick={togglePluginQuickArrow}
+                  >
+                    <SwitchAccessShortcutAddIcon />
                   </button>
                   <button className={centerPalaceStyle.arrow} onClick={cleanArrows}>
                     <MobiledataOffIcon />
@@ -1684,6 +1776,15 @@ export default function Astrolabe() {
                       <br />
                     </>
                   ) : null}
+                </div>
+
+                <div className={centerPalaceStyle.timePanel}>
+                  <button className={centerPalaceStyle.next} onClick={addBirthTime}>
+                    <AddCircleIcon />
+                  </button>
+                  <button className={centerPalaceStyle.previous} onClick={reduceBirthTime}>
+                    <RemoveCircleIcon />
+                  </button>
                 </div>
                 <div className={centerPalaceStyle.footer}>
                   {/*  <div className={centerPalaceStyle.searchBox}>

@@ -14,10 +14,11 @@
         .left {
             flex: 1;
             /* background-color: #aaa; */
+
         }
 
         .right {
-            flex: 3;
+            flex: 9;
             /* background-color: #bbb; */
             display: flex;
             justify-content: flex-end;
@@ -110,21 +111,30 @@
             flex: 1;
             /* background-color: #aaa; */
             display: flex;
-            justify-content: flex-start;
-            align-items: flex-end;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-start;
 
-            .age {
+
+            .age, .month {
+                
                 cursor: pointer;
                 background-color: transparent;
                 border: 0;
                 border-radius: 4px;
                 font-size: 12px;
                 padding: 2px 4px;
+                margin: 2px;
 
                 &.selected {
                     background-color: #ddd;
                     font-weight: bold;
                 }
+            }
+
+            .month {
+                font-size: 10px;
+                margin-bottom: 4px;
             }
         }
 
@@ -135,6 +145,11 @@
             flex-direction: column;
             justify-content: flex-end;
             align-items: center;
+
+            .smallMonth {
+                color: #c9f;
+                font-size: 12px;
+            }
 
             .smallLuck {
                 color: #f69;
