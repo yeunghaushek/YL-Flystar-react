@@ -1124,7 +1124,7 @@ export default function Astrolabe() {
                                     </button>
                                     <button
                                       style={{
-                                        backgroundColor: "#cc0",
+                                        backgroundColor: "#eb0",
                                         padding: "1px 3px",
                                         margin: "1px",
                                         fontSize: "14px",
@@ -1243,7 +1243,7 @@ export default function Astrolabe() {
                                     </button>
                                     <button
                                       style={{
-                                        backgroundColor: "#cc0",
+                                        backgroundColor: "#eb0",
                                         padding: "1px 3px",
                                         margin: "1px",
                                         fontSize: "14px",
@@ -1308,7 +1308,7 @@ export default function Astrolabe() {
                                         : arrow[2] === 1
                                         ? "#d00"
                                         : arrow[2] === 2
-                                        ? "#cc0"
+                                        ? "#eb0"
                                         : arrow[2] === 3
                                         ? "#00d"
                                         : "#111",
@@ -1450,7 +1450,7 @@ export default function Astrolabe() {
                               </button>
                               <button
                                 style={{
-                                  backgroundColor: "#cc0",
+                                  backgroundColor: "#eb0",
                                   padding: "1px 3px",
                                   margin: "1px",
                                   fontSize: "14px",
@@ -1816,7 +1816,7 @@ export default function Astrolabe() {
           ) : null}
         </ArcherContainer>
         <br />
-        <Select value={currentFavIndex} onChange={selectFav} autoWidth>
+        <Select value={currentFavIndex} onChange={selectFav} autoWidth sx={{ backgroundColor: "#fff" }}>
           <MenuItem disabled value={-1}>
             <em>已收藏</em>
           </MenuItem>

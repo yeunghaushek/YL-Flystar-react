@@ -4,7 +4,7 @@
     flex-direction: column;
     height: 220px;
     min-width: 180px;
-    border: 1px solid #eee;
+    border: 1px solid #ddd;
 
     .header {
         flex: 3;
@@ -56,7 +56,7 @@
                 }
 
                 &.yellow {
-                    background-color: #cc0;
+                    background-color: #eb0;
                 }
 
                 &.blue {
@@ -81,8 +81,8 @@
                 }
 
                 &.yellow {
-                    color: #cc0;
-                    border: 1px solid #cc0;
+                    color: #eb0;
+                    border: 1px solid #eb0;
                 }
 
                 &.blue {
@@ -130,7 +130,7 @@
 
                 &.selected  {
                     button {
-                        background-color: #ddd;
+                        background-color: #ccc;
                         font-weight: bold;
                     }
 
@@ -207,7 +207,7 @@
                 padding: 2px 8px;
 
                 &.selected {
-                    background-color: #ddd;
+                    background-color: #ccc;
                     font-weight: bold;
                 }
             }
@@ -333,7 +333,7 @@
         }
 
         .yellow {
-            color: #cc0;
+            color: #eb0;
         }
 
         .blue {
