@@ -598,6 +598,8 @@ export default function Astrolabe() {
       isLeapMonth: isLeapMonth,
     };
 
+    // console.log(myAstrolabe);
+
     setLifePalaceIndex(lifePalaceIndex);
     setCouplePalaceIndex(couplePalaceIndex);
     setAstrolabe(myAstrolabe);
@@ -1158,13 +1160,16 @@ export default function Astrolabe() {
                                   {star.mutagen}
                                 </div>
                               ) : null}
-                              <div
-                                className={`${palaceStyle.hollowMutagen} ${
-                                  palaceStyle[getMutagenStyle(mutagenToIndex[star.hollowMutagen])]
-                                }`}
-                              >
-                                {star.hollowMutagen}
-                              </div>
+
+                              {star.hollowMutagen && palaceIndex != lifePalaceIndex ? (
+                                <div
+                                  className={`${palaceStyle.hollowMutagen} ${
+                                    palaceStyle[getMutagenStyle(mutagenToIndex[star.hollowMutagen])]
+                                  }`}
+                                >
+                                  {star.hollowMutagen}
+                                </div>
+                              ) : null}
                             </div>
                           );
                         })}
@@ -1277,13 +1282,16 @@ export default function Astrolabe() {
                                   {star.mutagen}
                                 </div>
                               ) : null}
-                              <div
-                                className={`${palaceStyle.hollowMutagen} ${
-                                  palaceStyle[getMutagenStyle(mutagenToIndex[star.hollowMutagen])]
-                                }`}
-                              >
-                                {star.hollowMutagen}
-                              </div>
+
+                              {star.hollowMutagen && palaceIndex != lifePalaceIndex ? (
+                                <div
+                                  className={`${palaceStyle.hollowMutagen} ${
+                                    palaceStyle[getMutagenStyle(mutagenToIndex[star.hollowMutagen])]
+                                  }`}
+                                >
+                                  {star.hollowMutagen}
+                                </div>
+                              ) : null}
                             </div>
                           );
                         })}
