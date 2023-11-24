@@ -1,5 +1,4 @@
 import Head from "next/head";
-import { redirect } from "next/navigation";
 import { astro } from "iztro";
 import { useEffect, useState } from "react";
 
@@ -856,8 +855,6 @@ export default function Astrolabe() {
           </a>
         </div>
       </div>
-      <div className="Box"></div>
-
       <div className="container">
         <Modal open={showSearch} onClose={toggleSearch} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
           <Box sx={modalStyle}>
