@@ -330,6 +330,9 @@ export default function Astrolabe() {
     } else {
       arrows.splice(targetArrowIndex, 1);
     }
+
+    // sort the arrows by mutagen
+    arrows.sort((a, b) => a[2] - b[2]);
     setCurrentArrows(arrows);
     closeMutagenPanel();
   };
@@ -388,7 +391,11 @@ export default function Astrolabe() {
         }
       }
       // --------------------
+
+      // sort the arrows by mutagen
+      arrows.sort((a, b) => a[2] - b[2]);
       setCurrentArrows(arrows);
+      console.log(arrows);
     }
     closeMutagenPanel();
   };
@@ -598,7 +605,7 @@ export default function Astrolabe() {
       isLeapMonth: isLeapMonth,
     };
 
-    // console.log(myAstrolabe);
+    console.log(myAstrolabe);
 
     setLifePalaceIndex(lifePalaceIndex);
     setCouplePalaceIndex(couplePalaceIndex);
@@ -1054,106 +1061,122 @@ export default function Astrolabe() {
                         {palaceItem.minorStars.map((star, sIndex) => {
                           return (
                             <div className={palaceStyle.minor} key={`key-minorStars-${sIndex}`}>
-                              <StyledTooltipForStar
-                                onClose={closeMutagenPanel}
-                                open={revMutagenPanelIndex === starList.findIndex((s) => s === star.name)}
-                                disableFocusListener
-                                disableHoverListener
-                                disableTouchListener
-                                title={
-                                  <div>
-                                    <button
-                                      style={{
-                                        backgroundColor: "#181",
-                                        padding: "1px 3px",
-                                        margin: "1px",
-                                        fontSize: "14px",
-                                        color: "#fff",
-                                        border: 0,
-                                        borderRadius: "4px",
-                                        cursor: "pointer",
-                                      }}
-                                      onClick={() =>
-                                        toggleRevArrows(
-                                          starList.findIndex((s) => s === star.name),
-                                          0
-                                        )
-                                      }
-                                    >
-                                      祿
-                                    </button>
+                              <div className={palaceStyle.starContainer}>
+                                <div className={palaceStyle.starLeft}>
+                                  <StyledTooltipForStar
+                                    onClose={closeMutagenPanel}
+                                    open={revMutagenPanelIndex === starList.findIndex((s) => s === star.name)}
+                                    disableFocusListener
+                                    disableHoverListener
+                                    disableTouchListener
+                                    title={
+                                      <div>
+                                        <button
+                                          style={{
+                                            backgroundColor: "#181",
+                                            padding: "1px 3px",
+                                            margin: "1px",
+                                            fontSize: "14px",
+                                            color: "#fff",
+                                            border: 0,
+                                            borderRadius: "4px",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() =>
+                                            toggleRevArrows(
+                                              starList.findIndex((s) => s === star.name),
+                                              0
+                                            )
+                                          }
+                                        >
+                                          祿
+                                        </button>
 
+                                        <button
+                                          style={{
+                                            backgroundColor: "#d00",
+                                            padding: "1px 3px",
+                                            margin: "1px",
+                                            fontSize: "14px",
+                                            color: "#fff",
+                                            border: 0,
+                                            borderRadius: "4px",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() =>
+                                            toggleRevArrows(
+                                              starList.findIndex((s) => s === star.name),
+                                              1
+                                            )
+                                          }
+                                        >
+                                          權
+                                        </button>
+                                        <br />
+                                        <button
+                                          style={{
+                                            backgroundColor: "#00d",
+                                            padding: "1px 3px",
+                                            margin: "1px",
+                                            fontSize: "14px",
+                                            color: "#fff",
+                                            border: 0,
+                                            borderRadius: "4px",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() =>
+                                            toggleRevArrows(
+                                              starList.findIndex((s) => s === star.name),
+                                              3
+                                            )
+                                          }
+                                        >
+                                          忌
+                                        </button>
+                                        <button
+                                          style={{
+                                            backgroundColor: "#eb0",
+                                            padding: "1px 3px",
+                                            margin: "1px",
+                                            fontSize: "14px",
+                                            color: "#fff",
+                                            border: 0,
+                                            borderRadius: "4px",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() =>
+                                            toggleRevArrows(
+                                              starList.findIndex((s) => s === star.name),
+                                              2
+                                            )
+                                          }
+                                        >
+                                          科
+                                        </button>
+                                      </div>
+                                    }
+                                  >
                                     <button
-                                      style={{
-                                        backgroundColor: "#d00",
-                                        padding: "1px 3px",
-                                        margin: "1px",
-                                        fontSize: "14px",
-                                        color: "#fff",
-                                        border: 0,
-                                        borderRadius: "4px",
-                                        cursor: "pointer",
-                                      }}
-                                      onClick={() =>
-                                        toggleRevArrows(
-                                          starList.findIndex((s) => s === star.name),
-                                          1
-                                        )
-                                      }
+                                      className={palaceStyle.star}
+                                      onClick={() => clickStar(starList.findIndex((s) => s === star.name))}
                                     >
-                                      權
+                                      <div>{star.name[0]}</div>
+                                      <ArcherElement id={`star-${starList.findIndex((s) => s === star.name)}`}>
+                                        <div>{star.name[1]}</div>
+                                      </ArcherElement>
                                     </button>
-                                    <br />
-                                    <button
-                                      style={{
-                                        backgroundColor: "#00d",
-                                        padding: "1px 3px",
-                                        margin: "1px",
-                                        fontSize: "14px",
-                                        color: "#fff",
-                                        border: 0,
-                                        borderRadius: "4px",
-                                        cursor: "pointer",
-                                      }}
-                                      onClick={() =>
-                                        toggleRevArrows(
-                                          starList.findIndex((s) => s === star.name),
-                                          3
-                                        )
-                                      }
-                                    >
-                                      忌
-                                    </button>
-                                    <button
-                                      style={{
-                                        backgroundColor: "#eb0",
-                                        padding: "1px 3px",
-                                        margin: "1px",
-                                        fontSize: "14px",
-                                        color: "#fff",
-                                        border: 0,
-                                        borderRadius: "4px",
-                                        cursor: "pointer",
-                                      }}
-                                      onClick={() =>
-                                        toggleRevArrows(
-                                          starList.findIndex((s) => s === star.name),
-                                          2
-                                        )
-                                      }
-                                    >
-                                      科
-                                    </button>
-                                  </div>
-                                }
-                              >
-                                <button className={palaceStyle.star} onClick={() => clickStar(starList.findIndex((s) => s === star.name))}>
-                                  <div>{star.name[0]}</div>
-                                  <ArcherElement id={`star-${starList.findIndex((s) => s === star.name)}`}>
-                                    <div>{star.name[1]}</div>
-                                  </ArcherElement>
-                                </button>
-                              </StyledTooltipForStar>
+                                  </StyledTooltipForStar>
+                                </div>
+                                <div className={palaceStyle.starRight}>
+                                  {currentArrows.length > 0
+                                    ? currentArrows.map((arrow) => {
+                                        if (arrow[1] == starList.findIndex((s) => s === star.name))
+                                          return <div className={`${palaceStyle.line} ${palaceStyle[getMutagenStyle(arrow[2])]}`}></div>;
+                                        return null;
+                                      })
+                                    : null}
+                                </div>
+                              </div>
 
                               {star.mutagen ? (
                                 <div className={`${palaceStyle.mutagen} ${palaceStyle[getMutagenStyle(mutagenToIndex[star.mutagen])]}`}>
@@ -1176,106 +1199,122 @@ export default function Astrolabe() {
                         {palaceItem.majorStars.map((star, sIndex) => {
                           return (
                             <div className={palaceStyle.major} key={`key-majorStars-${sIndex}`}>
-                              <StyledTooltipForStar
-                                onClose={closeMutagenPanel}
-                                open={revMutagenPanelIndex === starList.findIndex((s) => s === star.name)}
-                                disableFocusListener
-                                disableHoverListener
-                                disableTouchListener
-                                title={
-                                  <div>
-                                    <button
-                                      style={{
-                                        backgroundColor: "#181",
-                                        padding: "1px 3px",
-                                        margin: "1px",
-                                        fontSize: "14px",
-                                        color: "#fff",
-                                        border: 0,
-                                        borderRadius: "4px",
-                                        cursor: "pointer",
-                                      }}
-                                      onClick={() =>
-                                        toggleRevArrows(
-                                          starList.findIndex((s) => s === star.name),
-                                          0
-                                        )
-                                      }
-                                    >
-                                      祿
-                                    </button>
+                              <div className={palaceStyle.starContainer}>
+                                <div className={palaceStyle.starLeft}>
+                                  <StyledTooltipForStar
+                                    onClose={closeMutagenPanel}
+                                    open={revMutagenPanelIndex === starList.findIndex((s) => s === star.name)}
+                                    disableFocusListener
+                                    disableHoverListener
+                                    disableTouchListener
+                                    title={
+                                      <div>
+                                        <button
+                                          style={{
+                                            backgroundColor: "#181",
+                                            padding: "1px 3px",
+                                            margin: "1px",
+                                            fontSize: "14px",
+                                            color: "#fff",
+                                            border: 0,
+                                            borderRadius: "4px",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() =>
+                                            toggleRevArrows(
+                                              starList.findIndex((s) => s === star.name),
+                                              0
+                                            )
+                                          }
+                                        >
+                                          祿
+                                        </button>
 
+                                        <button
+                                          style={{
+                                            backgroundColor: "#d00",
+                                            padding: "1px 3px",
+                                            margin: "1px",
+                                            fontSize: "14px",
+                                            color: "#fff",
+                                            border: 0,
+                                            borderRadius: "4px",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() =>
+                                            toggleRevArrows(
+                                              starList.findIndex((s) => s === star.name),
+                                              1
+                                            )
+                                          }
+                                        >
+                                          權
+                                        </button>
+                                        <br />
+                                        <button
+                                          style={{
+                                            backgroundColor: "#00d",
+                                            padding: "1px 3px",
+                                            margin: "1px",
+                                            fontSize: "14px",
+                                            color: "#fff",
+                                            border: 0,
+                                            borderRadius: "4px",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() =>
+                                            toggleRevArrows(
+                                              starList.findIndex((s) => s === star.name),
+                                              3
+                                            )
+                                          }
+                                        >
+                                          忌
+                                        </button>
+                                        <button
+                                          style={{
+                                            backgroundColor: "#eb0",
+                                            padding: "1px 3px",
+                                            margin: "1px",
+                                            fontSize: "14px",
+                                            color: "#fff",
+                                            border: 0,
+                                            borderRadius: "4px",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() =>
+                                            toggleRevArrows(
+                                              starList.findIndex((s) => s === star.name),
+                                              2
+                                            )
+                                          }
+                                        >
+                                          科
+                                        </button>
+                                      </div>
+                                    }
+                                  >
                                     <button
-                                      style={{
-                                        backgroundColor: "#d00",
-                                        padding: "1px 3px",
-                                        margin: "1px",
-                                        fontSize: "14px",
-                                        color: "#fff",
-                                        border: 0,
-                                        borderRadius: "4px",
-                                        cursor: "pointer",
-                                      }}
-                                      onClick={() =>
-                                        toggleRevArrows(
-                                          starList.findIndex((s) => s === star.name),
-                                          1
-                                        )
-                                      }
+                                      className={palaceStyle.star}
+                                      onClick={() => clickStar(starList.findIndex((s) => s === star.name))}
                                     >
-                                      權
+                                      <div>{star.name[0]}</div>
+                                      <ArcherElement id={`star-${starList.findIndex((s) => s === star.name)}`}>
+                                        <div>{star.name[1]}</div>
+                                      </ArcherElement>
                                     </button>
-                                    <br />
-                                    <button
-                                      style={{
-                                        backgroundColor: "#00d",
-                                        padding: "1px 3px",
-                                        margin: "1px",
-                                        fontSize: "14px",
-                                        color: "#fff",
-                                        border: 0,
-                                        borderRadius: "4px",
-                                        cursor: "pointer",
-                                      }}
-                                      onClick={() =>
-                                        toggleRevArrows(
-                                          starList.findIndex((s) => s === star.name),
-                                          3
-                                        )
-                                      }
-                                    >
-                                      忌
-                                    </button>
-                                    <button
-                                      style={{
-                                        backgroundColor: "#eb0",
-                                        padding: "1px 3px",
-                                        margin: "1px",
-                                        fontSize: "14px",
-                                        color: "#fff",
-                                        border: 0,
-                                        borderRadius: "4px",
-                                        cursor: "pointer",
-                                      }}
-                                      onClick={() =>
-                                        toggleRevArrows(
-                                          starList.findIndex((s) => s === star.name),
-                                          2
-                                        )
-                                      }
-                                    >
-                                      科
-                                    </button>
-                                  </div>
-                                }
-                              >
-                                <button className={palaceStyle.star} onClick={() => clickStar(starList.findIndex((s) => s === star.name))}>
-                                  <div>{star.name[0]}</div>
-                                  <ArcherElement id={`star-${starList.findIndex((s) => s === star.name)}`}>
-                                    <div>{star.name[1]}</div>
-                                  </ArcherElement>
-                                </button>
-                              </StyledTooltipForStar>
+                                  </StyledTooltipForStar>
+                                </div>
+                                <div className={palaceStyle.starRight}>
+                                  {currentArrows.length > 0
+                                    ? currentArrows.map((arrow) => {
+                                        if (arrow[1] == starList.findIndex((s) => s === star.name))
+                                          return <div className={`${palaceStyle.line} ${palaceStyle[getMutagenStyle(arrow[2])]}`}></div>;
+                                        return null;
+                                      })
+                                    : null}
+                                </div>
+                              </div>
 
                               {star.mutagen ? (
                                 <div className={`${palaceStyle.mutagen} ${palaceStyle[getMutagenStyle(mutagenToIndex[star.mutagen])]}`}>

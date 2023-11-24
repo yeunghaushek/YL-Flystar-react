@@ -26,18 +26,57 @@
             .star {
                 color: #39f;
                 font-size: 18px;
-                margin: 0 4px;
+                margin: 0 2px 0 4px;
                 background-color: transparent;
                 border: 0;
                 cursor: pointer;
             }
 
             .major {
+                
                 .star {
                     color: #33f;
                     font-weight: bold;
                 }
             }
+
+                .starContainer {
+                    display: flex;
+
+                    .starLeft {
+                    }
+
+                    .starRight {
+                        display: flex;
+                        flex-direction: column;
+                        margin: 3px 0;
+                        width: 3px;
+
+                        .line {
+                            
+                            flex: 1;
+
+                            background-color: #111;
+
+                            &.green {
+                                background-color: #181;
+                            }
+            
+                            &.red {
+                                background-color: #d00;
+                            }
+            
+                            &.yellow {
+                                background-color: #eb0;
+                            }
+            
+                            &.blue {
+                                background-color: #00d;
+                            }
+                        }
+                    }
+                }
+
 
             .mutagen {
                 text-align: center;
