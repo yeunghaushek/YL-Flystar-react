@@ -840,7 +840,7 @@ export default function Astrolabe() {
       <Head>
         <title>曜靈飛星排盤</title>
       </Head>
-      <div className="header">
+      <div className="header show">
         <div className="left">
           <div className="logo">
             <img src={"logo.png"} alt="logo" />

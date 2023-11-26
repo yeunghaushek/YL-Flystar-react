@@ -1,16 +1,178 @@
 .bg {
-  min-height: 2000px;
-  background-image: url("/bg.png");
-  background-size: 100% auto;
+  background-image: linear-gradient(
+    rgba(255, 255, 255, 0.9), 
+    rgba(255, 255, 255, 0.9), 
+  ),url("/bg.png");
+  background-size: cover;
   background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  padding: 0 0 30px 0;
+  z-index: 100;
 }
 
-.title {
-  font-size: 24px;
+.pageTitle {
+  font-size: 28px;
   margin-bottom: 8px;
+  letter-spacing: 2px;
+  color: #734d26;
+  font-weight: 400;
 }
 
-.text {
-  font-size: 14px;
+.pageText {
+  margin: 20px 0;
+  font-size: 16px;
   line-height: 2;
+  letter-spacing: 1px;
+}
+
+.banner {
+  z-index: 100;
+  overflow-x: hidden;
+
+  background-image: linear-gradient(
+    rgba(16,16,16, 0.3), 
+    rgba(16,16,16,0.3), 
+  ),url("https://images.pexels.com/photos/669015/pexels-photo-669015.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1");
+  background-size: cover;
+  background-repeat: no-repeat;
+  /* background-attachment: fixed; */
+  background-position: center;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  height: 1440px;
+  max-height: 1440px;
+
+  @media only screen and (max-width: 1920px) {
+      height: 1080px;
+  
+  }
+  
+  @media only screen and (max-width: 1366px) {
+      height: 768px;
+  }
+
+
+  .left {
+    flex: 1;
+  }
+
+  .right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+
+    .title {
+      font-family: "Kaisei HarunoUmi", serif;
+      font-size: 96px;
+      color: #fff;
+    }
+
+    .caption {
+      font-size: 32px;
+      color: #fff;
+      padding: 0 4px;
+    }
+
+    .link {
+      margin-top: 72px;
+
+      a {
+        padding: 12px 24px;
+        margin: 0 32px 0 0;
+        border-radius: 25px;
+        border: 2px solid #fff;
+        color: #fff;
+        font-size: 20px;
+      }
+    }
+  }
+
+  @media only screen and (max-width: 1920px) {
+    .right {
+      .title {
+        font-size: 72px;
+      }
+      .caption {
+        font-size:28px;
+      }
+    }
+
+}
+
+@media only screen and (max-width: 1366px) {
+  .right {
+    flex: 2;
+
+    .title {
+      font-size: 48px;
+    }
+
+    .caption {
+      font-size: 24px;
+    }
+
+    .link {
+      margin-top: 64px;
+
+      a {
+        padding: 12px 24px;
+        margin: 0 24px 0 0;
+        border-radius: 25px;
+        border: 2px solid #fff;
+        color: #fff;
+        font-size: 16px;
+      }
+    }
+  }
+}
+
+}
+
+
+
+
+
+
+.price {
+  padding: 15px 30px 30px 30px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  font-size: 12px;
+  height: 200px;
+  background-color: rgba(255, 255, 255, 0.5);
+
+  .title {
+    font-size: 20px;
+    text-align: center;
+    margin: 8px 0 12px 0;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  @media only screen and (max-width: 1366px) {
+    height: 240px;
+  }
+}
+
+.carousel {
+  img {
+    max-height: 1024px;
+  }
+}
+
+.contact {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  img {
+    width: 256px;
+  }
 }
