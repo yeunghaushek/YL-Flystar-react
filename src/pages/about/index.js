@@ -260,16 +260,16 @@ export default function About() {
         </div>
         <Carousel centerMode centerSlidePercentage={75} showArrows showStatus={false} autoPlay interval={6000} infiniteLoop>
           <div className={aboutStyle.carousel}>
-            <img src="https://images.pexels.com/photos/416160/pexels-photo-416160.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" />
+            <img src="https://images.pexels.com/photos/416160/pexels-photo-416160.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="carousel1" />
           </div>
           <div className={aboutStyle.carousel}>
-            <img src="https://images.pexels.com/photos/104827/cat-pet-animal-domestic-104827.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" />
+            <img src="https://images.pexels.com/photos/104827/cat-pet-animal-domestic-104827.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"  alt="carousel2" />
           </div>
           <div className={aboutStyle.carousel}>
-            <img src="https://images.pexels.com/photos/1056251/pexels-photo-1056251.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" />
+            <img src="https://images.pexels.com/photos/1056251/pexels-photo-1056251.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="carousel3" />
           </div>
           <div className={aboutStyle.carousel}>
-            <img src="https://images.pexels.com/photos/2558605/pexels-photo-2558605.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" />
+            <img src="https://images.pexels.com/photos/2558605/pexels-photo-2558605.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"  alt="carousel4" />
           </div>
         </Carousel>
         <div className="container">
@@ -295,7 +295,7 @@ export default function About() {
               </AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+              <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel3a-content" id="panel3a-header">
                 甚麼是紫微斗數？
               </AccordionSummary>
               <AccordionDetails>
@@ -303,7 +303,7 @@ export default function About() {
               </AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel2a-content" id="panel2a-header">
+              <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel4a-content" id="panel4a-header">
                 甚麼是紫微斗數？
               </AccordionSummary>
               <AccordionDetails>
