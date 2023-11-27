@@ -1,8 +1,5 @@
 .bg {
-  background-image: linear-gradient(
-    rgba(255, 255, 255, 0.9), 
-    rgba(255, 255, 255, 0.9), 
-  ),url("/bg.png");
+  background-image: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url("/bg.png");
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
@@ -19,9 +16,17 @@
   font-weight: 400;
 }
 
+.pageSubheading {
+  font-size: 22px;
+  letter-spacing: 2px;
+  color: #734d26;
+  font-style: italic;
+  text-decoration: underline;
+}
+
 .pageText {
   margin: 20px 0;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 2;
   letter-spacing: 1px;
 }
@@ -30,10 +35,8 @@
   z-index: 100;
   overflow-x: hidden;
 
-  background-image: linear-gradient(
-    rgba(16,16,16, 0.3), 
-    rgba(16,16,16,0.3), 
-  ),url("https://images.pexels.com/photos/669015/pexels-photo-669015.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1");
+  background-image: linear-gradient(rgba(16, 16, 16, 0.3), rgba(16, 16, 16, 0.3)),
+    url("https://images.pexels.com/photos/669015/pexels-photo-669015.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1");
   background-size: cover;
   background-repeat: no-repeat;
   /* background-attachment: fixed; */
@@ -48,14 +51,12 @@
   max-height: 1440px;
 
   @media only screen and (max-width: 1920px) {
-      height: 1080px;
-  
-  }
-  
-  @media only screen and (max-width: 1366px) {
-      height: 768px;
+    height: 1080px;
   }
 
+  @media only screen and (max-width: 1366px) {
+    height: 768px;
+  }
 
   .left {
     flex: 1;
@@ -100,57 +101,49 @@
         font-size: 72px;
       }
       .caption {
-        font-size:28px;
-      }
-    }
-
-}
-
-@media only screen and (max-width: 1366px) {
-  .right {
-    .title {
-      font-size: 48px;
-    }
-
-    .caption {
-      font-size: 24px;
-    }
-
-    .link {
-      margin-top: 64px;
-
-      a {
-        padding: 12px 24px;
-        margin: 0 24px 0 0;
-        border-radius: 25px;
-        border: 2px solid #fff;
-        color: #fff;
-        font-size: 16px;
+        font-size: 28px;
       }
     }
   }
-}
 
-@media only screen and (max-width: 767px) {
-  .right {
-    flex: 2;
-  
+  @media only screen and (max-width: 1366px) {
+    .right {
+      .title {
+        font-size: 48px;
+      }
+
+      .caption {
+        font-size: 24px;
+      }
+
+      .link {
+        margin-top: 64px;
+
+        a {
+          padding: 12px 24px;
+          margin: 0 24px 0 0;
+          border-radius: 25px;
+          border: 2px solid #fff;
+          color: #fff;
+          font-size: 16px;
+        }
+      }
+    }
+  }
+
+  @media only screen and (max-width: 767px) {
+    .right {
+      flex: 2;
+    }
   }
 }
-
-}
-
-
-
-
-
 
 .price {
   padding: 15px 30px 30px 30px;
   border: 2px solid #ddd;
   border-radius: 10px;
-  font-size: 12px;
-  height: 200px;
+  font-size: 14px;
+  height: 240px;
   background-color: rgba(255, 255, 255, 0.5);
 
   .title {
@@ -162,7 +155,7 @@
   }
 
   @media only screen and (max-width: 1366px) {
-    height: 240px;
+    height: 260px;
   }
 }
 

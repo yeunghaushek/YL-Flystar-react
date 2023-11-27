@@ -13,6 +13,7 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.16",
     "@mui/material": "^5.14.16",
+    "@mui/x-data-grid": "^6.18.2",
     "@mui/x-date-pickers": "^6.18.0",
     "dayjs": "^1.11.10",
     "iztro": "^2.0.2",
@@ -20,6 +21,7 @@
     "react": "^18",
     "react-archer": "^4.3.0",
     "react-dom": "^18",
+    "react-icons": "^4.12.0",
     "react-responsive-carousel": "^3.2.23",
     "sass": "^1.69.5"
   },

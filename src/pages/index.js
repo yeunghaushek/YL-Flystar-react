@@ -838,13 +838,13 @@ export default function Astrolabe() {
   return (
     <>
       <Head>
-        <title>曜靈飛星排盤</title>
+        <title>曜靈紫微飛星</title>
       </Head>
       <div className="header show">
         <div className="left">
           <div className="logo">
             <img src={"logo.png"} alt="logo" />
-            <div className="name">曜靈飛星排盤</div>
+            <div className="name">曜靈紫微飛星</div>
           </div>
           <button>排盤</button>
           {/* <button>關於我們</button> */}

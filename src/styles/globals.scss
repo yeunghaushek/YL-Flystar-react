@@ -25,7 +25,7 @@ body {
   height: 100%;
   overflow: auto;
   background: #eee;
-  scroll-behavior:smooth
+  scroll-behavior: smooth;
 }
 
 body {
@@ -72,6 +72,12 @@ a {
       font-size: 16px;
       letter-spacing: 1px;
       cursor: pointer;
+    }
+
+    @media only screen and (max-width: 1023px) {
+      button {
+        display: none;
+      }
     }
   }
 
@@ -159,5 +165,10 @@ a {
 .carousel .slider-wrapper.axis-horizontal .slider {
   -ms-box-orient: horizontal;
   -webkit-box-orient: horizontal;
-  -moz-box-orient:  horizontal;
+  -moz-box-orient: horizontal;
+}
+
+.MuiDataGrid-root .MuiDataGrid-cell {
+  white-space: normal !important;
+  word-wrap: break-word !important;
 }
