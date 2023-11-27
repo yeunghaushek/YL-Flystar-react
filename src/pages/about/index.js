@@ -32,7 +32,7 @@ const actions = [
   },
   {
     icon: (
-      <a target="_blank" href="https://wa.me/85264406336">
+      <a target="_blank" href="https://wa.me/85264406336?text=你好，我想了解一下命理分析服務">
         <WhatsAppIcon />
       </a>
     ),
@@ -65,21 +65,48 @@ const actions = [
 ];
 
 const columns = [
-  { field: "level", headerName: "課程階段", sortable: false, flex: 1, minWidth: 150 },
-  { field: "description", headerName: "課程簡介", sortable: false, flex: 3, minWidth: 300 },
+  {
+    field: "level",
+    headerName: "課程階段",
+    sortable: false,
+    flex: 1,
+    minWidth: 150,
+    renderCell: (params) => {
+      return <strong>{params.value}</strong>;
+    },
+    renderHeader: (params) => {
+      return <strong>{"課程階段"}</strong>;
+    },
+  },
+  {
+    field: "description",
+    headerName: "課程簡介",
+    sortable: false,
+    flex: 3,
+    minWidth: 300,
+    renderHeader: (params) => {
+      return <strong>{"課程簡介"}</strong>;
+    },
+  },
   {
     field: "target",
     headerName: "課程目標",
     sortable: false,
     flex: 3,
     minWidth: 300,
+    renderHeader: (params) => {
+      return <strong>{"課程目標"}</strong>;
+    },
   },
   {
     field: "price",
-    headerName: "預估費用",
+    headerName: "費用",
     sortable: false,
     flex: 2,
     minWidth: 225,
+    renderHeader: (params) => {
+      return <strong>{"費用"}</strong>;
+    },
   },
 ];
 
@@ -89,35 +116,35 @@ const rows = [
     level: "基礎課程",
     description: "學習紫微斗數命盤的符號意義，排盤方法，以及宮位、星曜、四化、飛化的基本象義。",
     target: "掌握命盤的基本結構和符號解讀，為進一步的學習打下堅實基礎。",
-    price: "HKD $4,000 - $5,000",
+    price: "HKD $5,000",
   },
   {
     id: 2,
     level: "核心技術",
     description: "梁氏飛星的核心技術和獨特命盤結構的教學，並進行每日排盤和核心技術練習。",
     target: "使學員能夠熟練運用梁氏飛星的核心技術，準確解讀命盤。",
-    price: "HKD $6,000 - $7,000",
+    price: "HKD $7,000",
   },
   {
     id: 3,
     level: "主題深入",
     description: "針對人生各個主題（如工作、感情等）進行深入討論，學習主題的主要結構和判斷方法。",
     target: "學會針對各主題進行準確的預測和分析，為深造課程做準備。",
-    price: "HKD $8,000 - $10,000",
+    price: "HKD $10,000",
   },
   {
     id: 4,
     level: "借盤論述與時間判斷",
     description: "通過命主的命盤，學習分析與命主相關人物的情況，以及時間判斷方法。",
     target: "能夠運用命盤分析他人，並準確預測未來發展的時間點。",
-    price: "HKD $6,000 - $8,000",
+    price: "HKD $8,000",
   },
   {
     id: 5,
     level: "深造課程",
     description: "學習論述事件的細節，目標是達到如觀看電影般的分析深度。包括主題深度論述技巧和實例教學。",
     target: "精通紫微斗數的深層分析，能夠如觀看電影般理解和預測生命中的各種事件。",
-    price: "HKD $12,000 - $15,000",
+    price: "HKD $15,000",
   },
 ];
 
@@ -240,109 +267,6 @@ export default function About() {
           <br />
           <br />
           <br />
-          <div className={aboutStyle.pageSubheading}>附加服務</div>
-          <br />
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <div className={aboutStyle.price}>
-                <div className={aboutStyle.title}>特定事件分析</div>
-                價格：HKD $1,200
-                <br />
-                <br />
-                <br />
-                針對最近遇到的特定事件或問題進行深入分析。
-                <br />* 適用於已完成全面命理分析的客戶。
-              </div>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <div className={aboutStyle.price}>
-                <div className={aboutStyle.title}>流年及大運分析</div>
-                價格：HKD $1,200
-                <br />
-                <br />
-                <br />
-                針對命主接下來的流年大運進行詳細分析，提供未來規劃指導。
-                <br />* 適用於已完成全面命理分析的客戶。
-              </div>
-            </Grid>
-          </Grid>
-          <br />
-          <br />
-          <br />
-          <div className={aboutStyle.pageSubheading}>專題探討</div>
-          <br />
-          <Grid container spacing={2}>
-            <Grid item xs={6} sm={4}>
-              <div className={aboutStyle.price}>
-                <div className={aboutStyle.title}>創業與事業規劃</div>
-                價格：HKD $1,800
-                <br />
-                <br />
-                <br />
-                專注於創業機會評估、事業發展策略、職場機遇。
-                <br />
-              </div>
-            </Grid>
-
-            <Grid item xs={6} sm={4}>
-              <div className={aboutStyle.price}>
-                <div className={aboutStyle.title}>財富與投資規劃</div>
-                價格：HKD $1,800
-                <br />
-                <br />
-                <br />
-                針對財務規劃、投資機會、財富管理提供指導。
-                <br />
-              </div>
-            </Grid>
-            <Grid item xs={6} sm={4}>
-              <div className={aboutStyle.price}>
-                <div className={aboutStyle.title}>教育與學業發展</div>
-                價格：HKD $1,500
-                <br />
-                <br />
-                <br />
-                針對學業規劃、職業教育選擇、專業技能提升提供諮詢。
-                <br />
-              </div>
-            </Grid>
-            <Grid item xs={6} sm={4}>
-              <div className={aboutStyle.price}>
-                <div className={aboutStyle.title}>個人成長與自我實現</div>
-                價格：HKD $1,500
-                <br />
-                <br />
-                <br />
-                專注於個人目標設定、生活技能提升、自我實現的途徑。
-                <br />
-              </div>
-            </Grid>
-            <Grid item xs={6} sm={4}>
-              <div className={aboutStyle.price}>
-                <div className={aboutStyle.title}>身心健康與生活平衡</div>
-                價格：HKD $1,500
-                <br />
-                <br />
-                <br />
-                著重於促進身心健康、生活和工作的平衡、壓力管理。
-                <br />
-              </div>
-            </Grid>
-            <Grid item xs={6} sm={4}>
-              <div className={aboutStyle.price}>
-                <div className={aboutStyle.title}>人際關係與社交網絡</div>
-                價格：HKD $1,500
-                <br />
-                <br />
-                <br />
-                針對建立和維護健康的人際關係、擴大社交網絡提供專業建議。
-                <br />
-              </div>
-            </Grid>
-          </Grid>
-          <br />
-          <br />
-          <br />
           <div className={aboutStyle.pageSubheading}>持續諮詢服務</div>
           <br />
           <Grid container spacing={2}>
@@ -388,6 +312,83 @@ export default function About() {
             </Grid>
             <Grid item xs={3}></Grid>
           </Grid>
+          <br />
+          <br />
+          <br />
+          <div className={aboutStyle.pageSubheading}>專題探討</div>
+          <br />
+          <Grid container spacing={2}>
+            <Grid item xs={6} sm={4}>
+              <div className={aboutStyle.price}>
+                <div className={aboutStyle.title}>創業與事業規劃</div>
+                價格：HKD $1,800
+                <br />
+                <br />
+                <br />
+                專注於創業機會評估、事業發展策略、職場機遇。
+                <br />
+              </div>
+            </Grid>
+            <Grid item xs={6} sm={4}>
+              <div className={aboutStyle.price}>
+                <div className={aboutStyle.title}>感情與婚姻</div>
+                價格：HKD $1,800
+                <br />
+                <br />
+                <br />
+                專注於感情生活、人際互動、婚姻諮詢等。
+                <br />
+              </div>
+            </Grid>
+            <Grid item xs={6} sm={4}>
+              <div className={aboutStyle.price}>
+                <div className={aboutStyle.title}>財富與投資規劃</div>
+                價格：HKD $1,800
+                <br />
+                <br />
+                <br />
+                針對財務規劃、投資機會、財富管理提供指導。
+                <br />
+              </div>
+            </Grid>
+
+            <Grid item xs={6} sm={4}>
+              <div className={aboutStyle.price}>
+                <div className={aboutStyle.title}>個人成長與自我實現</div>
+                價格：HKD $1,500
+                <br />
+                <br />
+                <br />
+                專注於個人目標設定、生活技能提升、自我實現的途徑。
+                <br />
+              </div>
+            </Grid>
+            <Grid item xs={6} sm={4}>
+              <div className={aboutStyle.price}>
+                <div className={aboutStyle.title}>教育與學業發展</div>
+                價格：HKD $1,500
+                <br />
+                <br />
+                <br />
+                針對學業規劃、職業教育選擇、專業技能提升提供諮詢。
+                <br />
+              </div>
+            </Grid>
+            <Grid item xs={6} sm={4}>
+              <div className={aboutStyle.price}>
+                <div className={aboutStyle.title}>人際關係與社交網絡</div>
+                價格：HKD $1,500
+                <br />
+                <br />
+                <br />
+                針對建立和維護健康的人際關係、擴大社交網絡提供專業建議。
+                <br />
+              </div>
+            </Grid>
+          </Grid>
+          <br />
+          <br />
+          <br />
           <br />
           <br />
           <div className={aboutStyle.pageText}>
