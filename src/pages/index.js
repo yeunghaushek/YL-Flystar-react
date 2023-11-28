@@ -1917,6 +1917,12 @@ export default function Astrolabe() {
           })}
         </Select>
       </div>
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
       <div className={astrolabeStyle.footer}>
         <div className={astrolabeStyle.left}>
           <div className={astrolabeStyle.logo}>

@@ -212,9 +212,9 @@ export default function About() {
           <div className={aboutStyle.left}></div>
           <div className={aboutStyle.right}>
             <div className={aboutStyle.title}>曜靈紫微飛星</div>
-            <div className={aboutStyle.caption}>Ling is Big</div>
+            <div className={aboutStyle.caption}>您的每一步選擇，將如何塑造您的未來？</div>
             <div className={aboutStyle.link}>
-              <Link href="/">立即排盤</Link>
+              <Link href="#contact">聯絡我們</Link>
               <a href="#begin">瞭解更多</a>
             </div>
           </div>
@@ -482,6 +482,17 @@ export default function About() {
           <br />
           <div className={aboutStyle.pageTitle}>常見問題</div>
           <div className={aboutStyle.pageText}>
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel0a-content" id="panel0a-header">
+                所有事情都是注定的嗎？還是可以改變的？
+              </AccordionSummary>
+              <AccordionDetails sx={{ fontSize: "16px" }}>
+                在命理學的理解中，雖然出生環境等某些因素是預先設定的，但絕大多數的人生事件和結果都是可變的，它們會隨著命主的選擇和決定而變化。
+                <br />
+                <br />
+                我們的命理分析正是基於這樣的理念，旨在指引您做出最佳的選擇，從而引導您走向最理想的人生結果。通过命理分析，我們能夠為您提供關於如何做出明智決策的指導，以最大程度地實現個人潛能和達成生活目標。
+              </AccordionDetails>
+            </Accordion>
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
                 甚麼人適合進行命理分析，甚麼人則不適合？

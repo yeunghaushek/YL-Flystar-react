@@ -37,6 +37,7 @@
 
   background-image: linear-gradient(rgba(16, 16, 16, 0.3), rgba(16, 16, 16, 0.3)),
     url("https://images.pexels.com/photos/669015/pexels-photo-669015.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1");
+  background-image: linear-gradient(rgba(16, 16, 16, 0.5), rgba(16, 16, 16, 0.5)), url("/banner.png");
   background-size: cover;
   background-repeat: no-repeat;
   /* background-attachment: fixed; */
@@ -59,11 +60,11 @@
   }
 
   .left {
-    flex: 1;
+    flex: 5;
   }
 
   .right {
-    flex: 1;
+    flex: 4;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -132,8 +133,34 @@
   }
 
   @media only screen and (max-width: 767px) {
+    .left {
+      flex: 1;
+    }
+
     .right {
-      flex: 2;
+      flex: 3;
+
+      .title {
+        margin-top: 96px;
+        font-size: 40px;
+      }
+
+      .caption {
+        font-size: 21px;
+      }
+
+      .link {
+        margin-top: 56px;
+
+        a {
+          padding: 8px 16px;
+          margin: 0 16px 0 0;
+          border-radius: 25px;
+          border: 2px solid #fff;
+          color: #fff;
+          font-size: 14px;
+        }
+      }
     }
   }
 }
