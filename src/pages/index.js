@@ -1,4 +1,6 @@
 import Head from "next/head";
+import Link from "next/link";
+
 import { astro } from "iztro";
 import { useEffect, useState } from "react";
 
@@ -840,6 +842,37 @@ export default function Astrolabe() {
       <Head>
         <title>曜靈紫微飛星</title>
       </Head>
+      <div className={`header show`}>
+        <div className="left">
+          <div className="logo">
+            <img src={"logo.png"} alt="logo" />
+            <div className="name">曜靈紫微飛星</div>
+          </div>
+          <Link href="/">
+            <button>排盤</button>
+          </Link>
+          {/* <Link href="#begin">
+            <button>遇見命理師</button>
+          </Link>
+          <Link href="#analysis">
+            <button>命理分析</button>
+          </Link>
+          <Link href="#course">
+            <button>教學課程</button>
+          </Link>
+          <Link href="#question">
+            <button>常見問題</button>
+          </Link>
+          <Link href="#contact">
+            <button>聯絡我們</button>
+          </Link> */}
+        </div>
+        <div className="right">
+          <a target="_blank" href="https://buy.stripe.com/cN2cPsa6XaLMauQ001">
+            支持我們
+          </a>
+        </div>
+      </div>
       <div className="container">
         <Modal open={showSearch} onClose={toggleSearch} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
           <Box sx={modalStyle}>
@@ -1917,7 +1950,7 @@ export default function Astrolabe() {
           })}
         </Select>
       </div>
-      <br />
+      {/* <br />
       <br />
       <br />
       <br />
@@ -1930,14 +1963,13 @@ export default function Astrolabe() {
             <div className={astrolabeStyle.name}>曜靈紫微飛星</div>
           </div>
           <button>排盤</button>
-          {/* <button>關於我們</button> */}
         </div>
         <div className={astrolabeStyle.right}>
           <a target="_blank" href="https://buy.stripe.com/cN2cPsa6XaLMauQ001">
             支持我們
           </a>
         </div>
-      </div>
+      </div> */}
     </>
   );
 }
