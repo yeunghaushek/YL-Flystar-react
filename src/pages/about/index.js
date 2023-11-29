@@ -580,7 +580,7 @@ export default function About() {
           </SpeedDial>
         </div>
       </div>
-      <div className="footer">{`${new Date().getFullYear()} © 曜靈飛星排盤 版權所有`}</div>
+      <div className="footer">{`${new Date().getFullYear()} © 曜靈紫微飛星 版權所有`}</div>
     </>
   );
 }
