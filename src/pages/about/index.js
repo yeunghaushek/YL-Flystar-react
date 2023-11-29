@@ -11,7 +11,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CallIcon from "@mui/icons-material/Call";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
-import FacebookIcon from "@mui/icons-material/Facebook";
+/* import FacebookIcon from "@mui/icons-material/Facebook"; */
 
 import { IoLogoWechat } from "react-icons/io5";
 import { FaLine } from "react-icons/fa";
@@ -116,35 +116,35 @@ const rows = [
     level: "基礎課程",
     description: "學習紫微斗數命盤的符號意義，排盤方法，以及宮位、星曜、四化、飛化的基本象義。",
     target: "掌握命盤的基本結構和符號解讀，為進一步的學習打下堅實基礎。",
-    price: "HKD $5,000",
+    price: "HKD $1,800 / 一期 (總共6-10節課)",
   },
   {
     id: 2,
     level: "核心技術",
     description: "梁氏飛星的核心技術和獨特命盤結構的教學，並進行每日排盤和核心技術練習。",
     target: "使學員能夠熟練運用梁氏飛星的核心技術，準確解讀命盤。",
-    price: "HKD $7,000",
+    price: "HKD $2,800 / 一期 (總共6-10節課)",
   },
   {
     id: 3,
     level: "主題深入",
     description: "針對人生各個主題（如工作、感情等）進行深入討論，學習主題的主要結構和判斷方法。",
     target: "學會針對各主題進行準確的預測和分析，為深造課程做準備。",
-    price: "HKD $10,000",
+    price: "HKD $4,800 / 一期 (共2期, 每期6-10節課)",
   },
   {
     id: 4,
     level: "借盤論述與時間判斷",
     description: "通過命主的命盤，學習分析與命主相關人物的情況，以及時間判斷方法。",
     target: "能夠運用命盤分析他人，並準確預測未來發展的時間點。",
-    price: "HKD $8,000",
+    price: "HKD $5,800 / 一期 (總共 6-10節課)",
   },
   {
     id: 5,
     level: "深造課程",
-    description: "學習論述事件的細節，目標是達到如觀看電影般的分析深度。包括主題深度論述技巧和實例教學。",
-    target: "精通紫微斗數的深層分析，能夠如觀看電影般理解和預測生命中的各種事件。",
-    price: "HKD $15,000",
+    description: "深入探討更高級的分析技巧，並學習如何精確地論述事件的細節，就如同觀看一部電影一般。",
+    target: "為已經掌握了基礎和核心技術的學生提供進階學習機會，以持續提升他們的命理分析能力和深度理解。",
+    price: "詳談",
   },
 ];
 
@@ -321,7 +321,7 @@ export default function About() {
             <Grid item xs={6} sm={4}>
               <div className={aboutStyle.price}>
                 <div className={aboutStyle.title}>創業與事業規劃</div>
-                價格：HKD $1,800
+                價格：HKD $1,500
                 <br />
                 <br />
                 <br />
@@ -332,7 +332,7 @@ export default function About() {
             <Grid item xs={6} sm={4}>
               <div className={aboutStyle.price}>
                 <div className={aboutStyle.title}>感情與婚姻</div>
-                價格：HKD $1,800
+                價格：HKD $1,500
                 <br />
                 <br />
                 <br />
@@ -343,7 +343,7 @@ export default function About() {
             <Grid item xs={6} sm={4}>
               <div className={aboutStyle.price}>
                 <div className={aboutStyle.title}>財富與投資規劃</div>
-                價格：HKD $1,800
+                價格：HKD $1,500
                 <br />
                 <br />
                 <br />
@@ -355,7 +355,7 @@ export default function About() {
             <Grid item xs={6} sm={4}>
               <div className={aboutStyle.price}>
                 <div className={aboutStyle.title}>個人成長與自我實現</div>
-                價格：HKD $1,500
+                價格：HKD $1,000
                 <br />
                 <br />
                 <br />
@@ -366,7 +366,7 @@ export default function About() {
             <Grid item xs={6} sm={4}>
               <div className={aboutStyle.price}>
                 <div className={aboutStyle.title}>教育與學業發展</div>
-                價格：HKD $1,500
+                價格：HKD $1,000
                 <br />
                 <br />
                 <br />
@@ -377,7 +377,7 @@ export default function About() {
             <Grid item xs={6} sm={4}>
               <div className={aboutStyle.price}>
                 <div className={aboutStyle.title}>人際關係與社交網絡</div>
-                價格：HKD $1,500
+                價格：HKD $1,000
                 <br />
                 <br />
                 <br />
@@ -437,7 +437,7 @@ export default function About() {
             pageSizeOptions={[5, 10]}
           />
           <br />
-          請注意，這些費用僅為估計，實際價格可能根據課程的具體內容和學生的進度有所調整。
+          所有課程的節數均根據學生的學習進度進行彈性安排，確保學生能夠充分掌握每一階段的學習內容。每一期的課程費用包含了學習到該階段的完整進度。
           <br />
           <br />
           <div className={aboutStyle.pageText}>
@@ -556,6 +556,9 @@ export default function About() {
           <div className={aboutStyle.contact}>
             <a target="_blank" href="https://www.instagram.com/yaoling_flystar/">
               <img src="/ig.jpg" alt="instagram" />
+            </a>
+            <a target="_blank" href="https://wa.me/85264406336?text=你好，我想了解一下命理分析服務">
+              <img src="/whatsapp.png" alt="whatsapp" />
             </a>
           </div>
           <br />
