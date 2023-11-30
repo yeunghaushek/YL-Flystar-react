@@ -31,6 +31,7 @@ import { ArcherContainer, ArcherElement } from "react-archer";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import InfoIcon from "@mui/icons-material/Info";
+import RttIcon from "@mui/icons-material/Rtt";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import UpgradeIcon from "@mui/icons-material/Upgrade";
@@ -417,7 +418,19 @@ export default function Astrolabe() {
 
   const [showInfo, setShowInfo] = useState(true);
   const toggleInfo = () => {
+    if (showTextfield) setShowTextfield(false);
     setShowInfo(!showInfo);
+  };
+
+  const [showTextfield, setShowTextfield] = useState(false);
+  const [note, setNote] = useState("");
+  const toggleTextfield = () => {
+    if (showInfo) setShowInfo(false);
+    setShowTextfield(!showTextfield);
+  };
+
+  const handleNote = (event) => {
+    setNote(event.target.value);
   };
 
   const [pluginSmallMonth, setPluginSmallMonth] = useState(true);
@@ -636,6 +649,8 @@ export default function Astrolabe() {
     setAstrolabe(myAstrolabe);
     setShowSearch(false);
     setShowInfo(true);
+    setShowTextfield(false);
+    setNote("");
     setShowSmallLuck(false);
     setShowSmallMonth(false);
     setCurrentAgeIndex(-1);
@@ -1851,6 +1866,12 @@ export default function Astrolabe() {
                     <InfoIcon />
                   </button>
                   <button
+                    className={`${centerPalaceStyle.info} ${showTextfield ? centerPalaceStyle.selected : ``}`}
+                    onClick={toggleTextfield}
+                  >
+                    <RttIcon />
+                  </button>
+                  <button
                     className={`${centerPalaceStyle.info} ${pluginSmallMonth ? centerPalaceStyle.selected : ``}`}
                     onClick={togglePluginSmallMonth}
                   >
@@ -1896,6 +1917,26 @@ export default function Astrolabe() {
                       {`四柱: ${astrolabe.chineseDate}`}
                       <br />
                     </>
+                  ) : null}
+                  {showTextfield ? (
+                    <TextField
+                      id="standard-multiline-flexible"
+                      hiddenLabel
+                      multiline
+                      fullWidth
+                      rows={6}
+                      maxRows={6}
+                      value={note}
+                      onChange={handleNote}
+                      sx={{
+                        "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
+                          border: "1px solid #bbb",
+                        },
+                        "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                          border: "1px solid #bbb",
+                        },
+                      }}
+                    />
                   ) : null}
                 </div>
 

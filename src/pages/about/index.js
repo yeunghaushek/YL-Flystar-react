@@ -38,7 +38,7 @@ const actions = [
     ),
     name: "WhatsApp",
   },
-  {
+  /* {
     icon: (
       <a href="#">
         <FaLine size={24} />
@@ -61,7 +61,7 @@ const actions = [
       </a>
     ),
     name: "Discord",
-  },
+  }, */
 ];
 
 const columns = [
@@ -450,7 +450,7 @@ export default function About() {
           <Divider light variant="middle" sx={{ margin: "20px 0" }} />
           <br />
         </div>
-        <Carousel centerMode centerSlidePercentage={75} showArrows showStatus={false} autoPlay interval={6000} infiniteLoop>
+        {/* <Carousel centerMode centerSlidePercentage={75} showArrows showStatus={false} autoPlay interval={6000} infiniteLoop>
           <div className={aboutStyle.carousel}>
             <img
               src="https://images.pexels.com/photos/416160/pexels-photo-416160.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
@@ -475,7 +475,7 @@ export default function About() {
               alt="carousel4"
             />
           </div>
-        </Carousel>
+        </Carousel> */}
         <div className="container">
           <br id="question" />
           <Divider light variant="middle" sx={{ margin: "20px 0" }} />
