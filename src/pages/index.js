@@ -866,6 +866,21 @@ export default function Astrolabe() {
           <Link href="/">
             <button>排盤</button>
           </Link>
+          <Link href="/info#begin">
+            <button>遇見命理師</button>
+          </Link>
+          <Link href="/info##analysis">
+            <button>命理分析</button>
+          </Link>
+          <Link href="/info##course">
+            <button>教學課程</button>
+          </Link>
+          <Link href="/info##question">
+            <button>常見問題</button>
+          </Link>
+          <Link href="/info##contact">
+            <button>聯絡我們</button>
+          </Link>
           {/* <Link href="#begin">
             <button>遇見命理師</button>
           </Link>

@@ -446,9 +446,9 @@ export default function About() {
             <br />
             通過我們的教學課程，您將有機會掌握這門融合了傳統智慧和現代邏輯的命理學，不僅為自己帶來深刻的自我認知，也能為他人提供專業的命理指導。加入我們的課程，開啟一段充滿洞察和發現的學習之旅。
           </div>
-          <br />
+          {/* <br />
           <Divider light variant="middle" sx={{ margin: "20px 0" }} />
-          <br />
+          <br /> */}
         </div>
         {/* <Carousel centerMode centerSlidePercentage={75} showArrows showStatus={false} autoPlay interval={6000} infiniteLoop>
           <div className={aboutStyle.carousel}>
