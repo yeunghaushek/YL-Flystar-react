@@ -14,6 +14,10 @@
   letter-spacing: 2px;
   color: #734d26;
   font-weight: 400;
+
+  @media only screen and (max-width: 767px) {
+    font-size: 22px;
+  }
 }
 
 .pageSubheading {
@@ -22,6 +26,10 @@
   color: #734d26;
   font-style: italic;
   text-decoration: underline;
+
+  @media only screen and (max-width: 767px) {
+    font-size: 18px;
+  }
 }
 
 .pageText {
@@ -29,6 +37,10 @@
   font-size: 18px;
   line-height: 2;
   letter-spacing: 1px;
+
+  @media only screen and (max-width: 767px) {
+    font-size: 14px;
+  }
 }
 
 .banner {
@@ -184,6 +196,16 @@
   @media only screen and (max-width: 1366px) {
     height: 260px;
   }
+
+  @media only screen and (max-width: 767px) {
+    padding: 10px 15px 15px 15px;
+    font-size: 12px;
+    height: 240px;
+
+    .title {
+      font-size: 14px;
+    }
+  }
 }
 
 .carousel {
@@ -196,6 +218,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
+
+  @media only screen and (max-width: 767px) {
+    flex-direction: column;
+  }
 
   img {
     width: 256px;
