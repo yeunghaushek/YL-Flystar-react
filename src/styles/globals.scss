@@ -82,9 +82,11 @@ a {
       cursor: pointer;
     }
 
-    @media only screen and (max-width: 1023px) {
-      button {
-        display: none;
+    &.info-header {
+      @media only screen and (max-width: 991px) {
+        button {
+          display: none;
+        }
       }
     }
   }

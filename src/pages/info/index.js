@@ -177,7 +177,7 @@ export default function About() {
         <title>曜靈紫微飛星</title>
       </Head>
       <div className={`header ${scrollTop && scrollTop >= bannerOffset - 120 ? `show` : ``}`}>
-        <div className="left">
+        <div className="left info-header">
           <div className="logo">
             <img src={"logo.png"} alt="logo" />
             <div className="name">曜靈紫微飛星</div>
