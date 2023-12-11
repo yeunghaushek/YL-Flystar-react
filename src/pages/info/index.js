@@ -32,7 +32,7 @@ const actions = [
   },
   {
     icon: (
-      <a target="_blank" href="https://wa.me/85264406336?text=你好，我想了解一下命理分析服務">
+      <a target="_blank" href="https://wa.me/85294780643?text=你好，我想了解一下命理分析服務">
         <WhatsAppIcon />
       </a>
     ),
@@ -557,7 +557,7 @@ export default function About() {
             <a target="_blank" href="https://www.instagram.com/yaoling_flystar/">
               <img src="/ig.jpg" alt="instagram" />
             </a>
-            <a target="_blank" href="https://wa.me/85264406336?text=你好，我想了解一下命理分析服務">
+            <a target="_blank" href="https://wa.me/85294780643?text=你好，我想了解一下命理分析服務">
               <img src="/whatsapp.png" alt="whatsapp" />
             </a>
           </div>
