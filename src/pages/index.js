@@ -872,10 +872,12 @@ export default function Astrolabe() {
       </Head>
       <div className={`header show`}>
         <div className="left">
-          <div className="logo">
-            <img src={"logo.png"} alt="logo" />
-            <div className="name">曜靈紫微飛星</div>
-          </div>
+          <Link href="/info">
+            <div className="logo">
+              <img src={"logo.png"} alt="logo" />
+              <div className="name">曜靈紫微飛星</div>
+            </div>
+          </Link>
           <Link href="/info">
             <button>遇見命理師</button>
           </Link>

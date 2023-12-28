@@ -178,10 +178,12 @@ export default function About() {
       </Head>
       <div className={`header ${scrollTop && scrollTop >= bannerOffset - 120 ? `show` : ``}`}>
         <div className="left info-header">
-          <div className="logo">
-            <img src={"logo.png"} alt="logo" />
-            <div className="name">曜靈紫微飛星</div>
-          </div>
+          <Link href="/info">
+            <div className="logo">
+              <img src={"logo.png"} alt="logo" />
+              <div className="name">曜靈紫微飛星</div>
+            </div>
+          </Link>
           <Link href="/">
             <button>排盤</button>
           </Link>
@@ -452,10 +454,15 @@ export default function About() {
         </div>
         {/* <Carousel centerMode centerSlidePercentage={75} showArrows showStatus={false} autoPlay interval={6000} infiniteLoop>
           <div className={aboutStyle.carousel}>
-            <img
-              src="https://images.pexels.com/photos/416160/pexels-photo-416160.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-              alt="carousel1"
-            />
+            <iframe
+              width="560"
+              height="315"
+              src="https://www.youtube.com/embed/DEYHzTA8NGw?si=4C3-Vgn6ytTdGYUJ"
+              title="YouTube video player"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+            ></iframe>
           </div>
           <div className={aboutStyle.carousel}>
             <img
@@ -559,6 +566,9 @@ export default function About() {
             </a>
             <a target="_blank" href="https://wa.me/85294780643?text=你好，我想了解一下命理分析服務">
               <img src="/whatsapp.png" alt="whatsapp" />
+            </a>
+            <a target="_blank" href="https://www.youtube.com/@yl-flystar">
+              <img src="/youtube.png" alt="whatsapp" />
             </a>
           </div>
           <br />
