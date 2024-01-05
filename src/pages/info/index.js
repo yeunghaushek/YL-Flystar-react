@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import aboutStyle from "@/styles/About.module.scss";
 
-import { Grid, Divider, Accordion, AccordionSummary, AccordionDetails, SpeedDial, SpeedDialAction } from "@mui/material";
+import { Grid, Divider, Accordion, AccordionSummary, AccordionDetails, SpeedDial, SpeedDialAction, IconButton } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -11,6 +11,8 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CallIcon from "@mui/icons-material/Call";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import YouTubeIcon from "@mui/icons-material/YouTube";
+
 /* import FacebookIcon from "@mui/icons-material/Facebook"; */
 
 import { IoLogoWechat } from "react-icons/io5";
@@ -38,13 +40,37 @@ const actions = [
     ),
     name: "WhatsApp",
   },
+  {
+    icon: (
+      <a target="_blank" href="https://www.youtube.com/@yl-flystar">
+        <YouTubeIcon />
+      </a>
+    ),
+    name: "Youtube",
+  },
+  {
+    icon: (
+      <a href="#contact">
+        <img src={`/wechat_icon.png`} alt="wechat_icon" width="24" />
+      </a>
+    ),
+    name: "Wechat",
+  },
+  {
+    icon: (
+      <a href="#contact">
+        <CallIcon />
+      </a>
+    ),
+    name: "Phone",
+  },
   /* {
     icon: (
       <a href="#">
         <FaLine size={24} />
       </a>
     ),
-    name: "Line",
+    name: "Line", 
   },
   {
     icon: (
@@ -568,10 +594,18 @@ export default function About() {
               <img src="/whatsapp.png" alt="whatsapp" />
             </a>
             <a target="_blank" href="https://www.youtube.com/@yl-flystar">
-              <img src="/youtube.png" alt="whatsapp" />
+              <img src="/youtube.png" alt="youtube" />
             </a>
+            <img src="/wechat.png" alt="wechat" />
           </div>
           <br />
+          <div className={aboutStyle.contact}>
+            <IconButton>
+              <CallIcon />
+            </IconButton>
+            {`+852 9478 0648`}
+          </div>
+
           <Divider light variant="middle" sx={{ margin: "20px 0" }} />
           <br />
           <br />
