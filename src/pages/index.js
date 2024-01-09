@@ -278,6 +278,7 @@ export default function Astrolabe() {
   const [currentDecadalIndex, setCurrentDecadalIndex] = useState(-1);
   const [currentAgeIndex, setCurrentAgeIndex] = useState(-1);
   const [currentMonthIndex, setCurrentMonthIndex] = useState(-1);
+  const [currentFirstMonthIndex, setCurrentFirstMonthIndex] = useState(-1);
   const [currentBorrowIndex, setCurrentBorrowIndex] = useState(-1);
 
   const [showBigLuck, setShowBigLuck] = useState(false);
@@ -312,6 +313,14 @@ export default function Astrolabe() {
 
   const clickAge = (palaceIndex) => {
     setCurrentAgeIndex(palaceIndex);
+
+    let smallLuckPalaces = [];
+    for (let i = 0; i < 12; i++) {
+      smallLuckPalaces.push(astrolabe.palaces[(lifePalaceIndex - palaceIndex + i + 12) % 12].name);
+    }
+    let firstMonthIndex = smallLuckPalaces.findIndex((smp) => smp === astrolabe.palaces[0].name);
+    setCurrentFirstMonthIndex(firstMonthIndex);
+
     if (!showSmallLuck) setShowSmallLuck(true);
     if (showSmallMonth) setShowSmallMonth(false);
     if (currentMonthIndex > -1) setCurrentMonthIndex(-1);
@@ -1472,7 +1481,9 @@ export default function Astrolabe() {
                           {pluginSmallMonth && currentAgeIndex > -1 ? (
                             <div className={`${palaceStyle.month} ${currentMonthIndex === palaceIndex ? palaceStyle.selected : ``}`}>
                               <button onClick={() => clickMonth(palaceIndex)}>
-                                {lunarMonthList[(palaceIndex - currentAgeIndex + 9 + 12) % 12]}
+                                {lunarMonthList[(palaceIndex - currentFirstMonthIndex + 12) % 12]}
+                                {/* <br />
+                                {lunarMonthList[(palaceIndex - currentAgeIndex + 9 + 12) % 12]} */}
                               </button>
                             </div>
                           ) : null}
