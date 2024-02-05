@@ -12,12 +12,8 @@ import CallIcon from "@mui/icons-material/Call";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import YouTubeIcon from "@mui/icons-material/YouTube";
-
+import FacebookIcon from "@mui/icons-material/Facebook";
 /* import FacebookIcon from "@mui/icons-material/Facebook"; */
-
-import { IoLogoWechat } from "react-icons/io5";
-import { FaLine } from "react-icons/fa";
-import { FaDiscord } from "react-icons/fa";
 
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
@@ -26,11 +22,27 @@ import { useEffect, useState } from "react";
 const actions = [
   {
     icon: (
-      <a target="_blank" href="https://www.instagram.com/yaoling_flystar/">
+      <a target="_blank" href="https://www.instagram.com/yl_astrologix?igsh=N2psYm8wZzhjNDJ1">
         <InstagramIcon />
       </a>
     ),
     name: "Instagram",
+  },
+  {
+    icon: (
+      <a target="_blank" href="https://www.facebook.com/profile.php?id=61556268658653&mibextid=ZbWKwL">
+        <FacebookIcon />
+      </a>
+    ),
+    name: "Facebook",
+  },
+  {
+    icon: (
+      <a target="_blank" href="https://www.threads.net/@yl_astrologix">
+        <img src={`/thread_icon.png`} alt="thread_icon" width="24" />
+      </a>
+    ),
+    name: "Thread",
   },
   {
     icon: (
@@ -42,7 +54,7 @@ const actions = [
   },
   {
     icon: (
-      <a target="_blank" href="https://www.youtube.com/@yl-flystar">
+      <a target="_blank" href="https://www.youtube.com/@yl-astrologix">
         <YouTubeIcon />
       </a>
     ),
@@ -140,16 +152,16 @@ const rows = [
   {
     id: 1,
     level: "基礎課程",
-    description: "學習紫微斗數命盤的符號意義，排盤方法，以及宮位、星曜、四化、飛化的基本象義。",
+    description: "學習星軌理數命盤的符號意義，排盤方法，以及宮位、星曜、四化、飛化的基本象義。",
     target: "掌握命盤的基本結構和符號解讀，為進一步的學習打下堅實基礎。",
-    price: "HKD $1,800 / 一期 (總共6-10節課)",
+    price: "HKD $3,800 / 一期 (總共6-10節課)",
   },
   {
     id: 2,
     level: "核心技術",
-    description: "梁氏飛星的核心技術和獨特命盤結構的教學，並進行每日排盤和核心技術練習。",
+    description: "星軌理數的核心技術和獨特命盤結構的教學，並進行每日排盤和核心技術練習。",
     target: "使學員能夠熟練運用梁氏飛星的核心技術，準確解讀命盤。",
-    price: "HKD $2,800 / 一期 (總共6-10節課)",
+    price: "HKD $3,800 / 一期 (總共6-10節課)",
   },
   {
     id: 3,
@@ -200,17 +212,17 @@ export default function About() {
   return (
     <>
       <Head>
-        <title>曜靈紫微飛星</title>
+        <title>曜靈星軌理數</title>
       </Head>
       <div className={`header ${scrollTop && scrollTop >= bannerOffset - 120 ? `show` : ``}`}>
         <div className="left info-header">
-          <Link href="/info">
+          <Link href="/">
             <div className="logo">
               <img src={"logo.png"} alt="logo" />
-              <div className="name">曜靈紫微飛星</div>
+              <div className="name">曜靈星軌理數</div>
             </div>
           </Link>
-          <Link href="/">
+          <Link href="/chart">
             <button>排盤</button>
           </Link>
           <Link href="#begin">
@@ -239,8 +251,8 @@ export default function About() {
         <div className={aboutStyle.banner} id="banner1">
           <div className={aboutStyle.left}></div>
           <div className={aboutStyle.right}>
-            <div className={aboutStyle.title}>曜靈紫微飛星</div>
-            <div className={aboutStyle.caption}>您的每一步選擇，將如何塑造您的未來？</div>
+            <div className={aboutStyle.title}>曜靈星軌理數</div>
+            <div className={aboutStyle.caption}>您的智能人生定位系統</div>
             <div className={aboutStyle.link}>
               <Link href="#contact">聯絡我們</Link>
               <a href="#begin">瞭解更多</a>
@@ -430,10 +442,10 @@ export default function About() {
           <br />
           <div className={aboutStyle.pageTitle}>梁氏飛星紫微斗數：邏輯與深度的命理探索</div>
           <div className={aboutStyle.pageText}>
-            梁氏飛星紫微斗數，作為當代命理學的一個重要分支，提供了一種獨特而系統化的方法來理解個人的命運和人生路徑。這一派系的特點在於其對邏輯和系統性的強調，使得命理分析不僅準確，也更具深度和可靠性。
+            星軌理數，源自於梁氏飛星紫微斗數的深厚基礎，代表了當代命理學中的一個創新分支。它採用了一種獨特且系統化的方法，用以解析個人的命運和人生軌迹。這一新派系之所以突出，是因為它在邏輯性和系統性上的重視，使得對個人命運的分析既準確又富有深度，提升了可靠性。
             <br />
             <br />
-            在梁氏飛星紫微斗數中，四化被視為命盤中最關鍵的元素，它們是影響一個人成功或失敗的決定性因素。我們通過獨特的技術，結合宮位、四化和星曜的綜合分析，提供對個人命運的深入洞察。這種分析方式類似於解讀一個複雜的數學公式，每一部分都是理解整體的關鍵。
+            在星軌理數的框架下，四化被認為是命盤中的關鍵元素，它們是塑造個人成功或失敗的核心因素。透過獨到的分析技巧，結合宮位、四化及星曜的綜合解讀，我們提供了對個人命運深層次的洞察。這種分析方法就像是解碼一個複雜數學公式，其中每個部分都是解讀整體的關鍵。
           </div>
           <br />
           <DataGrid
@@ -469,10 +481,10 @@ export default function About() {
           <br />
           <br />
           <div className={aboutStyle.pageText}>
-            學習梁氏飛星紫微斗數，您將學會如何運用這一系統來揭示個人性格的細微之處、未來的可能轉折，以及面對挑戰與把握機遇的策略。這門學問不僅提供未來的預測，更重要的是，它幫助學習者深入理解生活中的每一個選擇和每一段經歷，從而更好地掌握自己的生命舵。
+            學習星軌理數，您將掌握如何運用這套系統來揭示個性的細節、未來可能的轉變點，以及如何面對挑戰與抓住機遇的策略。這門學科不僅為我們預示未來，更重要的是，它幫助學習者深入了解生活中的每一次選擇和經歷，從而更主動地操控自己的命運。
             <br />
             <br />
-            通過我們的教學課程，您將有機會掌握這門融合了傳統智慧和現代邏輯的命理學，不僅為自己帶來深刻的自我認知，也能為他人提供專業的命理指導。加入我們的課程，開啟一段充滿洞察和發現的學習之旅。
+            參與我們的教學課程，您將有機會深入學習這門融合傳統智慧與現代邏輯的命理學。這不僅能為您自己帶來深刻的自我認識，還能為他人提供專業的生命指導。加入我們，啟程一段充滿洞見與發現的學習旅程。
           </div>
           {/* <br />
           <Divider light variant="middle" sx={{ margin: "20px 0" }} />
@@ -587,13 +599,19 @@ export default function About() {
           <br />
           <div className={aboutStyle.pageTitle}>聯絡我們</div>
           <div className={aboutStyle.contact}>
-            <a target="_blank" href="https://www.instagram.com/yaoling_flystar/">
+            <a target="_blank" href="https://www.instagram.com/yl_astrologix?igsh=N2psYm8wZzhjNDJ1">
               <img src="/ig.jpg" alt="instagram" />
+            </a>
+            <a target="_blank" href="https://www.facebook.com/profile.php?id=61556268658653&mibextid=ZbWKwL">
+              <img src="/facebook.png" alt="facebook" />
+            </a>
+            <a target="_blank" href="https://www.threads.net/@yl_astrologix">
+              <img src="/thread.png" alt="thread" />
             </a>
             <a target="_blank" href="https://wa.me/85294780643?text=你好，我想了解一下命理分析服務">
               <img src="/whatsapp.png" alt="whatsapp" />
             </a>
-            <a target="_blank" href="https://www.youtube.com/@yl-flystar">
+            <a target="_blank" href="https://www.youtube.com/@yl-astrologix">
               <img src="/youtube.png" alt="youtube" />
             </a>
             <img src="/wechat.png" alt="wechat" />

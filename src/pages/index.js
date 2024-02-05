@@ -1,908 +1,231 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useRouter } from "next/router";
 
-import { astro } from "iztro";
-import { useEffect, useMemo, useState } from "react";
+import aboutStyle from "@/styles/About.module.scss";
 
-import astrolabeStyle from "@/styles/Astrolabe.module.scss";
-import palaceStyle from "@/styles/Palace.module.scss";
-import centerPalaceStyle from "@/styles/CenterPalace.module.scss";
+import { Grid, Divider, Accordion, AccordionSummary, AccordionDetails, SpeedDial, SpeedDialAction, IconButton } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
 
-import {
-  Box,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Grid,
-  Radio,
-  RadioGroup,
-  Checkbox,
-  TextField,
-  Autocomplete,
-  Button,
-  InputLabel,
-  MenuItem,
-  Tooltip,
-  Modal,
-} from "@mui/material";
-import Select from "@mui/material/Select";
-import { ArcherContainer, ArcherElement } from "react-archer";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import InfoIcon from "@mui/icons-material/Info";
-import RttIcon from "@mui/icons-material/Rtt";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import UpgradeIcon from "@mui/icons-material/Upgrade";
-import SwitchAccessShortcutAddIcon from "@mui/icons-material/SwitchAccessShortcutAdd";
-import MobiledataOffIcon from "@mui/icons-material/MobiledataOff";
-import StarIcon from "@mui/icons-material/Star";
-import StarBorderIcon from "@mui/icons-material/StarBorder";
-import AssignmentIcon from "@mui/icons-material/Assignment";
+import CallIcon from "@mui/icons-material/Call";
+import InstagramIcon from "@mui/icons-material/Instagram";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import YouTubeIcon from "@mui/icons-material/YouTube";
+import FacebookIcon from "@mui/icons-material/Facebook";
+/* import FacebookIcon from "@mui/icons-material/Facebook"; */
 
-Date.prototype.toLocalDate = function () {
-  let tzoffset = this.getTimezoneOffset() * 60000; //offset in milliseconds
-  let formattedDateStr = new Date(this.getTime() - tzoffset).toISOString();
-  return {
-    year: formattedDateStr.substring(0, 4),
-    month: parseInt(formattedDateStr.substring(5, 7)),
-    day: parseInt(formattedDateStr.substring(8, 10)),
-  };
-};
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
+import { useEffect, useState } from "react";
 
-const modalStyle = {
-  position: "absolute",
-  top: "47.5%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  borderRadius: "10px",
-  border: "0",
-  width: "80%",
-  maxWidth: "900px",
-  backgroundColor: "#ddd",
-  boxShadow: 24,
-  padding: "20px",
-};
-
-const StyledTooltip = ({ title, children, ...props }) => (
-  <Tooltip
-    {...props}
-    title={title}
-    placement="right-end"
-    arrow
-    componentsProps={{
-      tooltip: {
-        sx: {
-          marginLeft: "2px !important",
-          padding: "4px 4px",
-          backgroundColor: "rgb(16,16,16,0.8)",
-        },
-      },
-      arrow: {
-        sx: {
-          color: "rgb(16,16,16,0.8)",
-        },
-      },
-    }}
-  >
-    {children}
-  </Tooltip>
-);
-
-const StyledTooltipForStar = ({ title, children, ...props }) => (
-  <Tooltip
-    {...props}
-    title={title}
-    placement="bottom-end"
-    arrow
-    componentsProps={{
-      tooltip: {
-        sx: {
-          marginTop: "2px !important",
-          padding: "4px 4px",
-          backgroundColor: "rgb(16,16,16,0.8)",
-        },
-      },
-      arrow: {
-        sx: {
-          color: "rgb(16,16,16,0.8)",
-        },
-      },
-    }}
-  >
-    {children}
-  </Tooltip>
-);
-
-const birthTimeList = [
-  "早子時 (00:00~01:00)",
-  "丑時 (01:00~03:00)",
-  "寅時 (03:00~05:00)",
-  "卯時 (05:00~07:00)",
-  "辰時 (07:00~09:00)",
-  "巳時 (09:00~11:00)",
-  "午時 (11:00~13:00)",
-  "未時 (13:00~15:00)",
-  "申時 (15:00~17:00)",
-  "酉時 (17:00~19:00)",
-  "戌時 (19:00~21:00)",
-  "亥時 (21:00~23:00)",
-  "晚子時 (23:00~00:00)",
+const actions = [
+  {
+    icon: (
+      <a target="_blank" href="https://www.instagram.com/yl_astrologix?igsh=N2psYm8wZzhjNDJ1">
+        <InstagramIcon />
+      </a>
+    ),
+    name: "Instagram",
+  },
+  {
+    icon: (
+      <a target="_blank" href="https://www.facebook.com/profile.php?id=61556268658653&mibextid=ZbWKwL">
+        <FacebookIcon />
+      </a>
+    ),
+    name: "Facebook",
+  },
+  {
+    icon: (
+      <a target="_blank" href="https://www.threads.net/@yl_astrologix">
+        <img src={`/thread_icon.png`} alt="thread_icon" width="24" />
+      </a>
+    ),
+    name: "Thread",
+  },
+  {
+    icon: (
+      <a target="_blank" href="https://wa.me/85294780643?text=你好，我想了解一下命理分析服務">
+        <WhatsAppIcon />
+      </a>
+    ),
+    name: "WhatsApp",
+  },
+  {
+    icon: (
+      <a target="_blank" href="https://www.youtube.com/@yl-astrologix">
+        <YouTubeIcon />
+      </a>
+    ),
+    name: "Youtube",
+  },
+  {
+    icon: (
+      <a href="#contact">
+        <img src={`/wechat_icon.png`} alt="wechat_icon" width="24" />
+      </a>
+    ),
+    name: "Wechat",
+  },
+  {
+    icon: (
+      <a href="#contact">
+        <CallIcon />
+      </a>
+    ),
+    name: "Phone",
+  },
+  /* {
+    icon: (
+      <a href="#">
+        <FaLine size={24} />
+      </a>
+    ),
+    name: "Line", 
+  },
+  {
+    icon: (
+      <a href="#">
+        <IoLogoWechat size={24} />
+      </a>
+    ),
+    name: "WeChat",
+  },
+  {
+    icon: (
+      <a href="#">
+        <FaDiscord size={24} />
+      </a>
+    ),
+    name: "Discord",
+  }, */
 ];
 
-const starList = [
-  "廉貞",
-  "破軍",
-  "武曲",
-  "太陽",
-  "天機",
-  "天梁",
-  "紫微",
-  "太陰",
-  "天同",
-  "文昌",
-  "巨門",
-  "貪狼",
-  "右弼",
-  "文曲",
-  "左輔",
-  "七殺",
-  "天府",
-  "天相",
+const columns = [
+  {
+    field: "level",
+    headerName: "課程階段",
+    sortable: false,
+    flex: 1,
+    minWidth: 150,
+    renderCell: (params) => {
+      return <strong>{params.value}</strong>;
+    },
+    renderHeader: (params) => {
+      return <strong>{"課程階段"}</strong>;
+    },
+  },
+  {
+    field: "description",
+    headerName: "課程簡介",
+    sortable: false,
+    flex: 3,
+    minWidth: 300,
+    renderHeader: (params) => {
+      return <strong>{"課程簡介"}</strong>;
+    },
+  },
+  {
+    field: "target",
+    headerName: "課程目標",
+    sortable: false,
+    flex: 3,
+    minWidth: 300,
+    renderHeader: (params) => {
+      return <strong>{"課程目標"}</strong>;
+    },
+  },
+  {
+    field: "price",
+    headerName: "費用",
+    sortable: false,
+    flex: 2,
+    minWidth: 225,
+    renderHeader: (params) => {
+      return <strong>{"費用"}</strong>;
+    },
+  },
 ];
 
-const solarDayList = [
-  "1",
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
-  "7",
-  "8",
-  "9",
-  "10",
-  "11",
-  "12",
-  "13",
-  "14",
-  "15",
-  "16",
-  "17",
-  "18",
-  "19",
-  "20",
-  "21",
-  "22",
-  "23",
-  "24",
-  "25",
-  "26",
-  "27",
-  "28",
-  "29",
-  "30",
-  "31",
+const rows = [
+  {
+    id: 1,
+    level: "基礎課程",
+    description: "學習星軌理數命盤的符號意義，排盤方法，以及宮位、星曜、四化、飛化的基本象義。",
+    target: "掌握命盤的基本結構和符號解讀，為進一步的學習打下堅實基礎。",
+    price: "HKD $3,800 / 一期 (總共6-10節課)",
+  },
+  {
+    id: 2,
+    level: "核心技術",
+    description: "星軌理數的核心技術和獨特命盤結構的教學，並進行每日排盤和核心技術練習。",
+    target: "使學員能夠熟練運用梁氏飛星的核心技術，準確解讀命盤。",
+    price: "HKD $3,800 / 一期 (總共6-10節課)",
+  },
+  {
+    id: 3,
+    level: "主題深入",
+    description: "針對人生各個主題（如工作、感情等）進行深入討論，學習主題的主要結構和判斷方法。",
+    target: "學會針對各主題進行準確的預測和分析，為深造課程做準備。",
+    price: "HKD $4,800 / 一期 (共2期, 每期6-10節課)",
+  },
+  {
+    id: 4,
+    level: "借盤論述與時間判斷",
+    description: "通過命主的命盤，學習分析與命主相關人物的情況，以及時間判斷方法。",
+    target: "能夠運用命盤分析他人，並準確預測未來發展的時間點。",
+    price: "HKD $5,800 / 一期 (總共 6-10節課)",
+  },
+  {
+    id: 5,
+    level: "深造課程",
+    description: "深入探討更高級的分析技巧，並學習如何精確地論述事件的細節，就如同觀看一部電影一般。",
+    target: "為已經掌握了基礎和核心技術的學生提供進階學習機會，以持續提升他們的命理分析能力和深度理解。",
+    price: "HKD $6,800 / 10節",
+  },
 ];
 
-const solarMonthList = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
-
-const lunarDayList = [
-  "初一",
-  "初二",
-  "初三",
-  "初四",
-  "初五",
-  "初六",
-  "初七",
-  "初八",
-  "初九",
-  "初十",
-  "十一",
-  "十二",
-  "十三",
-  "十四",
-  "十五",
-  "十六",
-  "十七",
-  "十八",
-  "十九",
-  "二十",
-  "廿一",
-  "廿二",
-  "廿三",
-  "廿四",
-  "廿五",
-  "廿六",
-  "廿七",
-  "廿八",
-  "廿九",
-  "三十",
-];
-
-const lunarMonthList = ["正月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
-
-const heavenlyStemToStarIndex = {
-  甲: [0, 1, 2, 3],
-  乙: [4, 5, 6, 7],
-  丙: [8, 4, 9, 0],
-  丁: [7, 8, 4, 10],
-  戊: [11, 7, 12, 4],
-  己: [2, 11, 5, 13],
-  庚: [3, 2, 7, 8],
-  辛: [10, 3, 13, 9],
-  壬: [5, 6, 14, 2],
-  癸: [1, 10, 7, 11],
-};
-
-const mutagenToIndex = {
-  祿: 0,
-  權: 1,
-  科: 2,
-  忌: 3,
-};
-
-const getMutagenStyle = (mutagenIndex) => {
-  switch (mutagenIndex) {
-    case 0:
-      return "green";
-    case 1:
-      return "red";
-    case 2:
-      return "yellow";
-    case 3:
-      return "blue";
-    default:
-      return;
-  }
-};
-
-export default function Astrolabe() {
-  const router = useRouter();
-  const [clientWidth, setClientWidth] = useState(-1);
-  useEffect(() => {
-    setClientWidth(document.body.clientWidth);
-  }, []);
+export default function About() {
+  const [bannerOffset, setBannerOffset] = useState(0);
+  const [scrollTop, setScrollTop] = useState(0);
 
   useEffect(() => {
-    if (clientWidth > -1 && clientWidth <= 767) {
-      router.push("/info");
-    }
-  }, [clientWidth]);
-
-  const [astrolabe, setAstrolabe] = useState(null);
-  const [lifePalaceIndex, setLifePalaceIndex] = useState(-1);
-  const [couplePalaceIndex, setCouplePalaceIndex] = useState(-1);
-  const [currentDecadalIndex, setCurrentDecadalIndex] = useState(-1);
-  const [currentAgeIndex, setCurrentAgeIndex] = useState(-1);
-  const [currentMonthIndex, setCurrentMonthIndex] = useState(-1);
-  const [currentFirstMonthIndex, setCurrentFirstMonthIndex] = useState(-1);
-  const [currentBorrowIndex, setCurrentBorrowIndex] = useState(-1);
-
-  const [showBigLuck, setShowBigLuck] = useState(false);
-  const [showSmallLuck, setShowSmallLuck] = useState(false);
-  const [showChildLuck, setShowChildLuck] = useState(false);
-  const [showSmallMonth, setShowSmallMonth] = useState(false);
-  const [showBorrow, setShowBorrow] = useState(false);
-
-  const clickDecadal = (palaceIndex) => {
-    if (palaceIndex === couplePalaceIndex && currentDecadalIndex === couplePalaceIndex) {
-      setShowChildLuck(!showChildLuck);
-    } else {
-      setCurrentDecadalIndex(palaceIndex);
-      if (!showBigLuck) setShowBigLuck(true);
-      if (showSmallLuck) setShowSmallLuck(false);
-      if (showChildLuck) setShowChildLuck(false);
-      if (showSmallMonth) setShowSmallMonth(false);
-      if (currentAgeIndex > -1) setCurrentAgeIndex(-1);
-      if (currentMonthIndex > -1) setCurrentMonthIndex(-1);
-    }
-  };
-
-  const getDecadalAge = (ages) => {
-    if (currentDecadalIndex < 0) return -1;
-    if (showChildLuck) {
-      let range = astrolabe.palaces[lifePalaceIndex].decadal.range;
-      return ages.find((age) => age >= range[0] && age <= range[1]);
-    }
-    let range = astrolabe.palaces[currentDecadalIndex].decadal.range;
-    return ages.find((age) => age >= range[0] && age <= range[1]);
-  };
-
-  const clickAge = (palaceIndex) => {
-    setCurrentAgeIndex(palaceIndex);
-
-    let smallLuckPalaces = [];
-    for (let i = 0; i < 12; i++) {
-      smallLuckPalaces.push(astrolabe.palaces[(lifePalaceIndex - palaceIndex + i + 12) % 12].name);
-    }
-    let firstMonthIndex = smallLuckPalaces.findIndex((smp) => smp === astrolabe.palaces[0].name);
-    setCurrentFirstMonthIndex(firstMonthIndex);
-
-    if (!showSmallLuck) setShowSmallLuck(true);
-    if (showSmallMonth) setShowSmallMonth(false);
-    if (currentMonthIndex > -1) setCurrentMonthIndex(-1);
-  };
-
-  const clickMonth = (palaceIndex) => {
-    setCurrentMonthIndex(palaceIndex);
-    if (!showSmallMonth) setShowSmallMonth(true);
-  };
-
-  const clickBorrow = (palaceIndex) => {
-    setCurrentBorrowIndex(palaceIndex);
-    if (!showBorrow) setShowBorrow(true);
-  };
-
-  const [currentArrows, setCurrentArrows] = useState([]);
-  const toggleArrows = (palaceIndex, targetStarIndex, mutagenIndex) => {
-    let arrows = currentArrows.slice();
-    let targetArrowIndex = arrows.findIndex((arr) => arr[0] === palaceIndex && arr[1] === targetStarIndex);
-    if (targetArrowIndex === -1) {
-      arrows.push([palaceIndex, targetStarIndex, mutagenIndex]);
-
-      // handle plugin arrow
-      if (pluginQuickArrow && (mutagenIndex == 0 || mutagenIndex == 3)) {
-        let pluginPalaceIndex = astrolabe.palaces.findIndex(
-          (palace) =>
-            palace.majorStars.findIndex((star) => star.name === starList[targetStarIndex]) > -1 ||
-            palace.minorStars.findIndex((star) => star.name === starList[targetStarIndex]) > -1
-        );
-
-        if (pluginPalaceIndex > -1) {
-          let pluginStarIndex = starList.findIndex((star) => star === astrolabe.palaces[pluginPalaceIndex].mutagenStars[3]);
-          let pluginArrowIndex = arrows.findIndex((arr) => arr[0] === pluginPalaceIndex && arr[1] === pluginStarIndex);
-          if (pluginArrowIndex === -1) {
-            arrows.push([pluginPalaceIndex, pluginStarIndex, 3]);
-          }
-        }
-      }
-      // --------------------
-    } else {
-      arrows.splice(targetArrowIndex, 1);
-    }
-
-    // sort the arrows by mutagen
-    arrows.sort((a, b) => a[2] - b[2]);
-    setCurrentArrows(arrows);
-    closeMutagenPanel();
-  };
-
-  const [currentMutagenPanelIndex, setCurrentMutagenPanelIndex] = useState(-1);
-  const clickPalace = (palaceIndex) => {
-    if (revMutagenPanelIndex > -1) setRevMutagenPanelIndex(-1);
-    if (currentMutagenPanelIndex === palaceIndex) setCurrentMutagenPanelIndex(-1);
-    else setCurrentMutagenPanelIndex(palaceIndex);
-  };
-
-  const [revMutagenPanelIndex, setRevMutagenPanelIndex] = useState(-1);
-  const clickStar = (starIndex) => {
-    if (currentMutagenPanelIndex > -1) setCurrentMutagenPanelIndex(-1);
-    if (revMutagenPanelIndex === starIndex) setRevMutagenPanelIndex(-1);
-    else setRevMutagenPanelIndex(starIndex);
-  };
-
-  const toggleRevArrows = (targetStarIndex, mutagenIndex) => {
-    let targetPalaceIndexes = astrolabe.palaces.flatMap((palace, palaceIndex) => {
-      if (palace.mutagenStars[mutagenIndex] === starList[targetStarIndex]) {
-        return [palaceIndex];
-      }
-      return [];
-    });
-
-    if (targetPalaceIndexes.length > 0) {
-      let arrows = currentArrows.slice();
-      let existArrowIndexes = 0;
-      for (let i = 0; i < targetPalaceIndexes.length; i++) {
-        let targetArrowIndex = arrows.findIndex((arr) => arr[0] === targetPalaceIndexes[i] && arr[2] === mutagenIndex);
-        if (targetArrowIndex === -1) {
-          arrows.push([targetPalaceIndexes[i], targetStarIndex, mutagenIndex]);
-        } else {
-          existArrowIndexes++;
-        }
-      }
-      if (existArrowIndexes === targetPalaceIndexes.length) {
-        arrows = arrows.filter((arr) => !(targetPalaceIndexes.includes(arr[0]) && arr[2] === mutagenIndex));
-      }
-
-      // handle plugin arrow
-      if (pluginQuickArrow && (mutagenIndex == 0 || mutagenIndex == 3)) {
-        let pluginPalaceIndex = astrolabe.palaces.findIndex(
-          (palace) =>
-            palace.majorStars.findIndex((star) => star.name === starList[targetStarIndex]) > -1 ||
-            palace.minorStars.findIndex((star) => star.name === starList[targetStarIndex]) > -1
-        );
-
-        if (pluginPalaceIndex > -1) {
-          let pluginStarIndex = starList.findIndex((star) => star === astrolabe.palaces[pluginPalaceIndex].mutagenStars[3]);
-          let pluginArrowIndex = arrows.findIndex((arr) => arr[0] === pluginPalaceIndex && arr[1] === pluginStarIndex);
-          if (pluginArrowIndex === -1) {
-            arrows.push([pluginPalaceIndex, pluginStarIndex, 3]);
-          }
-        }
-      }
-      // --------------------
-
-      // sort the arrows by mutagen
-      arrows.sort((a, b) => a[2] - b[2]);
-      setCurrentArrows(arrows);
-      //console.log(arrows);
-    }
-    closeMutagenPanel();
-  };
-
-  const closeMutagenPanel = () => {
-    if (currentMutagenPanelIndex > -1) setCurrentMutagenPanelIndex(-1);
-    if (revMutagenPanelIndex > -1) setRevMutagenPanelIndex(-1);
-  };
-
-  const [showInfo, setShowInfo] = useState(true);
-  const toggleInfo = () => {
-    if (showTextfield) setShowTextfield(false);
-    setShowInfo(!showInfo);
-  };
-
-  const [showTextfield, setShowTextfield] = useState(false);
-  const [note, setNote] = useState("");
-  const toggleTextfield = () => {
-    if (showInfo) setShowInfo(false);
-    setShowTextfield(!showTextfield);
-  };
-
-  const handleNote = (event) => {
-    setNote(event.target.value);
-  };
-
-  const [pluginSmallMonth, setPluginSmallMonth] = useState(true);
-  const togglePluginSmallMonth = () => {
-    if (pluginSmallMonth) {
-      setShowSmallMonth(false);
-      setCurrentMonthIndex(-1);
-    }
-    setPluginSmallMonth(!pluginSmallMonth);
-  };
-
-  const [pluginBorrow, setPluginBorrow] = useState(false);
-  const togglePluginBorrow = () => {
-    if (pluginBorrow) {
-      setShowBorrow(false);
-      setCurrentBorrowIndex(-1);
-    }
-    setPluginBorrow(!pluginBorrow);
-  };
-
-  const [pluginUnderline, setPluginUnderline] = useState(false);
-  const togglePluginUnderline = () => {
-    setPluginUnderline(!pluginUnderline);
-  };
-
-  const [pluginQuickArrow, setPluginQuickArrow] = useState(false);
-  const togglePluginQuickArrow = () => {
-    setPluginQuickArrow(!pluginQuickArrow);
-  };
-
-  const cleanArrows = () => {
-    if (currentMutagenPanelIndex > -1) setCurrentMutagenPanelIndex(-1);
-    if (revMutagenPanelIndex > -1) setRevMutagenPanelIndex(-1);
-    setCurrentArrows([]);
-  };
-
-  const [showSearch, setShowSearch] = useState(false);
-  const toggleSearch = () => {
-    setShowSearch(!showSearch);
-  };
-
-  const [name, setName] = useState("");
-  const [gender, setGender] = useState(0);
-  const [calendar, setCalendar] = useState(0);
-  const [isLeapMonth, setIsLeapMonth] = useState(false);
-  const [birthTime, setBirthTime] = useState(0);
-
-  const handleName = (event) => {
-    setName(event.target.value);
-  };
-
-  const handleGender = (event) => {
-    setGender(event.target.value);
-  };
-
-  const handleCalendar = (event) => {
-    setCalendar(event.target.value);
-    if (event.target.value == 0) setIsLeapMonth(false);
-  };
-
-  const handleLeapMonth = (event) => {
-    setIsLeapMonth(event.target.checked);
-  };
-
-  const today = new Date().toLocalDate();
-  const [year, setYear] = useState(today.year);
-  const [month, setMonth] = useState(today.month);
-  const [day, setDay] = useState(today.day);
-  const [isValidBirthday, setIsValidBirthday] = useState(true);
-
-  const handleYear = (event) => {
-    if (event.target.value.length > 4) return;
-    let yystr = event.target.value.replace(/[^\d]/g, "");
-    if (!yystr || yystr === "") {
-      setYear("");
-    } else setYear(yystr);
-  };
-
-  const handleMonth = (event) => {
-    setMonth(event.target.value);
-  };
-
-  const handleDay = (event) => {
-    setDay(event.target.value);
-  };
-
-  const handleBirthTime = (event) => {
-    setBirthTime(event.target.value);
-  };
-
-  useEffect(() => {
-    if (calendar == 1) {
-      if (day > 30) setDay(30);
-    }
-  }, [calendar]);
-
-  const generateAstrolabe = () => {
-    let astrolabe;
-    if (calendar == 0) {
-      astrolabe = astro.astrolabeBySolarDate(`${year}-${month}-${day}`, birthTime, gender == 0 ? "male" : "female", true, "zh-TW");
-    } else {
-      astrolabe = astro.astrolabeByLunarDate(
-        `${year}-${month}-${day}`,
-        birthTime,
-        gender == 0 ? "male" : "female",
-        isLeapMonth,
-        true,
-        "zh-TW"
-      );
-    }
-    let lifePalaceIndex = astrolabe.palaces.findIndex((pItem) => pItem.name === "命宮");
-    let lifePalaceMutagenStars = heavenlyStemToStarIndex[astrolabe.palaces[lifePalaceIndex].decadal.heavenlyStem].map(
-      (item) => starList[item]
-    );
-
-    let couplePalaceIndex = astrolabe.palaces.findIndex((pItem) => pItem.name === "夫妻" || pItem.name === "夫妻宮");
-
-    let myAstrolabe = {
-      chineseDate: astrolabe.chineseDate.replaceAll("醜", "丑"),
-      solarDate: astrolabe.solarDate,
-      fiveElementsClass: astrolabe.fiveElementsClass,
-      lunarDate: `${astrolabe.lunarDate.replaceAll("腊", "臘").replaceAll("闰", "閏")}`,
-      time: astrolabe.time,
-      timeRange: astrolabe.timeRange,
-      palaces: astrolabe.palaces.map((pItem, pIndex) => {
-        let majorStars = pItem.majorStars.flatMap((star) => {
-          if (starList.includes(star.name)) {
-            return [
-              {
-                name: star.name,
-                mutagen: star.mutagen,
-                hollowMutagen:
-                  lifePalaceMutagenStars.findIndex((s) => star.name === s) > -1
-                    ? Object.keys(mutagenToIndex).find(
-                        (key) => mutagenToIndex[key] === lifePalaceMutagenStars.findIndex((s) => star.name === s)
-                      )
-                    : "",
-              },
-            ];
-          }
-          return [];
-        });
-        let minorStars = pItem.minorStars.flatMap((star) => {
-          if (starList.includes(star.name)) {
-            return [
-              {
-                name: star.name,
-                mutagen: star.mutagen,
-                hollowMutagen:
-                  // find '祿權科忌' based on mutagenIndex (0,1,2,3)
-                  lifePalaceMutagenStars.findIndex((s) => star.name === s) > -1
-                    ? Object.keys(mutagenToIndex).find(
-                        (key) => mutagenToIndex[key] === lifePalaceMutagenStars.findIndex((s) => star.name === s)
-                      )
-                    : "",
-              },
-            ];
-          }
-          return [];
-        });
-        let mutagenStars = heavenlyStemToStarIndex[pItem.decadal.heavenlyStem].map((starIndex) => starList[starIndex]);
-        return {
-          name:
-            pItem.name === "僕役" ? "交友宮" : pItem.name === "官祿" ? "事業宮" : pItem.name === "命宮" ? pItem.name : `${pItem.name}宮`,
-          ages: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1].map(
-            (item, index) =>
-              astrolabe.rawDates.lunarDate.lunarYear -
-              (astrolabe.rawDates.lunarDate.lunarYear % 12) +
-              6 +
-              pIndex +
-              index * 12 -
-              astrolabe.rawDates.lunarDate.lunarYear +
-              1
-          ),
-
-          decadal: { ...pItem.decadal, earthlyBranch: pItem.decadal.earthlyBranch.replaceAll("醜", "丑") },
-          majorStars: majorStars,
-          minorStars: minorStars,
-          mutagenStars: mutagenStars,
-          outsideMutagenIndexes: mutagenStars.flatMap((mStar, mIndex) => {
-            if (majorStars.find((star) => star.name === mStar) || minorStars.find((star) => star.name === mStar)) {
-              return [mIndex];
-            }
-            return [];
-          }),
-          insideMutagenIndexes: mutagenStars.flatMap((mStar, mIndex) => {
-            if (
-              astrolabe.palaces[(pIndex + 6) % 12].majorStars.find((star) => star.name === mStar) ||
-              astrolabe.palaces[(pIndex + 6) % 12].minorStars.find((star) => star.name === mStar)
-            ) {
-              return [mIndex];
-            }
-            return [];
-          }),
-        };
-      }),
-      lunarYear: astrolabe.rawDates.lunarDate.lunarYear,
-      name: name,
-      gender:
-        gender == 0
-          ? astrolabe.rawDates.lunarDate.lunarYear % 2 == 0
-            ? "陽男"
-            : "陰男"
-          : gender == 1
-          ? astrolabe.rawDates.lunarDate.lunarYear % 2 == 0
-            ? "陽女"
-            : "陰女"
-          : "",
-      isLeapMonth: isLeapMonth,
+    const handleScroll = () => {
+      setScrollTop(document.body.scrollTop);
     };
-
-    //console.log(myAstrolabe);
-
-    setLifePalaceIndex(lifePalaceIndex);
-    setCouplePalaceIndex(couplePalaceIndex);
-    setAstrolabe(myAstrolabe);
-    setShowSearch(false);
-    setShowInfo(true);
-    setShowTextfield(false);
-    setNote("");
-    setShowSmallLuck(false);
-    setShowSmallMonth(false);
-    setCurrentAgeIndex(-1);
-    setCurrentMonthIndex(-1);
-    setCurrentArrows([]);
-
-    let currentDecadalIndex = myAstrolabe.palaces.findIndex(
-      (palace) =>
-        new Date().toLocalDate().year - myAstrolabe.lunarYear + 1 >= palace.decadal.range[0] &&
-        new Date().toLocalDate().year - myAstrolabe.lunarYear + 1 <= palace.decadal.range[1]
-    );
-
-    if (currentDecadalIndex > -1 && currentDecadalIndex !== lifePalaceIndex) clickDecadal(currentDecadalIndex);
-    else {
-      // not find -> less than liftPalace Range
-      // <= lifePalace -> childLuck
-      clickDecadal(couplePalaceIndex);
-      setShowChildLuck(true);
-    }
-
-    if (inFavList() === -1) setCurrentFavIndex(-1);
-  };
-
-  useEffect(() => {
-    let isValid = true;
-    if (year === "") isValid = false;
-    if (isNaN(year)) isValid = false;
-    if (parseInt(year) < 1900) isValid = false;
-    if (parseInt(year) > 2100) isValid = false;
-    if (calendar == 0) {
-      if ([4, 6, 9, 11].includes(month) && day > 30) isValid = false;
-      if (month == 2 && year % 4 == 0 && day > 29) isValid = false;
-      if (month == 2 && year % 4 !== 0 && day > 28) isValid = false;
-    }
-    setIsValidBirthday(isValid);
-  }, [calendar, year, month, day]);
-
-  const addDay = () => {
-    /** Feb */
-    if (year % 4 != 0 && month == 2 && day == 28) {
-      setMonth(3);
-      setDay(1);
-    } else if (year % 4 == 0 && month == 2 && day == 29) {
-      setMonth(3);
-      setDay(1);
-    } else if (month == 12 && day == 31) {
-      /** Dec */
-      setYear(year + 1);
-      setMonth(1);
-      setDay(1);
-    } else if ((month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10) && day == 31) {
-      /** Month with 31 days */
-      setMonth(month + 1);
-      setDay(1);
-    } else if ((month == 4 || month == 6 || month == 9 || month == 11) && day == 30) {
-      /** Month with 30 days */
-      setMonth(month + 1);
-      setDay(1);
-    } else {
-      /** Normal Add Day */
-      setDay(day + 1);
-    }
-  };
-
-  const minusDay = () => {
-    /** Mar -> Feb */
-    if (year % 4 != 0 && month == 3 && day == 1) {
-      setMonth(2);
-      setDay(28);
-    } else if (year % 4 == 0 && month == 3 && day == 1) {
-      setMonth(2);
-      setDay(29);
-    } else if (month == 1 && day == 1) {
-      /** Jan -> Dec */
-      setYear(year - 1);
-      setMonth(12);
-      setDay(31);
-    } else if ((month == 2 || month == 4 || month == 6 || month == 8 || month == 9 || month == 11) && day == 1) {
-      /** Month -> Month with 31 days */
-      setMonth(month - 1);
-      setDay(31);
-    } else if ((month == 5 || month == 7 || month == 10 || month == 12) && day == 1) {
-      /** Month -> Month with 30 days */
-      setMonth(month - 1);
-      setDay(30);
-    } else {
-      /** Normal Minus Day */
-      setDay(day - 1);
-    }
-  };
-
-  const addBirthTime = async () => {
-    if (birthTime < 12) {
-      setBirthTime(birthTime + 1);
-      setUpdateCounter(updateCounter + 1);
-    } else {
-      addDay();
-      setBirthTime(0);
-      setUpdateCounter(updateCounter + 1);
-    }
-  };
-
-  const reduceBirthTime = () => {
-    if (birthTime > 0) {
-      setBirthTime(birthTime - 1);
-      setUpdateCounter(updateCounter + 1);
-    } else {
-      minusDay();
-      setBirthTime(12);
-      setUpdateCounter(updateCounter + 1);
-    }
-  };
-
-  const [favList, setFavList] = useState([]);
-  const [currentFavIndex, setCurrentFavIndex] = useState(-1);
-  const addFavList = () => {
-    let favs = favList.slice();
-    favs.push({ name, gender, calendar, year, month, day, birthTime, isLeapMonth });
-    setFavList(favs);
-    setCurrentFavIndex(favs.length - 1);
-    localStorage.setItem("favList", JSON.stringify(favs));
-  };
-
-  const inFavList = () => {
-    return favList.findIndex((fav) => {
-      return (
-        fav.name === name &&
-        fav.gender === gender &&
-        fav.calendar === calendar &&
-        fav.year === year &&
-        fav.month === month &&
-        fav.day === day &&
-        fav.birthTime === birthTime &&
-        fav.isLeapMonth === isLeapMonth
-      );
-    });
-  };
-
-  const removeFavList = () => {
-    let favs = favList.slice();
-    let targetFavIndex = inFavList();
-    if (targetFavIndex > -1) {
-      favs.splice(targetFavIndex, 1);
-      setFavList(favs);
-      setCurrentFavIndex(-1);
-      localStorage.setItem("favList", JSON.stringify(favs));
-    }
-  };
-
-  const selectFav = (event) => {
-    setCurrentFavIndex(event.target.value);
-  };
-
-  useEffect(() => {
-    let savedFavList = localStorage.getItem("favList");
-    if (savedFavList) setFavList(JSON.parse(savedFavList));
+    // just trigger this so that the initial state
+    // is updated as soon as the component is mounted
+    // related: https://stackoverflow.com/a/63408216
+    handleScroll();
+    document.body.addEventListener("scroll", handleScroll);
+    return () => {
+      document.body.removeEventListener("scroll", handleScroll);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (currentFavIndex > -1) {
-      setName(favList[currentFavIndex].name);
-      setGender(favList[currentFavIndex].gender);
-      setCalendar(favList[currentFavIndex].calendar);
-      setYear(favList[currentFavIndex].year);
-      setMonth(favList[currentFavIndex].month);
-      setDay(favList[currentFavIndex].day);
-      setBirthTime(favList[currentFavIndex].birthTime);
-      setIsLeapMonth(favList[currentFavIndex].isLeapMonth);
-      setUpdateCounter(updateCounter + 1);
-    }
-  }, [currentFavIndex]);
-
-  const [updateCounter, setUpdateCounter] = useState(0);
-  useEffect(() => {
-    generateAstrolabe();
-  }, [updateCounter]);
-
-  useEffect(() => {
-    /**
-         *  birthday: "2023-9-4",
-            birthTime: 1,
-            gender: "female",
-            birthdayType: "solar",
-            isLeapMonth: false,
-            fixLeap: true,
-            lang: "zh-TW",
-         */
-    setUpdateCounter(updateCounter + 1);
+    let banner = document.getElementById("banner1");
+    setBannerOffset(banner.offsetHeight);
   }, []);
-
-  useEffect(() => {
-    /* let ast1 = astro.astrolabeByLunarDate(`1999-07-19`, birthTime, gender, true, true, "zh-TW");
-    let ast2 = astro.astrolabeByLunarDate(`1999-07-19`, birthTime, gender, false, true, "zh-TW");
-    let ast3 = astro.astrolabeByLunarDate(`1999-07-19`, birthTime, gender, true, false, "zh-TW");
-    let ast4 = astro.astrolabeByLunarDate(`1999-07-19`, birthTime, gender, false, false, "zh-TW"); */
-    //console.log(ast1);
-    //console.log(ast2);
-    //console.log(ast3);
-    //console.log(ast4);
-  }, []);
-
   return (
     <>
       <Head>
-        <title>曜靈紫微飛星</title>
+        <title>曜靈星軌理數</title>
       </Head>
-      <div className={`header show`}>
-        <div className="left">
-          <Link href="/info">
+      <div className={`header ${scrollTop && scrollTop >= bannerOffset - 120 ? `show` : ``}`}>
+        <div className="left info-header">
+          <Link href="/">
             <div className="logo">
               <img src={"logo.png"} alt="logo" />
-              <div className="name">曜靈紫微飛星</div>
+              <div className="name">曜靈星軌理數</div>
             </div>
           </Link>
-          <Link href="/info">
-            <button>遇見命理師</button>
+          <Link href="/chart">
+            <button>排盤</button>
           </Link>
-          {/* <Link href="/info##analysis">
-            <button>命理分析</button>
-          </Link>
-          <Link href="/info##course">
-            <button>教學課程</button>
-          </Link>
-          <Link href="/info##question">
-            <button>常見問題</button>
-          </Link>
-          <Link href="/info##contact">
-            <button>聯絡我們</button>
-          </Link> */}
-          {/* <Link href="#begin">
+          <Link href="#begin">
             <button>遇見命理師</button>
           </Link>
           <Link href="#analysis">
@@ -916,7 +239,7 @@ export default function Astrolabe() {
           </Link>
           <Link href="#contact">
             <button>聯絡我們</button>
-          </Link> */}
+          </Link>
         </div>
         <div className="right">
           <a target="_blank" href="https://buy.stripe.com/cN2cPsa6XaLMauQ001">
@@ -924,1138 +247,402 @@ export default function Astrolabe() {
           </a>
         </div>
       </div>
-
-      {clientWidth > 767 ? (
-        <div className="container">
-          <Modal open={showSearch} onClose={toggleSearch} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
-            <Box sx={modalStyle}>
-              <br />
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={4}>
-                  <FormControl fullWidth>
-                    <TextField label="姓名" name="name" value={name} onChange={handleName} />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={4} md={3} sx={{ marginTop: -1, textAlign: "center" }}>
-                  <FormControl>
-                    <RadioGroup aria-labelledby="gender-radio" name="gender-radio-group" value={gender} onChange={handleGender}>
-                      <FormControlLabel
-                        value={0}
-                        control={
-                          <Radio
-                            sx={{
-                              "& .MuiSvgIcon-root": {
-                                fontSize: 18,
-                              },
-                            }}
-                          />
-                        }
-                        label="男"
-                      />
-                      <FormControlLabel
-                        value={1}
-                        control={
-                          <Radio
-                            sx={{
-                              "& .MuiSvgIcon-root": {
-                                fontSize: 18,
-                              },
-                            }}
-                          />
-                        }
-                        label="女"
-                      />
-                    </RadioGroup>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={4} md={3} sx={{ marginTop: -1 }}>
-                  <FormControl>
-                    <RadioGroup aria-labelledby="calendar-radio" name="calendar-radio-group" value={calendar} onChange={handleCalendar}>
-                      <FormControlLabel
-                        value={0}
-                        control={
-                          <Radio
-                            sx={{
-                              "& .MuiSvgIcon-root": {
-                                fontSize: 18,
-                              },
-                            }}
-                          />
-                        }
-                        label="陽曆"
-                      />
-                      <FormControlLabel
-                        value={1}
-                        control={
-                          <Radio
-                            sx={{
-                              "& .MuiSvgIcon-root": {
-                                fontSize: 18,
-                              },
-                            }}
-                          />
-                        }
-                        label="農曆"
-                      />
-                    </RadioGroup>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={4} md={2} sx={{ marginTop: -1 }}>
-                  <FormControl>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={isLeapMonth}
-                          onChange={handleLeapMonth}
-                          name="leap-month"
-                          disabled={calendar == 0}
-                          sx={{ "& .MuiSvgIcon-root": { fontSize: 20 } }}
-                        />
-                      }
-                      label="閏月"
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <FormControl fullWidth>
-                    <TextField label="年" name="year" value={year} onChange={handleYear} />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={6} md={4}>
-                  {calendar == 1 ? (
-                    <FormControl fullWidth>
-                      <InputLabel id="lunarMonth-label">月</InputLabel>
-                      <Select labelId="lunarMonth-label" id="lunarMonth" name="lunarMonth" value={month} label="月" onChange={handleMonth}>
-                        {lunarMonthList.map((item, index) => {
-                          return (
-                            <MenuItem value={index + 1} key={`key-lunarMonth-${index}`}>
-                              {item}
-                            </MenuItem>
-                          );
-                        })}
-                      </Select>
-                    </FormControl>
-                  ) : (
-                    <FormControl fullWidth>
-                      <InputLabel id="solarMonth-label">月</InputLabel>
-                      <Select labelId="solarMonth-label" id="solarMonth" name="solarMonth" value={month} label="月" onChange={handleMonth}>
-                        {solarMonthList.map((item, index) => {
-                          return (
-                            <MenuItem value={index + 1} key={`key-solarMonth-${index}`}>
-                              {item}
-                            </MenuItem>
-                          );
-                        })}
-                      </Select>
-                    </FormControl>
-                  )}
-                </Grid>
-                <Grid item xs={6} md={4}>
-                  {calendar == 1 ? (
-                    <FormControl fullWidth>
-                      <InputLabel id="lunarDay-label">日</InputLabel>
-                      <Select
-                        labelId="lunarDay-label"
-                        id="lunarDay"
-                        name="lunarDay"
-                        value={day}
-                        label="日"
-                        onChange={handleDay}
-                        MenuProps={{ PaperProps: { sx: { maxHeight: 450 } } }}
-                      >
-                        {lunarDayList.map((item, index) => {
-                          return (
-                            <MenuItem value={index + 1} key={`key-lunarDay-${index}`}>
-                              {item}
-                            </MenuItem>
-                          );
-                        })}
-                      </Select>
-                    </FormControl>
-                  ) : (
-                    <FormControl fullWidth>
-                      <InputLabel id="solarDay-label">日</InputLabel>
-                      <Select
-                        labelId="solarDay-label"
-                        id="solarDay"
-                        name="solarDay"
-                        value={day}
-                        label="日"
-                        onChange={handleDay}
-                        MenuProps={{ PaperProps: { sx: { maxHeight: 450 } } }}
-                      >
-                        {solarDayList.map((item, index) => {
-                          return (
-                            <MenuItem value={index + 1} key={`key-solarDay-${index}`}>
-                              {item}
-                            </MenuItem>
-                          );
-                        })}
-                      </Select>
-                    </FormControl>
-                  )}
-                </Grid>
-                <Grid item xs={4}></Grid>
-                {/* 
-                <Grid item xs={12}>
-                  <FormControl fullWidth>
-                    <TextField label="出生日期" name="birthday" value={`${year}-${month}-${day}`} onChange={() => {}} />
-                  </FormControl>
-                </Grid> */}
-                <Grid item xs={12}>
-                  <FormControl fullWidth>
-                    <InputLabel id="birthTime-label">時辰</InputLabel>
-                    <Select
-                      labelId="birthTime-label"
-                      id="birthTime"
-                      name="birthTime"
-                      value={birthTime}
-                      label="時辰"
-                      onChange={handleBirthTime}
-                    >
-                      {birthTimeList.map((item, index) => {
-                        return (
-                          <MenuItem value={index} key={`key-birthTime-${index}`}>
-                            {item}
-                          </MenuItem>
-                        );
-                      })}
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12}>
-                  <FormControl fullWidth>
-                    <Button
-                      variant="contained"
-                      color="success"
-                      sx={{ height: "55px" }}
-                      disabled={!isValidBirthday}
-                      onClick={() => setUpdateCounter(updateCounter + 1)}
-                    >
-                      <AssignmentIcon />
-                    </Button>
-                  </FormControl>
-                </Grid>
-              </Grid>
-              <br />
-            </Box>
-          </Modal>
-          <ArcherContainer lineStyle={"straight"} strokeWidth={1} svgContainerStyle={{ zIndex: 10 }}>
-            {astrolabe ? (
-              <div className={astrolabeStyle.astrolabe}>
-                {astrolabe.palaces.map((palaceItem, palaceIndex) => {
-                  return (
-                    <div className={palaceStyle.palace} style={{ gridArea: `g${palaceIndex}` }} key={`key-palace-${palaceIndex}`}>
-                      <div className={palaceStyle.header}>
-                        <div className={palaceStyle.left}>
-                          {/* {palaceIndex} */}
-                          {pluginBorrow ? (
-                            <div className={`${palaceStyle.borrow} ${currentBorrowIndex === palaceIndex ? palaceStyle.selected : ``}`}>
-                              <VisibilityIcon
-                                sx={{
-                                  fontSize: "16px",
-                                }}
-                                onClick={() => {
-                                  clickBorrow(palaceIndex);
-                                }}
-                              />
-                            </div>
-                          ) : null}
-                        </div>
-                        <div className={palaceStyle.right}>
-                          {palaceItem.minorStars.map((star, sIndex) => {
-                            return (
-                              <div className={palaceStyle.minor} key={`key-minorStars-${sIndex}`}>
-                                <div className={palaceStyle.starContainer}>
-                                  <div className={palaceStyle.starLeft}>
-                                    <StyledTooltipForStar
-                                      onClose={closeMutagenPanel}
-                                      open={revMutagenPanelIndex === starList.findIndex((s) => s === star.name)}
-                                      disableFocusListener
-                                      disableHoverListener
-                                      disableTouchListener
-                                      title={
-                                        <div>
-                                          <button
-                                            style={{
-                                              backgroundColor: "#181",
-                                              padding: "1px 3px",
-                                              margin: "1px",
-                                              fontSize: "14px",
-                                              color: "#fff",
-                                              border: 0,
-                                              borderRadius: "4px",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() =>
-                                              toggleRevArrows(
-                                                starList.findIndex((s) => s === star.name),
-                                                0
-                                              )
-                                            }
-                                          >
-                                            祿
-                                          </button>
-
-                                          <button
-                                            style={{
-                                              backgroundColor: "#d00",
-                                              padding: "1px 3px",
-                                              margin: "1px",
-                                              fontSize: "14px",
-                                              color: "#fff",
-                                              border: 0,
-                                              borderRadius: "4px",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() =>
-                                              toggleRevArrows(
-                                                starList.findIndex((s) => s === star.name),
-                                                1
-                                              )
-                                            }
-                                          >
-                                            權
-                                          </button>
-                                          <br />
-                                          <button
-                                            style={{
-                                              backgroundColor: "#00d",
-                                              padding: "1px 3px",
-                                              margin: "1px",
-                                              fontSize: "14px",
-                                              color: "#fff",
-                                              border: 0,
-                                              borderRadius: "4px",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() =>
-                                              toggleRevArrows(
-                                                starList.findIndex((s) => s === star.name),
-                                                3
-                                              )
-                                            }
-                                          >
-                                            忌
-                                          </button>
-                                          <button
-                                            style={{
-                                              backgroundColor: "#eb0",
-                                              padding: "1px 3px",
-                                              margin: "1px",
-                                              fontSize: "14px",
-                                              color: "#fff",
-                                              border: 0,
-                                              borderRadius: "4px",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() =>
-                                              toggleRevArrows(
-                                                starList.findIndex((s) => s === star.name),
-                                                2
-                                              )
-                                            }
-                                          >
-                                            科
-                                          </button>
-                                        </div>
-                                      }
-                                    >
-                                      <button
-                                        className={palaceStyle.star}
-                                        onClick={() => clickStar(starList.findIndex((s) => s === star.name))}
-                                      >
-                                        <div>{star.name[0]}</div>
-                                        <ArcherElement id={`star-${starList.findIndex((s) => s === star.name)}`}>
-                                          <div>{star.name[1]}</div>
-                                        </ArcherElement>
-                                      </button>
-                                    </StyledTooltipForStar>
-                                  </div>
-                                  <div className={palaceStyle.starRight}>
-                                    {pluginUnderline && currentArrows.length > 0
-                                      ? currentArrows.map((arrow) => {
-                                          if (arrow[1] == starList.findIndex((s) => s === star.name))
-                                            return <div className={`${palaceStyle.line} ${palaceStyle[getMutagenStyle(arrow[2])]}`}></div>;
-                                          return null;
-                                        })
-                                      : null}
-                                  </div>
-                                </div>
-
-                                {star.mutagen ? (
-                                  <div className={`${palaceStyle.mutagen} ${palaceStyle[getMutagenStyle(mutagenToIndex[star.mutagen])]}`}>
-                                    {star.mutagen}
-                                  </div>
-                                ) : null}
-
-                                {star.hollowMutagen && palaceIndex != lifePalaceIndex ? (
-                                  <div
-                                    className={`${palaceStyle.hollowMutagen} ${
-                                      palaceStyle[getMutagenStyle(mutagenToIndex[star.hollowMutagen])]
-                                    }`}
-                                  >
-                                    {star.hollowMutagen}
-                                  </div>
-                                ) : null}
-                              </div>
-                            );
-                          })}
-                          {palaceItem.majorStars.map((star, sIndex) => {
-                            return (
-                              <div className={palaceStyle.major} key={`key-majorStars-${sIndex}`}>
-                                <div className={palaceStyle.starContainer}>
-                                  <div className={palaceStyle.starLeft}>
-                                    <StyledTooltipForStar
-                                      onClose={closeMutagenPanel}
-                                      open={revMutagenPanelIndex === starList.findIndex((s) => s === star.name)}
-                                      disableFocusListener
-                                      disableHoverListener
-                                      disableTouchListener
-                                      title={
-                                        <div>
-                                          <button
-                                            style={{
-                                              backgroundColor: "#181",
-                                              padding: "1px 3px",
-                                              margin: "1px",
-                                              fontSize: "14px",
-                                              color: "#fff",
-                                              border: 0,
-                                              borderRadius: "4px",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() =>
-                                              toggleRevArrows(
-                                                starList.findIndex((s) => s === star.name),
-                                                0
-                                              )
-                                            }
-                                          >
-                                            祿
-                                          </button>
-
-                                          <button
-                                            style={{
-                                              backgroundColor: "#d00",
-                                              padding: "1px 3px",
-                                              margin: "1px",
-                                              fontSize: "14px",
-                                              color: "#fff",
-                                              border: 0,
-                                              borderRadius: "4px",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() =>
-                                              toggleRevArrows(
-                                                starList.findIndex((s) => s === star.name),
-                                                1
-                                              )
-                                            }
-                                          >
-                                            權
-                                          </button>
-                                          <br />
-                                          <button
-                                            style={{
-                                              backgroundColor: "#00d",
-                                              padding: "1px 3px",
-                                              margin: "1px",
-                                              fontSize: "14px",
-                                              color: "#fff",
-                                              border: 0,
-                                              borderRadius: "4px",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() =>
-                                              toggleRevArrows(
-                                                starList.findIndex((s) => s === star.name),
-                                                3
-                                              )
-                                            }
-                                          >
-                                            忌
-                                          </button>
-                                          <button
-                                            style={{
-                                              backgroundColor: "#eb0",
-                                              padding: "1px 3px",
-                                              margin: "1px",
-                                              fontSize: "14px",
-                                              color: "#fff",
-                                              border: 0,
-                                              borderRadius: "4px",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() =>
-                                              toggleRevArrows(
-                                                starList.findIndex((s) => s === star.name),
-                                                2
-                                              )
-                                            }
-                                          >
-                                            科
-                                          </button>
-                                        </div>
-                                      }
-                                    >
-                                      <button
-                                        className={palaceStyle.star}
-                                        onClick={() => clickStar(starList.findIndex((s) => s === star.name))}
-                                      >
-                                        <div>{star.name[0]}</div>
-                                        <ArcherElement id={`star-${starList.findIndex((s) => s === star.name)}`}>
-                                          <div>{star.name[1]}</div>
-                                        </ArcherElement>
-                                      </button>
-                                    </StyledTooltipForStar>
-                                  </div>
-                                  <div className={palaceStyle.starRight}>
-                                    {pluginUnderline && currentArrows.length > 0
-                                      ? currentArrows.map((arrow) => {
-                                          if (arrow[1] == starList.findIndex((s) => s === star.name))
-                                            return <div className={`${palaceStyle.line} ${palaceStyle[getMutagenStyle(arrow[2])]}`}></div>;
-                                          return null;
-                                        })
-                                      : null}
-                                  </div>
-                                </div>
-
-                                {star.mutagen ? (
-                                  <div className={`${palaceStyle.mutagen} ${palaceStyle[getMutagenStyle(mutagenToIndex[star.mutagen])]}`}>
-                                    {star.mutagen}
-                                  </div>
-                                ) : null}
-
-                                {star.hollowMutagen && palaceIndex != lifePalaceIndex ? (
-                                  <div
-                                    className={`${palaceStyle.hollowMutagen} ${
-                                      palaceStyle[getMutagenStyle(mutagenToIndex[star.hollowMutagen])]
-                                    }`}
-                                  >
-                                    {star.hollowMutagen}
-                                  </div>
-                                ) : null}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                      <div className={palaceStyle.body}>
-                        {currentArrows.flatMap((arrow) => {
-                          if (arrow[0] === palaceIndex) {
-                            return [
-                              <ArcherElement
-                                id={`arrow-${arrow[0]}-${arrow[2]}`}
-                                key={`key-arrow-${arrow[0]}-${arrow[2]}`}
-                                relations={[
-                                  {
-                                    targetId: `star-${arrow[1]}`,
-                                    targetAnchor: "top",
-                                    sourceAnchor: "middle",
-                                    style: {
-                                      strokeColor:
-                                        arrow[2] === 0
-                                          ? "#181"
-                                          : arrow[2] === 1
-                                          ? "#d00"
-                                          : arrow[2] === 2
-                                          ? "#eb0"
-                                          : arrow[2] === 3
-                                          ? "#00d"
-                                          : "#111",
-                                      strokeWidth: 1.5,
-                                    },
-                                  },
-                                ]}
-                              >
-                                <div></div>
-                              </ArcherElement>,
-                            ];
-                          }
-                          return [];
-                        })}
-                      </div>
-                      <div className={palaceStyle.footer}>
-                        <div className={palaceStyle.left}>
-                          {pluginSmallMonth && currentAgeIndex > -1 ? (
-                            <div className={`${palaceStyle.month} ${currentMonthIndex === palaceIndex ? palaceStyle.selected : ``}`}>
-                              <button onClick={() => clickMonth(palaceIndex)}>
-                                {lunarMonthList[(palaceIndex - currentFirstMonthIndex + 12) % 12]}
-                                {/* <br />
-                                {lunarMonthList[(palaceIndex - currentAgeIndex + 9 + 12) % 12]} */}
-                              </button>
-                            </div>
-                          ) : null}
-                          {currentDecadalIndex > -1 && getDecadalAge(palaceItem.ages) ? (
-                            <div className={`${palaceStyle.age} ${currentAgeIndex === palaceIndex ? palaceStyle.selected : ``}`}>
-                              <button onClick={() => clickAge(palaceIndex)}>
-                                <div>{getDecadalAge(palaceItem.ages)}</div>
-                                <div>{`(${astrolabe.lunarYear + getDecadalAge(palaceItem.ages) - 1})`}</div>
-                              </button>
-                            </div>
-                          ) : (
-                            <div className={`${palaceStyle.age} ${palaceStyle.empty}`}>
-                              <button></button>
-                            </div>
-                          )}
-                        </div>
-                        <div className={palaceStyle.middle}>
-                          {showSmallMonth ? (
-                            <div className={palaceStyle.smallMonth}>
-                              {`流月${astrolabe.palaces[(lifePalaceIndex - currentMonthIndex + palaceIndex + 12) % 12].name.slice(0, 2)}`}
-                            </div>
-                          ) : null}
-                          {showSmallLuck ? (
-                            <div className={palaceStyle.smallLuck}>
-                              {`流年${astrolabe.palaces[(lifePalaceIndex - currentAgeIndex + palaceIndex + 12) % 12].name.slice(0, 2)}`}
-                            </div>
-                          ) : null}
-
-                          {showChildLuck ? (
-                            <div className={`${palaceStyle.childLuck} ${showBorrow ? `${palaceStyle.smallerByBorrow}` : ``}`}>
-                              {`少小運${astrolabe.palaces[(lifePalaceIndex - currentDecadalIndex + palaceIndex + 12) % 12].name.slice(
-                                0,
-                                2
-                              )}`}
-                            </div>
-                          ) : showBigLuck ? (
-                            <div className={`${palaceStyle.bigLuck} ${showBorrow ? `${palaceStyle.smallerByBorrow}` : ``}`}>
-                              {`大運${astrolabe.palaces[(lifePalaceIndex - currentDecadalIndex + palaceIndex + 12) % 12].name.slice(0, 2)}`}
-                            </div>
-                          ) : null}
-                          {showBorrow ? (
-                            <div className={palaceStyle.borrow}>
-                              {`${astrolabe.palaces[currentBorrowIndex].name.slice(0, 2)}的${astrolabe.palaces[
-                                (lifePalaceIndex - currentBorrowIndex + palaceIndex + 12) % 12
-                              ].name.slice(0, 2)}`}
-                            </div>
-                          ) : null}
-                          <div>
-                            <button
-                              className={`${palaceStyle.decadal} ${currentDecadalIndex === palaceIndex ? palaceStyle.selected : ``}`}
-                              onClick={() => clickDecadal(palaceIndex)}
-                            >
-                              {palaceItem.decadal.range.toString().replace(",", " - ")}
-                            </button>
-                          </div>
-
-                          <StyledTooltip
-                            onClose={closeMutagenPanel}
-                            open={currentMutagenPanelIndex === palaceIndex}
-                            disableFocusListener
-                            disableHoverListener
-                            disableTouchListener
-                            title={
-                              <div>
-                                <button
-                                  style={{
-                                    backgroundColor: "#181",
-                                    padding: "1px 3px",
-                                    margin: "1px",
-                                    fontSize: "14px",
-                                    color: "#fff",
-                                    border: 0,
-                                    borderRadius: "4px",
-                                    cursor: "pointer",
-                                  }}
-                                  onClick={() =>
-                                    toggleArrows(
-                                      palaceIndex,
-                                      starList.findIndex((star) => star === palaceItem.mutagenStars[0]),
-                                      0
-                                    )
-                                  }
-                                >
-                                  祿
-                                </button>
-
-                                <button
-                                  style={{
-                                    backgroundColor: "#d00",
-                                    padding: "1px 3px",
-                                    margin: "1px",
-                                    fontSize: "14px",
-                                    color: "#fff",
-                                    border: 0,
-                                    borderRadius: "4px",
-                                    cursor: "pointer",
-                                  }}
-                                  onClick={() =>
-                                    toggleArrows(
-                                      palaceIndex,
-                                      starList.findIndex((star) => star === palaceItem.mutagenStars[1]),
-                                      1
-                                    )
-                                  }
-                                >
-                                  權
-                                </button>
-                                <br />
-                                <button
-                                  style={{
-                                    backgroundColor: "#00d",
-                                    padding: "1px 3px",
-                                    margin: "1px",
-                                    fontSize: "14px",
-                                    color: "#fff",
-                                    border: 0,
-                                    borderRadius: "4px",
-                                    cursor: "pointer",
-                                  }}
-                                  onClick={() =>
-                                    toggleArrows(
-                                      palaceIndex,
-                                      starList.findIndex((star) => star === palaceItem.mutagenStars[3]),
-                                      3
-                                    )
-                                  }
-                                >
-                                  忌
-                                </button>
-                                <button
-                                  style={{
-                                    backgroundColor: "#eb0",
-                                    padding: "1px 3px",
-                                    margin: "1px",
-                                    fontSize: "14px",
-                                    color: "#fff",
-                                    border: 0,
-                                    borderRadius: "4px",
-                                    cursor: "pointer",
-                                  }}
-                                  onClick={() =>
-                                    toggleArrows(
-                                      palaceIndex,
-                                      starList.findIndex((star) => star === palaceItem.mutagenStars[2]),
-                                      2
-                                    )
-                                  }
-                                >
-                                  科
-                                </button>
-                              </div>
-                            }
-                          >
-                            <button className={palaceStyle.name} onClick={() => clickPalace(palaceIndex)}>
-                              {palaceItem.name}
-                            </button>
-                          </StyledTooltip>
-                        </div>
-                        <div className={palaceStyle.right}>
-                          <div className={palaceStyle.decadal}>{palaceItem.decadal.heavenlyStem}</div>
-                          <div className={palaceStyle.decadal}>{palaceItem.decadal.earthlyBranch}</div>
-                        </div>
-                      </div>
-                      {palaceItem.outsideMutagenIndexes.length > 0 ? (
-                        palaceIndex === 0 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.leftBottom} ${palaceStyle.outside}`}>
-                            {palaceItem.outsideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}↙`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 1 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.leftMiddle}`}>
-                            {palaceItem.outsideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}↙`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 2 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.leftMiddle}`}>
-                            {palaceItem.outsideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}↖`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 3 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.leftTop} ${palaceStyle.outside}`}>
-                            {palaceItem.outsideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}↖`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 4 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.middleTop}`}>
-                            {palaceItem.outsideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}↖`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 5 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.middleTop}`}>
-                            {palaceItem.outsideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`↗${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 6 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.rightTop} ${palaceStyle.outside}`}>
-                            {palaceItem.outsideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`↗${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 7 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.rightMiddle}`}>
-                            {palaceItem.outsideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`↗${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 8 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.rightMiddle}`}>
-                            {palaceItem.outsideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`↘${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 9 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.rightBottom} ${palaceStyle.outside}`}>
-                            {palaceItem.outsideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`↘${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 10 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.middleBottom}`}>
-                            {palaceItem.outsideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`↘${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 11 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.middleBottom}`}>
-                            {palaceItem.outsideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}↙`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : null
-                      ) : null}
-                      {palaceItem.insideMutagenIndexes.length > 0 ? (
-                        palaceIndex === 0 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.rightTop}`}>
-                            {palaceItem.insideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`↗${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 1 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.rightMiddle}`}>
-                            {palaceItem.insideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`↗${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 2 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.rightMiddle}`}>
-                            {palaceItem.insideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`↘${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 3 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.rightBottom}`}>
-                            {palaceItem.insideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`↘${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 4 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.middleBottom}`}>
-                            {palaceItem.insideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`↘${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 5 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.middleBottom}`}>
-                            {palaceItem.insideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}↙`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 6 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.leftBottom}`}>
-                            {palaceItem.insideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}↙`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 7 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.leftMiddle}`}>
-                            {palaceItem.insideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}↙`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 8 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.leftMiddle}`}>
-                            {palaceItem.insideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}↖`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 9 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.leftTop}`}>
-                            {palaceItem.insideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}↖`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 10 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.middleTop}`}>
-                            {palaceItem.insideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}↖`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 11 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.middleTop}`}>
-                            {palaceItem.insideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`↗${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : null
-                      ) : null}
-                    </div>
-                  );
-                })}
-                <div className={centerPalaceStyle.centerPalace}>
-                  <div className={centerPalaceStyle.header}>
-                    {/* <button className={centerPalaceStyle.next} onClick={addBirthTime}>
-                    <AddCircleIcon />
-                  </button>
-                  <button className={centerPalaceStyle.previous} onClick={reduceBirthTime}>
-                    <RemoveCircleIcon />
-                  </button> */}
-
-                    <button className={`${centerPalaceStyle.info} ${showInfo ? centerPalaceStyle.selected : ``}`} onClick={toggleInfo}>
-                      <InfoIcon />
-                    </button>
-                    <button
-                      className={`${centerPalaceStyle.info} ${showTextfield ? centerPalaceStyle.selected : ``}`}
-                      onClick={toggleTextfield}
-                    >
-                      <RttIcon />
-                    </button>
-                    <button
-                      className={`${centerPalaceStyle.info} ${pluginSmallMonth ? centerPalaceStyle.selected : ``}`}
-                      onClick={togglePluginSmallMonth}
-                    >
-                      <CalendarMonthIcon />
-                    </button>
-                    <button
-                      className={`${centerPalaceStyle.info} ${pluginBorrow ? centerPalaceStyle.selected : ``}`}
-                      onClick={togglePluginBorrow}
-                    >
-                      <VisibilityIcon />
-                    </button>
-                    <button
-                      className={`${centerPalaceStyle.info} ${pluginUnderline ? centerPalaceStyle.selected : ``}`}
-                      onClick={togglePluginUnderline}
-                    >
-                      <UpgradeIcon />
-                    </button>
-                    <button
-                      className={`${centerPalaceStyle.info} ${pluginQuickArrow ? centerPalaceStyle.selected : ``}`}
-                      onClick={togglePluginQuickArrow}
-                    >
-                      <SwitchAccessShortcutAddIcon />
-                    </button>
-                    <button className={centerPalaceStyle.arrow} onClick={cleanArrows}>
-                      <MobiledataOffIcon />
-                    </button>
-                  </div>
-                  <div className={centerPalaceStyle.body}>
-                    {showInfo ? (
-                      <>
-                        {`姓名: ${astrolabe.name}`}
-                        <br />
-                        {`性別: ${astrolabe.gender}`}
-                        <br />
-                        {`陽曆: ${astrolabe.solarDate}`}
-                        <br />
-                        {`農曆: ${astrolabe.lunarDate} ${astrolabe.isLeapMonth ? `(閏月)` : ``}`}
-                        <br />
-                        {`時辰: ${astrolabe.time} (${astrolabe.timeRange})`}
-                        <br />
-                        {`五行局: ${astrolabe.fiveElementsClass}`}
-                        <br />
-                        {`四柱: ${astrolabe.chineseDate}`}
-                        <br />
-                      </>
-                    ) : null}
-                    {showTextfield ? (
-                      <TextField
-                        id="standard-multiline-flexible"
-                        hiddenLabel
-                        multiline
-                        fullWidth
-                        rows={6}
-                        maxRows={6}
-                        value={note}
-                        onChange={handleNote}
-                        sx={{
-                          "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
-                            border: "1px solid #bbb",
-                          },
-                          "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                            border: "1px solid #bbb",
-                          },
-                        }}
-                      />
-                    ) : null}
-                  </div>
-
-                  <div className={centerPalaceStyle.timePanel}>
-                    <button className={centerPalaceStyle.next} onClick={addBirthTime}>
-                      <AddCircleIcon />
-                    </button>
-                    <button className={centerPalaceStyle.previous} onClick={reduceBirthTime}>
-                      <RemoveCircleIcon />
-                    </button>
-                  </div>
-                  <div className={centerPalaceStyle.footer}>
-                    {/*  <div className={centerPalaceStyle.searchBox}>
-                    <button className={centerPalaceStyle.search} onClick={toggleSearch}>
-                      <AssignmentIcon />
-                    </button>
-                  </div> */}
-                    <div className={centerPalaceStyle.starBox}>
-                      {inFavList() === -1 ? (
-                        <button className={centerPalaceStyle.star} onClick={addFavList}>
-                          <StarBorderIcon />
-                        </button>
-                      ) : (
-                        <button className={centerPalaceStyle.star} onClick={removeFavList}>
-                          <StarIcon />
-                        </button>
-                      )}
-                    </div>
-                    <div className={centerPalaceStyle.searchBox}>
-                      <button className={centerPalaceStyle.search} onClick={toggleSearch}>
-                        <AssignmentIcon />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : null}
-          </ArcherContainer>
-          <br />
-          <Select value={currentFavIndex} onChange={selectFav} autoWidth sx={{ backgroundColor: "#fff" }}>
-            <MenuItem disabled value={-1}>
-              <em>已收藏</em>
-            </MenuItem>
-            {favList.map((fav, index) => {
-              return (
-                <MenuItem value={index} key={`key-astrolabe-list-${index}`}>
-                  {`${fav.name} ${fav.gender == 0 ? "男" : fav.gender == 1 ? "女" : ""} ${
-                    fav.calendar == 0 ? "陽曆" : fav.calendar == 1 ? "農曆" : ""
-                  } ${fav.year}-${fav.month}-${fav.day} ${birthTimeList[fav.birthTime]}`}
-                </MenuItem>
-              );
-            })}
-          </Select>
-        </div>
-      ) : null}
-
-      {/* <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <div className={astrolabeStyle.footer}>
-        <div className={astrolabeStyle.left}>
-          <div className={astrolabeStyle.logo}>
-            <img src={"logo.png"} alt="logo" />
-            <div className={astrolabeStyle.name}>曜靈紫微飛星</div>
+      <div className={aboutStyle.bg}>
+        <div className={aboutStyle.banner} id="banner1">
+          <div className={aboutStyle.left}></div>
+          <div className={aboutStyle.right}>
+            <div className={aboutStyle.title}>曜靈星軌理數</div>
+            <div className={aboutStyle.caption}>您的智能人生定位系統</div>
+            <div className={aboutStyle.link}>
+              <Link href="#contact">聯絡我們</Link>
+              <a href="#begin">瞭解更多</a>
+            </div>
           </div>
-          <button>排盤</button>
         </div>
-        <div className={astrolabeStyle.right}>
-          <a target="_blank" href="https://buy.stripe.com/cN2cPsa6XaLMauQ001">
-            支持我們
-          </a>
+        <div className="container" id="begin">
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <div className={aboutStyle.pageTitle}>命理之旅的啟程</div>
+          <div className={aboutStyle.pageText}>
+            從一位堅持邏輯與科學的軟件工程師，到成為一名深諳命理學的專家，我的職業轉變是一段充滿洞察和轉變的旅程。在這條路上，我從最初對於玄學的質疑，走到了深入探索這一領域的深奧智慧。
+            <br />
+            <br />
+            這一轉變的關鍵，來自於與命理導師張世賢老師的邂逅。他不僅精通飛星紫微斗數，更在我的人生軌跡上發揮了重要的指導作用。張老師不僅精準地指出了我當時的處境，也揭示了我未曾預料到的現實挑戰，甚至將我的夢想和想法一一點出，這讓我深受觸動。
+            <br />
+            <br />
+            經過這段經歷，我開始認真學習飛星紫微斗數，致力於深入了解這門學問。我的目標是將其美好和力量傳遞給更多的人，幫助他們提升自我，面對生活中的挑戰，並從中找到轉機和機遇，開創更加輝煌的人生。
+          </div>
+          <br id="analysis" />
+          <Divider light variant="middle" sx={{ margin: "20px 0" }} />
+          <br />
+          <div className={aboutStyle.pageTitle}>命理分析服務：深入您的人生藍圖</div>
+          <div className={aboutStyle.pageText}>
+            在我們提供的命理分析服務中，我們致力於為您提供遠超於傳統占卜或預測的深度洞察。這不僅是一次全面的自我發現之旅，更是一個深入探索和理解您的生命藍圖的過程。透過精確的命盤分析，我們能揭示您生命中的關鍵趨勢、轉折點以及潛在的挑戰和機遇。
+          </div>
+          <br />
+          <div className={aboutStyle.pageSubheading}>核心服務</div>
+          <br />
+          <Grid container spacing={2}>
+            <Grid item xs={2}></Grid>
+            <Grid item xs={12} sm={8}>
+              <div className={aboutStyle.price}>
+                <div className={aboutStyle.title}>全面命理分析會談</div>
+                價格：HKD $2,000
+                <br />
+                形式：面對面或在線會談
+                <br />
+                <br />
+                首先核對命盤，以命主過往經歷確認其準確性。
+                <br />
+                隨後針對命主感興趣的問題進行深入討論。
+                <br />
+                包括工作、事業、創業、感情、桃花、婚姻、家庭、健康、才華等多個主題。
+              </div>
+            </Grid>
+            <Grid item xs={2}></Grid>
+          </Grid>
+          <br />
+          <br />
+          <br />
+          <div className={aboutStyle.pageSubheading}>持續諮詢服務</div>
+          <br />
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <div className={aboutStyle.price}>
+                <div className={aboutStyle.title}>深度跟進分析</div>
+                價格：HKD $1,200
+                <br />
+                <br />
+                <br />
+                針對已經接受過全面命理分析的客戶，提供針對性的深入跟進。
+                <br />
+                涵蓋新的問題或生活中的變化，提供更新的洞察和建議。
+                <br />* 適用於已完成全面命理分析的客戶。
+              </div>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <div className={aboutStyle.price}>
+                <div className={aboutStyle.title}>年度命理更新</div>
+                價格：HKD $1,200
+                <br />
+                <br />
+                <br />
+                為長期客戶提供每年的命理更新，反映最新的生活變化和即將到來的機遇。
+                <br />
+                幫助客戶持續調整和優化他們的人生策略。
+                <br />* 適用於已完成全面命理分析的客戶。
+              </div>
+            </Grid>
+            <Grid item xs={3}></Grid>
+            <Grid item xs={12} sm={6}>
+              <div className={aboutStyle.price}>
+                <div className={aboutStyle.title}>長期諮詢計劃</div>
+                價格：HKD $5,000 / 年
+                <br />
+                <br />
+                <br />
+                為有持續諮詢需求的客戶提供定期會談服務。
+                <br />
+                每月一次的全面命理分析和無限次的簡短諮詢。
+                <br />* 適用於已完成全面命理分析的客戶。
+              </div>
+            </Grid>
+            <Grid item xs={3}></Grid>
+          </Grid>
+          <br />
+          <br />
+          <br />
+          <div className={aboutStyle.pageSubheading}>專題探討</div>
+          <br />
+          <Grid container spacing={2}>
+            <Grid item xs={6} sm={4}>
+              <div className={aboutStyle.price}>
+                <div className={aboutStyle.title}>創業與事業規劃</div>
+                價格：HKD $1,500
+                <br />
+                <br />
+                <br />
+                專注於創業機會評估、事業發展策略、職場機遇。
+                <br />
+              </div>
+            </Grid>
+            <Grid item xs={6} sm={4}>
+              <div className={aboutStyle.price}>
+                <div className={aboutStyle.title}>感情與婚姻</div>
+                價格：HKD $1,500
+                <br />
+                <br />
+                <br />
+                專注於感情生活、人際互動、婚姻諮詢等。
+                <br />
+              </div>
+            </Grid>
+            <Grid item xs={6} sm={4}>
+              <div className={aboutStyle.price}>
+                <div className={aboutStyle.title}>財富與投資規劃</div>
+                價格：HKD $1,500
+                <br />
+                <br />
+                <br />
+                針對財務規劃、投資機會、財富管理提供指導。
+                <br />
+              </div>
+            </Grid>
+
+            <Grid item xs={6} sm={4}>
+              <div className={aboutStyle.price}>
+                <div className={aboutStyle.title}>個人成長與自我實現</div>
+                價格：HKD $1,000
+                <br />
+                <br />
+                <br />
+                專注於個人目標設定、生活技能提升、自我實現的途徑。
+                <br />
+              </div>
+            </Grid>
+            <Grid item xs={6} sm={4}>
+              <div className={aboutStyle.price}>
+                <div className={aboutStyle.title}>教育與學業發展</div>
+                價格：HKD $1,000
+                <br />
+                <br />
+                <br />
+                針對學業規劃、職業教育選擇、專業技能提升提供諮詢。
+                <br />
+              </div>
+            </Grid>
+            <Grid item xs={6} sm={4}>
+              <div className={aboutStyle.price}>
+                <div className={aboutStyle.title}>人際關係與社交網絡</div>
+                價格：HKD $1,000
+                <br />
+                <br />
+                <br />
+                針對建立和維護健康的人際關係、擴大社交網絡提供專業建議。
+                <br />
+              </div>
+            </Grid>
+          </Grid>
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <div className={aboutStyle.pageText}>
+            我們的服務專注於核對命盤與命主過往經歷的完美對應，並針對命主關心的問題提供具體的討論和解答。無論是職業選擇、感情問題還是健康和財運，我們的分析都旨在為您帶來新的視角和具體建議，幫助您在生活中做出更明智的決策。
+            <br />
+            <br />
+            命理分析的真正價值在於它提供的深層次洞察，這些洞察不僅涉及未來的趨勢，還包括個人的內在特質、潛在能力和生活中的重要決策。這種深入的自我理解是實現個人目標和夢想的關鍵。透過我們的專業分析，您將能夠更好地理解自己，掌握自己的命運，並在人生的旅程中做出更有意義和更有成效的選擇。
+          </div>
+          <br id="course" />
+          <Divider light variant="middle" sx={{ margin: "20px 0" }} />
+          <br />
+          <div className={aboutStyle.pageTitle}>梁氏飛星紫微斗數：邏輯與深度的命理探索</div>
+          <div className={aboutStyle.pageText}>
+            星軌理數，源自於梁氏飛星紫微斗數的深厚基礎，代表了當代命理學中的一個創新分支。它採用了一種獨特且系統化的方法，用以解析個人的命運和人生軌迹。這一新派系之所以突出，是因為它在邏輯性和系統性上的重視，使得對個人命運的分析既準確又富有深度，提升了可靠性。
+            <br />
+            <br />
+            在星軌理數的框架下，四化被認為是命盤中的關鍵元素，它們是塑造個人成功或失敗的核心因素。透過獨到的分析技巧，結合宮位、四化及星曜的綜合解讀，我們提供了對個人命運深層次的洞察。這種分析方法就像是解碼一個複雜數學公式，其中每個部分都是解讀整體的關鍵。
+          </div>
+          <br />
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            disableColumnFilter
+            disableColumnMenu
+            disableColumnSelector
+            disableDensitySelector
+            disableRowSelectionOnClick
+            disableVirtualization
+            hideFooter
+            hideFooterPagination
+            hideFooterSelectedRowCount
+            showCellVerticalBorder
+            showColumnVerticalBorder
+            rowHeight={96}
+            sx={{
+              fontSize: "16px",
+              "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+                outline: "none !important",
+              },
+            }}
+            initialState={{
+              pagination: {
+                paginationModel: { page: 0, pageSize: 5 },
+              },
+            }}
+            pageSizeOptions={[5, 10]}
+          />
+          <br />
+          所有課程的節數均根據學生的學習進度進行彈性安排，確保學生能夠充分掌握每一階段的學習內容。每一期的課程費用包含了學習到該階段的完整進度。
+          <br />
+          <br />
+          <div className={aboutStyle.pageText}>
+            學習星軌理數，您將掌握如何運用這套系統來揭示個性的細節、未來可能的轉變點，以及如何面對挑戰與抓住機遇的策略。這門學科不僅為我們預示未來，更重要的是，它幫助學習者深入了解生活中的每一次選擇和經歷，從而更主動地操控自己的命運。
+            <br />
+            <br />
+            參與我們的教學課程，您將有機會深入學習這門融合傳統智慧與現代邏輯的命理學。這不僅能為您自己帶來深刻的自我認識，還能為他人提供專業的生命指導。加入我們，啟程一段充滿洞見與發現的學習旅程。
+          </div>
+          {/* <br />
+          <Divider light variant="middle" sx={{ margin: "20px 0" }} />
+          <br /> */}
         </div>
-      </div> */}
+        {/* <Carousel centerMode centerSlidePercentage={75} showArrows showStatus={false} autoPlay interval={6000} infiniteLoop>
+          <div className={aboutStyle.carousel}>
+            <iframe
+              width="560"
+              height="315"
+              src="https://www.youtube.com/embed/DEYHzTA8NGw?si=4C3-Vgn6ytTdGYUJ"
+              title="YouTube video player"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+            ></iframe>
+          </div>
+          <div className={aboutStyle.carousel}>
+            <img
+              src="https://images.pexels.com/photos/104827/cat-pet-animal-domestic-104827.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+              alt="carousel2"
+            />
+          </div>
+          <div className={aboutStyle.carousel}>
+            <img
+              src="https://images.pexels.com/photos/1056251/pexels-photo-1056251.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+              alt="carousel3"
+            />
+          </div>
+          <div className={aboutStyle.carousel}>
+            <img
+              src="https://images.pexels.com/photos/2558605/pexels-photo-2558605.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+              alt="carousel4"
+            />
+          </div>
+        </Carousel> */}
+        <div className="container">
+          <br id="question" />
+          <Divider light variant="middle" sx={{ margin: "20px 0" }} />
+          <br />
+          <div className={aboutStyle.pageTitle}>常見問題</div>
+          <div className={aboutStyle.pageText}>
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel0a-content" id="panel0a-header">
+                所有事情都是注定的嗎？還是可以改變的？
+              </AccordionSummary>
+              <AccordionDetails sx={{ fontSize: "16px" }}>
+                在命理學的理解中，雖然出生環境等某些因素是預先設定的，但絕大多數的人生事件和結果都是可變的，它們會隨著命主的選擇和決定而變化。
+                <br />
+                <br />
+                我們的命理分析正是基於這樣的理念，旨在指引您做出最佳的選擇，從而引導您走向最理想的人生結果。通过命理分析，我們能夠為您提供關於如何做出明智決策的指導，以最大程度地實現個人潛能和達成生活目標。
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+                甚麼人適合進行命理分析，甚麼人則不適合？
+              </AccordionSummary>
+              <AccordionDetails sx={{ fontSize: "16px" }}>
+                命理分析最適合那些渴望自我提升、希望讓自己變得更好的人。無論年齡大小，只要懷著積極進取的心態，命理分析都能提供相關的洞察和指引。對於年輕人來說，進行命理分析能在人生早期提供寶貴的方向指引；即使是在50到60歲，只要有決心和動力，依然可以透過命理分析來發展事業或探索新的人生機遇。此外，命理分析也適用於那些希望了解關於子孫未來的人。
+                <br />
+                <br />
+                相反地，那些持有認命或怨天尤人心態的人則不太適合進行命理分析。因為即使我們提供了改善生活和前景的建議，如果他們不願意採取行動，這些分析也無法發揮實質的作用。命理分析需要一個願意積極行動、對生活懷有希望的態度來發揮其最大的效用。
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel2a-content" id="panel2a-header">
+                命理分析能得到甚麼？為甚麼我們要進行命理分析？
+              </AccordionSummary>
+              <AccordionDetails sx={{ fontSize: "16px" }}>
+                命理分析提供三大關鍵洞察，幫助您更好地規劃和導航您的人生：
+                <br />
+                <br />
+                1.
+                識別資源、機會和選擇：命理分析能讓您了解在人生旅程中將會遇到的重要資源和機會，以及您面臨的選擇。這些信息對於制定成功策略和實現目標至關重要。
+                <br />
+                <br />
+                2. 預見選擇後的結果：透過對您命盤的深入分析，您能夠預知特定選擇可能帶來的後果，這有助於您在生活中做出更明智和有見地的決策。
+                <br />
+                <br />
+                3.
+                識別潛在陷阱：命理分析同時揭示您人生道路上可能遇到的障礙和陷阱，讓您能夠提前做好準備，或選擇更適合的路徑來避免不必要的困難。
+                <br />
+                <br />
+                進行命理分析的主要原因在於，它能夠幫助您選擇對的道路，減少走彎路的可能性。擁有這樣的洞察和指導，您可以更自信地面對生活的挑戰，把握每一個轉折點，並朝著更充實和滿意的生活邁進。
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel3a-content" id="panel3a-header">
+                完成命理分析，能幫我賺錢嗎？
+              </AccordionSummary>
+              <AccordionDetails sx={{ fontSize: "16px" }}>
+                根據我們門派的豐富論命經驗，許多命主在接受命理分析後，並且根據分析結果來進行事業規劃，通常會在5至10年內經歷顯著的收入增長。事實上，我們有記錄顯示，部分命主的收入在這段時間內增長了高達27倍。特別是對於創業者或有創業意願的人士來說，命理分析對於收入增長的影響尤為明顯。
+                <br />
+                <br />
+                當然，命理分析並非直接的「賺錢工具」，而是一種提供洞察和指導的服務。透過分析，我們能夠幫助命主識別最有潛力的事業方向、最佳時機以及避免潛在陷阱。這些信息對於制定有效的職業策略、把握商業機會以及實現長期財富積累是非常有幫助的。因此，如果命主能夠根據命理分析的建議採取行動，確實有可能實現顯著的財務增長。
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel4a-content" id="panel4a-header">
+                如果我來做命理分析，但覺得不準，怎麼辦？
+              </AccordionSummary>
+              <AccordionDetails sx={{ fontSize: "16px" }}>
+                在我們進行命理分析時，我們的首要目標是確保分析結果與命主的實際情況完全一致。我們對分析的準確性要求極高，期望達到100%的吻合度。如果在分析過程中，您發現任何不準確之處，我們鼓勵您立即提出，因為這有助於我們更準確地核對命盤，並進行更精確的預測。
+                <br />
+                <br />
+                我們理解客戶對準確性的期望，因此如果您在分析完成後仍然覺得結果不準確，我們承諾將全額退回您的論命費用。我們的這項退款保證旨在讓您安心嘗試我們的服務，確保您能夠在不滿意的情況下無風險地獲得滿意的解決方案。
+              </AccordionDetails>
+            </Accordion>
+          </div>
+          <br id="contact" />
+          <Divider light variant="middle" sx={{ margin: "20px 0" }} />
+          <br />
+          <div className={aboutStyle.pageTitle}>聯絡我們</div>
+          <div className={aboutStyle.contact}>
+            <a target="_blank" href="https://www.instagram.com/yl_astrologix?igsh=N2psYm8wZzhjNDJ1">
+              <img src="/ig.jpg" alt="instagram" />
+            </a>
+            <a target="_blank" href="https://www.facebook.com/profile.php?id=61556268658653&mibextid=ZbWKwL">
+              <img src="/facebook.png" alt="facebook" />
+            </a>
+            <a target="_blank" href="https://www.threads.net/@yl_astrologix">
+              <img src="/thread.png" alt="thread" />
+            </a>
+            <a target="_blank" href="https://wa.me/85294780643?text=你好，我想了解一下命理分析服務">
+              <img src="/whatsapp.png" alt="whatsapp" />
+            </a>
+            <a target="_blank" href="https://www.youtube.com/@yl-astrologix">
+              <img src="/youtube.png" alt="youtube" />
+            </a>
+            <img src="/wechat.png" alt="wechat" />
+          </div>
+          <br />
+          <div className={aboutStyle.contact}>
+            <IconButton>
+              <CallIcon />
+            </IconButton>
+            {`+852 9478 0648`}
+          </div>
+
+          <Divider light variant="middle" sx={{ margin: "20px 0" }} />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <SpeedDial
+            ariaLabel="SpeedDial basic example"
+            sx={{ position: "fixed", bottom: 64, right: 64 }}
+            FabProps={{ sx: { backgroundColor: "#009", "&:hover": { backgroundColor: "#009" } } }}
+            icon={<CallIcon />}
+          >
+            {actions.map((action) => (
+              <SpeedDialAction key={action.name} icon={action.icon} tooltipTitle={action.name} sx={{ lineHeight: "unset" }} />
+            ))}
+          </SpeedDial>
+        </div>
+      </div>
+      <div className="footer">{`${new Date().getFullYear()} © 曜靈紫微飛星 版權所有`}</div>
     </>
   );
 }
