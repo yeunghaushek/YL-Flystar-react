@@ -160,7 +160,7 @@ const rows = [
     id: 2,
     level: "核心技術",
     description: "星軌理數的核心技術和獨特命盤結構的教學，並進行每日排盤和核心技術練習。",
-    target: "使學員能夠熟練運用梁氏飛星的核心技術，準確解讀命盤。",
+    target: "使學員能夠熟練運用星軌理數核心技術，準確解讀命盤。",
     price: "HKD $3,800 / 一期 (總共6-10節課)",
   },
   {
@@ -440,7 +440,7 @@ export default function About() {
           <br id="course" />
           <Divider light variant="middle" sx={{ margin: "20px 0" }} />
           <br />
-          <div className={aboutStyle.pageTitle}>梁氏飛星紫微斗數：邏輯與深度的命理探索</div>
+          <div className={aboutStyle.pageTitle}>星軌理數：邏輯與深度的命理探索</div>
           <div className={aboutStyle.pageText}>
             星軌理數，源自於梁氏飛星紫微斗數的深厚基礎，代表了當代命理學中的一個創新分支。它採用了一種獨特且系統化的方法，用以解析個人的命運和人生軌迹。這一新派系之所以突出，是因為它在邏輯性和系統性上的重視，使得對個人命運的分析既準確又富有深度，提升了可靠性。
             <br />
