@@ -255,7 +255,8 @@ export default function About() {
             <div className={aboutStyle.caption}>您的智能人生定位系統</div>
             <div className={aboutStyle.link}>
               <Link href="#contact">聯絡我們</Link>
-              <a href="#begin">瞭解更多</a>
+              {/* <a href="#begin">瞭解更多</a> */}
+              <Link href="/chart">立即排盤</Link>
             </div>
           </div>
         </div>
