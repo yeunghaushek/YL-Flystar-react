@@ -608,6 +608,8 @@ export default function About() {
             <a target="_blank" href="https://www.threads.net/@yl_astrologix">
               <img src="/thread.png" alt="thread" />
             </a>
+          </div>
+          <div className={aboutStyle.contact}>
             <a target="_blank" href="https://wa.me/85294780643?text=你好，我想了解一下命理分析服務">
               <img src="/whatsapp.png" alt="whatsapp" />
             </a>
