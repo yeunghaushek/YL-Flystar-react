@@ -218,6 +218,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-wrap: wrap;
   font-size: 18px;
   color: #666;
 
@@ -226,6 +227,12 @@
   }
 
   img {
-    width: 256px;
+    width: 192px;
+  }
+
+  @media only screen and (max-width: 767px) {
+    img {
+      width: 256px;
+    }
   }
 }
