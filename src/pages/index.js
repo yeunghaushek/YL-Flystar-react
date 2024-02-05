@@ -624,7 +624,7 @@ export default function About() {
             <IconButton>
               <CallIcon />
             </IconButton>
-            {`+852 9478 0648`}
+            {`+852 9478 0643`}
           </div>
 
           <Divider light variant="middle" sx={{ margin: "20px 0" }} />
