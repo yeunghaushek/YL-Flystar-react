@@ -600,6 +600,16 @@ export default function About() {
           <br />
           <div className={aboutStyle.pageTitle}>聯絡我們</div>
           <div className={aboutStyle.contact}>
+            <iframe
+              src="https://docs.google.com/forms/d/e/1FAIpQLSfOT_w2D4V7WxUP_BHPHv1PFJAUsU8z2IXKn17uCrh7nzcaoQ/viewform?embedded=true"
+              width="640"
+              height="960"
+              frameBorder="0"
+            >
+              正在載入…
+            </iframe>
+          </div>
+          <div className={aboutStyle.contact}>
             <a target="_blank" href="https://www.instagram.com/yl_astrologix?igsh=N2psYm8wZzhjNDJ1">
               <img src="/ig.jpg" alt="instagram" />
             </a>
