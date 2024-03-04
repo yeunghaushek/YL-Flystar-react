@@ -877,7 +877,7 @@ export default function Astrolabe() {
   return (
     <>
       <Head>
-        <title>曜靈星軌理數</title>
+        <title>曜靈星軌理數 - 您的智能人生定位系統</title>
       </Head>
       <div className={`header show`}>
         <div className="left">

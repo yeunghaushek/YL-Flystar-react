@@ -212,7 +212,7 @@ export default function About() {
   return (
     <>
       <Head>
-        <title>曜靈星軌理數</title>
+        <title>曜靈星軌理數 - 您的智能人生定位系統</title>
       </Head>
       <div className={`header ${scrollTop && scrollTop >= bannerOffset - 120 ? `show` : ``}`}>
         <div className="left info-header">
