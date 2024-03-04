@@ -160,7 +160,7 @@ const rows = [
     id: 2,
     level: "核心技術",
     description: "星軌理數的核心技術和獨特命盤結構的教學，並進行每日排盤和核心技術練習。",
-    target: "使學員能夠熟練運用星軌理數核心技術，準確解讀命盤。",
+    target: "使學員能夠熟練運用星軌理數的核心技術，準確解讀命盤。",
     price: "HKD $3,800 / 一期 (總共6-10節課)",
   },
   {
@@ -238,7 +238,7 @@ export default function About() {
             <button>常見問題</button>
           </Link>
           <Link href="#contact">
-            <button>聯絡我們</button>
+            <button>立即預約</button>
           </Link>
         </div>
         <div className="right">
@@ -254,9 +254,9 @@ export default function About() {
             <div className={aboutStyle.title}>曜靈星軌理數</div>
             <div className={aboutStyle.caption}>您的智能人生定位系統</div>
             <div className={aboutStyle.link}>
-              <Link href="#contact">聯絡我們</Link>
+              <Link href="#contact">立即預約</Link>
               {/* <a href="#begin">瞭解更多</a> */}
-              <Link href="/chart">立即排盤</Link>
+              <Link href="/chart">線上排盤</Link>
             </div>
           </div>
         </div>
@@ -598,7 +598,7 @@ export default function About() {
           <br id="contact" />
           <Divider light variant="middle" sx={{ margin: "20px 0" }} />
           <br />
-          <div className={aboutStyle.pageTitle}>聯絡我們</div>
+          <div className={aboutStyle.pageTitle}>立即預約</div>
           <div className={aboutStyle.contact}>
             <iframe
               src="https://docs.google.com/forms/d/e/1FAIpQLSfOT_w2D4V7WxUP_BHPHv1PFJAUsU8z2IXKn17uCrh7nzcaoQ/viewform?embedded=true"
@@ -609,6 +609,7 @@ export default function About() {
               正在載入…
             </iframe>
           </div>
+          <div className={aboutStyle.pageTitle}>聯絡我們</div>
           <div className={aboutStyle.contact}>
             <a target="_blank" href="https://www.instagram.com/yl_astrologix?igsh=N2psYm8wZzhjNDJ1">
               <img src="/ig.jpg" alt="instagram" />
