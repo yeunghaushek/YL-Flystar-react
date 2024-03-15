@@ -4,7 +4,7 @@
   flex-direction: column;
   height: 230px;
   min-width: 180px;
-  border: 1px solid #ddd;
+  border: 1px solid #999;
 
   .header {
     flex: 3;
@@ -34,7 +34,7 @@
       justify-content: flex-end;
 
       .star {
-        color: #39f;
+        color: #6ff;
         font-size: 18px;
         margin: 0 1px 0 4px;
         background-color: transparent;
@@ -44,7 +44,7 @@
 
       .major {
         .star {
-          color: #33f;
+          color: #88f;
           font-weight: bold;
         }
       }
@@ -71,7 +71,7 @@
             }
 
             &.red {
-              background-color: #d00;
+              background-color: #c55;
             }
 
             &.yellow {
@@ -79,7 +79,7 @@
             }
 
             &.blue {
-              background-color: #00d;
+              background-color: #66a;
             }
           }
         }
@@ -94,11 +94,11 @@
         padding: 1px 0;
 
         &.green {
-          background-color: #181;
+          background-color: #3a3;
         }
 
         &.red {
-          background-color: #d00;
+          background-color: #c55;
         }
 
         &.yellow {
@@ -106,7 +106,7 @@
         }
 
         &.blue {
-          background-color: #00d;
+          background-color: #66a;
         }
       }
 
@@ -117,13 +117,13 @@
         padding: 0;
 
         &.green {
-          color: #181;
-          border: 1px solid #181;
+          color: #3a3;
+          border: 1px solid #3a3;
         }
 
         &.red {
-          color: #d00;
-          border: 1px solid #d00;
+          color: #c55;
+          border: 1px solid #c55;
         }
 
         &.yellow {
@@ -132,8 +132,8 @@
         }
 
         &.blue {
-          color: #00d;
-          border: 1px solid #00d;
+          color: #66a;
+          border: 1px solid #66a;
         }
       }
     }
@@ -166,6 +166,7 @@
 
         button {
           cursor: pointer;
+          color: #ddd;
           background-color: transparent;
           border: 0;
           border-radius: 4px;
@@ -177,6 +178,7 @@
         &.selected {
           button {
             background-color: #ccc;
+            color: #111;
             font-weight: bold;
           }
         }
@@ -260,9 +262,11 @@
         font-size: 13px;
         padding: 2px 8px;
         margin-top: 2px;
+        color: #ccc;
 
         &.selected {
-          background-color: #ccc;
+          background-color: #ddd;
+          color: #111;
           font-weight: bold;
         }
       }
@@ -270,7 +274,7 @@
       .name {
         background-color: transparent;
         border: 0;
-        color: #2929a3;
+        color: #66f;
         font-size: 22px;
         font-weight: bold;
         letter-spacing: 2px;
@@ -379,11 +383,11 @@
     }
 
     .green {
-      color: #181;
+      color: #3a3;
     }
 
     .red {
-      color: #d00;
+      color: #c55;
     }
 
     .yellow {
@@ -391,7 +395,7 @@
     }
 
     .blue {
-      color: #00d;
+      color: #66a;
     }
   }
 }

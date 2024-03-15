@@ -61,7 +61,7 @@ const modalStyle = {
   border: "0",
   width: "80%",
   maxWidth: "900px",
-  backgroundColor: "#ddd",
+  backgroundColor: "#bbb",
   boxShadow: 24,
   padding: "20px",
 };
@@ -1178,7 +1178,7 @@ export default function Astrolabe() {
                                         <div>
                                           <button
                                             style={{
-                                              backgroundColor: "#181",
+                                              backgroundColor: "#3b3",
                                               padding: "1px 3px",
                                               margin: "1px",
                                               fontSize: "14px",
@@ -1199,7 +1199,7 @@ export default function Astrolabe() {
 
                                           <button
                                             style={{
-                                              backgroundColor: "#d00",
+                                              backgroundColor: "#c55",
                                               padding: "1px 3px",
                                               margin: "1px",
                                               fontSize: "14px",
@@ -1220,7 +1220,7 @@ export default function Astrolabe() {
                                           <br />
                                           <button
                                             style={{
-                                              backgroundColor: "#00d",
+                                              backgroundColor: "#66a",
                                               padding: "1px 3px",
                                               margin: "1px",
                                               fontSize: "14px",
@@ -1316,7 +1316,7 @@ export default function Astrolabe() {
                                         <div>
                                           <button
                                             style={{
-                                              backgroundColor: "#181",
+                                              backgroundColor: "#3b3",
                                               padding: "1px 3px",
                                               margin: "1px",
                                               fontSize: "14px",
@@ -1337,7 +1337,7 @@ export default function Astrolabe() {
 
                                           <button
                                             style={{
-                                              backgroundColor: "#d00",
+                                              backgroundColor: "#c55",
                                               padding: "1px 3px",
                                               margin: "1px",
                                               fontSize: "14px",
@@ -1358,7 +1358,7 @@ export default function Astrolabe() {
                                           <br />
                                           <button
                                             style={{
-                                              backgroundColor: "#00d",
+                                              backgroundColor: "#66a",
                                               padding: "1px 3px",
                                               margin: "1px",
                                               fontSize: "14px",
@@ -1456,13 +1456,13 @@ export default function Astrolabe() {
                                     style: {
                                       strokeColor:
                                         arrow[2] === 0
-                                          ? "#181"
+                                          ? "#3b3"
                                           : arrow[2] === 1
-                                          ? "#d00"
+                                          ? "#c55"
                                           : arrow[2] === 2
                                           ? "#eb0"
                                           : arrow[2] === 3
-                                          ? "#00d"
+                                          ? "#66a"
                                           : "#111",
                                       strokeWidth: 1.5,
                                     },
@@ -1550,7 +1550,7 @@ export default function Astrolabe() {
                               <div>
                                 <button
                                   style={{
-                                    backgroundColor: "#181",
+                                    backgroundColor: "#3b3",
                                     padding: "1px 3px",
                                     margin: "1px",
                                     fontSize: "14px",
@@ -1572,7 +1572,7 @@ export default function Astrolabe() {
 
                                 <button
                                   style={{
-                                    backgroundColor: "#d00",
+                                    backgroundColor: "#c55",
                                     padding: "1px 3px",
                                     margin: "1px",
                                     fontSize: "14px",
@@ -1594,7 +1594,7 @@ export default function Astrolabe() {
                                 <br />
                                 <button
                                   style={{
-                                    backgroundColor: "#00d",
+                                    backgroundColor: "#66a",
                                     padding: "1px 3px",
                                     margin: "1px",
                                     fontSize: "14px",
