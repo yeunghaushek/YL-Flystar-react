@@ -40,6 +40,7 @@ export default function Blog() {
     <>
       <Head>
         <title>曜靈星軌理數 - 您的智能人生定位系統</title>
+        <meta name="description" content="您的智能人生定位系統" />
       </Head>
       <div className={`header show`}>
         <div className="left info-header">
@@ -52,20 +53,23 @@ export default function Blog() {
           <Link href="/chart">
             <button>排盤</button>
           </Link>
-          <Link href="#begin">
+          <Link href="/info#begin">
             <button>遇見命理師</button>
           </Link>
-          <Link href="#analysis">
+          <Link href="/info#analysis">
             <button>命理分析</button>
           </Link>
-          <Link href="#course">
+          <Link href="/info#course">
             <button>教學課程</button>
           </Link>
-          <Link href="#question">
+          <Link href="/info#question">
             <button>常見問題</button>
           </Link>
-          <Link href="#contact">
+          <Link href="/info#contact">
             <button>立即預約</button>
+          </Link>
+          <Link href="/blog">
+            <button>網誌</button>
           </Link>
         </div>
         <div className="right">

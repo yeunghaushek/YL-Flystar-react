@@ -213,6 +213,7 @@ export default function About() {
     <>
       <Head>
         <title>曜靈星軌理數 - 您的智能人生定位系統</title>
+        <meta name="description" content="您的智能人生定位系統" />
         <meta name="google-site-verification" content="GgRiozFx3jLZsdTn2Tqpxhao0v52utKt4__I2Je4csY" />
       </Head>
       <div className={`header ${scrollTop && scrollTop >= bannerOffset - 120 ? `show` : ``}`}>
@@ -240,6 +241,9 @@ export default function About() {
           </Link>
           <Link href="#contact">
             <button>立即預約</button>
+          </Link>
+          <Link href="/blog">
+            <button>網誌</button>
           </Link>
         </div>
         <div className="right">

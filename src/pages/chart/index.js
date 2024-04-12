@@ -878,45 +878,37 @@ export default function Astrolabe() {
     <>
       <Head>
         <title>曜靈星軌理數 - 您的智能人生定位系統</title>
+        <meta name="description" content="您的智能人生定位系統" />
       </Head>
       <div className={`header show`}>
-        <div className="left">
+        <div className="left info-header">
           <Link href="/">
             <div className="logo">
               <img src={"logo.png"} alt="logo" />
               <div className="name">曜靈星軌理數</div>
             </div>
           </Link>
-          <Link href="/">
+          <Link href="/chart">
+            <button>排盤</button>
+          </Link>
+          <Link href="/info#begin">
             <button>遇見命理師</button>
           </Link>
-          {/* <Link href="/info##analysis">
+          <Link href="/info#analysis">
             <button>命理分析</button>
           </Link>
-          <Link href="/info##course">
+          <Link href="/info#course">
             <button>教學課程</button>
           </Link>
-          <Link href="/info##question">
+          <Link href="/info#question">
             <button>常見問題</button>
           </Link>
-          <Link href="/info##contact">
-            <button>聯絡我們</button>
-          </Link> */}
-          {/* <Link href="#begin">
-            <button>遇見命理師</button>
+          <Link href="/info#contact">
+            <button>立即預約</button>
           </Link>
-          <Link href="#analysis">
-            <button>命理分析</button>
+          <Link href="/blog">
+            <button>網誌</button>
           </Link>
-          <Link href="#course">
-            <button>教學課程</button>
-          </Link>
-          <Link href="#question">
-            <button>常見問題</button>
-          </Link>
-          <Link href="#contact">
-            <button>聯絡我們</button>
-          </Link> */}
         </div>
         <div className="right">
           <a target="_blank" href="https://buy.stripe.com/cN2cPsa6XaLMauQ001">
