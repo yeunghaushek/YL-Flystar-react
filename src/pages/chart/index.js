@@ -889,12 +889,12 @@ export default function Astrolabe() {
             </div>
           </Link>
           <Link href="/chart">
-            <button>排盤</button>
+            <button>線上排盤</button>
           </Link>
           <Link href="/info#begin">
             <button>遇見命理師</button>
           </Link>
-          <Link href="/info#analysis">
+          {/* <Link href="/info#analysis">
             <button>命理分析</button>
           </Link>
           <Link href="/info#course">
@@ -905,7 +905,7 @@ export default function Astrolabe() {
           </Link>
           <Link href="/info#contact">
             <button>立即預約</button>
-          </Link>
+          </Link> */}
           <Link href="/blog">
             <button>網誌</button>
           </Link>
@@ -2040,7 +2040,7 @@ export default function Astrolabe() {
             <img src={"logo.png"} alt="logo" />
             <div className={astrolabeStyle.name}>曜靈紫微飛星</div>
           </div>
-          <button>排盤</button>
+          <button>線上排盤</button>
         </div>
         <div className={astrolabeStyle.right}>
           <a target="_blank" href="https://buy.stripe.com/cN2cPsa6XaLMauQ001">

@@ -224,12 +224,12 @@ export default function About() {
             </div>
           </Link>
           <Link href="/chart">
-            <button>排盤</button>
+            <button>線上排盤</button>
           </Link>
           <Link href="#begin">
             <button>遇見命理師</button>
           </Link>
-          <Link href="#analysis">
+          {/* <Link href="#analysis">
             <button>命理分析</button>
           </Link>
           <Link href="#course">
@@ -240,7 +240,7 @@ export default function About() {
           </Link>
           <Link href="#contact">
             <button>立即預約</button>
-          </Link>
+          </Link> */}
           <Link href="/blog">
             <button>網誌</button>
           </Link>

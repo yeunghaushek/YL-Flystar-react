@@ -51,12 +51,12 @@ export default function Blog() {
             </div>
           </Link>
           <Link href="/chart">
-            <button>排盤</button>
+            <button>線上排盤</button>
           </Link>
           <Link href="/info#begin">
             <button>遇見命理師</button>
           </Link>
-          <Link href="/info#analysis">
+          {/* <Link href="/info#analysis">
             <button>命理分析</button>
           </Link>
           <Link href="/info#course">
@@ -67,7 +67,7 @@ export default function Blog() {
           </Link>
           <Link href="/info#contact">
             <button>立即預約</button>
-          </Link>
+          </Link> */}
           <Link href="/blog">
             <button>網誌</button>
           </Link>
