@@ -11,47 +11,9 @@ import blogStyle from "@/styles/Blog.module.scss";
 
 import { myBlogs } from "@/constants/blogs";
 
-const BlogContent = ({ blogCate, blogId }) => {
-  try {
-    const myBlogCate = myBlogs.find((cate) => cate.blogCate == blogCate);
-    if (!myBlogCate) throw new Error("<blogCate> not found");
-    const blog = myBlogCate.blogs.find((blog) => blog.blogId == blogId);
-    if (!blog) throw new Error("<blogId> not found");
-
-    return (
-      <>
-        <div className={`${blogStyle.container}`}>
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <div className={aboutStyle.pageTitle}>{blog.blogTitle}</div>
-          <div className={aboutStyle.pageText}>
-            {blog.contentHtmls && blog.contentHtmls.length > 0
-              ? blog.contentHtmls.map((contentHtml, cIndex) => (
-                  <div key={`${blog.blogTitle}content${cIndex}`}>
-                    <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
-                    <br />
-                  </div>
-                ))
-              : null}
-          </div>
-          <br />
-          <br />
-          <Divider light variant="middle" sx={{ margin: "20px 0" }} />
-        </div>
-      </>
-    );
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
 const BlogCate = () => {
   const router = useRouter();
-  const { blogCate, blogId } = router.query;
+  const { blogCate } = router.query;
 
   return (
     <>
@@ -60,25 +22,27 @@ const BlogCate = () => {
         <meta name="description" content="您的智能人生定位系統" />
       </Head>
       <Header />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <div className={`${blogStyle.blogContent}`}>
-        {myBlogs.map((cate, cIndex) => (
-          <div key={`cate${cIndex}`}>
-            <a href={`/blog/${cate.blogCate}/${cate.blogs[0].blogId}`}>{`${cate.blogCate}. ${cate.cateTitle}`}</a>
-            {cate.blogCate === blogCate
-              ? cate.blogs.map((blog, bIndex) => (
-                  <div key={`blog${bIndex}`}>
-                    <a href={`/blog/${cate.blogCate}/${blog.blogId}`}>{`${blog.blogId}. ${blog.blogTitle}`}</a>
-                  </div>
-                ))
-              : null}
-          </div>
-        ))}
+      <div className={aboutStyle.bg}>
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <div className={`${blogStyle.blogContent}`}>
+          {myBlogs.map((cate, cIndex) => (
+            <div key={`cate${cIndex}`}>
+              <a href={`/blog/${cate.blogCate}/${cate.blogs[0].blogId}`}>{`${cate.blogCate}. ${cate.cateTitle}`}</a>
+              {cate.blogCate === blogCate
+                ? cate.blogs.map((blog, bIndex) => (
+                    <div key={`blog${bIndex}`}>
+                      <a href={`/blog/${cate.blogCate}/${blog.blogId}`}>{`${blog.blogId}. ${blog.blogTitle}`}</a>
+                    </div>
+                  ))
+                : null}
+            </div>
+          ))}
+        </div>
       </div>
     </>
   );

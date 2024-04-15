@@ -80,34 +80,35 @@ const BlogCate = () => {
         <meta name="description" content="您的智能人生定位系統" />
       </Head>
       <Header />
-
-      <div className={`${blogStyle.split} ${blogStyle.left}`}>
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <div className={`${blogStyle.content}`}>
-          {myBlogs.map((cate, cIndex) => (
-            <div key={`cate${cIndex}`}>
-              <a href={`/blog/${cate.blogCate}/${cate.blogs[0].blogId}`}>{`${cate.blogCate}. ${cate.cateTitle}`}</a>
-              {cate.blogCate === blogCate
-                ? cate.blogs.map((blog, bIndex) => (
-                    <div key={`blog${bIndex}`}>
-                      <a href={`/blog/${cate.blogCate}/${blog.blogId}`}>{`${blog.blogId}. ${blog.blogTitle}`}</a>
-                    </div>
-                  ))
-                : null}
-            </div>
-          ))}
+      <div className={aboutStyle.bg}>
+        <div className={`${blogStyle.split} ${blogStyle.left}`}>
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <div className={`${blogStyle.content}`}>
+            {myBlogs.map((cate, cIndex) => (
+              <div key={`cate${cIndex}`}>
+                <a href={`/blog/${cate.blogCate}/${cate.blogs[0].blogId}`}>{`${cate.blogCate}. ${cate.cateTitle}`}</a>
+                {cate.blogCate === blogCate
+                  ? cate.blogs.map((blog, bIndex) => (
+                      <div key={`blog${bIndex}`}>
+                        <a href={`/blog/${cate.blogCate}/${blog.blogId}`}>{`${blog.blogId}. ${blog.blogTitle}`}</a>
+                      </div>
+                    ))
+                  : null}
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-      <div className={`${blogStyle.split} ${blogStyle.right}`}>
-        <BlogContent blogCate={blogCate} blogId={blogId} />
-        <br />
-        <br />
-        <br />
-        <br />
+        <div className={`${blogStyle.split} ${blogStyle.right}`}>
+          <BlogContent blogCate={blogCate} blogId={blogId} />
+          <br />
+          <br />
+          <br />
+          <br />
+        </div>{" "}
       </div>
     </>
   );
