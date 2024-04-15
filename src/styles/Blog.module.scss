@@ -1,3 +1,28 @@
+/* Content Page Only */
+.blogContent {
+  width: 90%;
+  margin: 0 auto;
+  background-color: #eee;
+  padding: 8px 12px;
+
+  > div {
+    margin: 12px 0;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-decoration: underline;
+    color: #777;
+
+    > div {
+      margin: 12px 0;
+      margin-left: 20px;
+      font-size: 14px;
+      letter-spacing: 1px;
+      text-decoration: underline;
+      color: #777;
+    }
+  }
+}
+
 /* Split the screen in half */
 .split {
   height: 100%;
@@ -26,6 +51,15 @@
       letter-spacing: 1px;
       text-decoration: underline;
       color: #777;
+
+      > div {
+        margin: 12px 0;
+        margin-left: 20px;
+        font-size: 14px;
+        letter-spacing: 1px;
+        text-decoration: underline;
+        color: #777;
+      }
     }
   }
 
@@ -40,15 +74,24 @@
   right: 0;
   scroll-behavior: smooth;
 
+  a {
+    color: #99f;
+    text-decoration: underline;
+  }
+
   .container {
     width: 90%;
     margin: 0 auto;
     font-family: "Noto Sans TC", sans-serif;
-  }
 
-  a {
-    color: #99f;
-    text-decoration: underline;
+    span {
+      margin: 4px 6px;
+
+      a {
+        color: #33f;
+        text-decoration: underline;
+      }
+    }
   }
 
   @media only screen and (max-width: 991px) {

@@ -1,6 +1,8 @@
 //pages/sitemap.xml.js
 //const EXTERNAL_DATA_URL = 'https://jsonplaceholder.typicode.com/posts';
 
+import { myBlogs } from "@/constants/blogs";
+
 function generateSiteMap() {
   return `<?xml version="1.0" encoding="UTF-8"?>
    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -14,6 +16,20 @@ function generateSiteMap() {
      <url>
        <loc>https://yl-flystar.pro/blog</loc>
      </url>
+      ${myBlogs
+        .map((cate) => {
+          return `<url>
+          <loc>https://yl-flystar.pro/blog/${cate.blogCate}</loc>
+        </url>
+        ${cate.blogs
+          .map((blog) => {
+            return `<url>
+          <loc>https://yl-flystar.pro/blog/${cate.blogCate}/${blog.blogId}</loc>
+        </url>`;
+          })
+          .join("")}`;
+        })
+        .join("")}
    </urlset>
  `;
 }
