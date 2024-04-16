@@ -28,17 +28,13 @@ const BlogContent = ({ blogCate, blogId }) => {
 
           <div>
             <span>
-              <a href={`/blog`} target="_blank">
-                網誌
-              </a>
+              <a href={`/blog`}>網誌</a>
             </span>
             <span>{`>>`}</span>
 
             <span>
               {" "}
-              <a href={`/blog/${myBlogCate.blogCate}/1`} target="_blank">
-                {myBlogCate.cateTitle}
-              </a>
+              <a href={`/blog/${myBlogCate.blogCate}/1`}>{myBlogCate.cateTitle}</a>
             </span>
 
             <span> {`>>`}</span>
@@ -90,11 +86,11 @@ const BlogCate = () => {
           <div className={`${blogStyle.content}`}>
             {myBlogs.map((cate, cIndex) => (
               <div key={`cate${cIndex}`}>
-                <a href={`/blog/${cate.blogCate}/${cate.blogs[0].blogId}`}>{`${cate.blogCate}. ${cate.cateTitle}`}</a>
+                <a href={`/blog/${cate.blogCate}/${cate.blogs[0].blogId}`}>{`${cate.cateTitle}`}</a>
                 {cate.blogCate === blogCate
                   ? cate.blogs.map((blog, bIndex) => (
                       <div key={`blog${bIndex}`}>
-                        <a href={`/blog/${cate.blogCate}/${blog.blogId}`}>{`${blog.blogId}. ${blog.blogTitle}`}</a>
+                        <a href={`/blog/${cate.blogCate}/${blog.blogId}`}>{`${blog.blogTitle}`}</a>
                       </div>
                     ))
                   : null}

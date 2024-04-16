@@ -32,11 +32,11 @@ const BlogCate = () => {
         <div className={`${blogStyle.blogContent}`}>
           {myBlogs.map((cate, cIndex) => (
             <div key={`cate${cIndex}`}>
-              <a href={`/blog/${cate.blogCate}/${cate.blogs[0].blogId}`}>{`${cate.blogCate}. ${cate.cateTitle}`}</a>
+              <a href={`/blog/${cate.blogCate}/${cate.blogs[0].blogId}`}>{`${cate.cateTitle}`}</a>
               {cate.blogCate === blogCate
                 ? cate.blogs.map((blog, bIndex) => (
                     <div key={`blog${bIndex}`}>
-                      <a href={`/blog/${cate.blogCate}/${blog.blogId}`}>{`${blog.blogId}. ${blog.blogTitle}`}</a>
+                      <a href={`/blog/${cate.blogCate}/${blog.blogId}`}>{`${blog.blogTitle}`}</a>
                     </div>
                   ))
                 : null}
