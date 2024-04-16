@@ -3,20 +3,32 @@
 export const myBlogs = [
   {
     blogCate: "命盤小知識",
-    cateTitle: "命盤小知識",
+    cateTitle: "飛星紫微斗數 - 命盤小知識",
     blogs: [
+      {
+        blogId: "命盤小知識",
+        blogTitle: "命盤小知識",
+        contentHtmls: [
+          "在這個系列中，我將分享一些既實用又有趣的<b>命盤小知識</b>。這些簡單易懂的內容讓你可以快速地從命盤上識別出特定的特徵。",
+          "食用方法：",
+          "1) 從標題中選擇你感興趣的主題。",
+          "2) 打開<a href=\"/chart\" target=\"_blank\">排盤軟件</a>。",
+          '3) 輸入你的<b>出生時辰。</b><br/><div style="display: flex;justify-content: center;"}><img src="/blogs/0a.png" alt="排盤程式-輸入出生時辰" /></div>',
+          "4) 檢查你的命盤，看看是否有文章中提到的特徵。",
+        ]
+      },
       {
         blogId: "偏財運強的命盤特徵",
         blogTitle: "偏財運強的命盤特徵",
         contentHtmls: [
-          "在星軌理數中，主要的偏財星有三顆，分別是「破軍」、「貪狼」、「廉貞」。如果有果報的宮位，化偏財星的祿，會有偏財運好的跡象。",
-          "果報宮分別有福德宮、子女宮、夫妻宮、遷移宮。其中福德宮和遷移宮的力量最強。",
+          "在星軌理數中，主要的<b>偏財星</b>有三顆，分別是「破軍」、「貪狼」、「廉貞」。如果有果報的宮位，化偏財星的祿，會有偏財運好的跡象。",
+          "果報宮分別有福德宮、子女宮、夫妻宮、遷移宮。其中<b>福德宮</b>和<b>遷移宮</b>的力量最強。",
           "所以，如果你有以下特徵，就代表偏財運強，容易中獎：",
-          '1. 生年偏財星祿 (破 / 廉 / 貪) 坐福德宮<br/><div style="display: flex;justify-content: center;"}><img src="/blogs/1a.png" alt="1a" /></div>',
-          '2. 福德宮化偏財星祿 (破 / 廉 / 貪)<br/><div style="display: flex;justify-content: center;"}><img src="/blogs/1b.png" alt="1b" /></div>',
-          '3. 遷移宮化偏財星祿 (破 / 廉 / 貪)<br/><div style="display: flex;justify-content: center;"}><img src="/blogs/1c.png" alt="1c" /></div>',
+          '1. <b>生年偏財星祿</b> (破 / 廉 / 貪) 坐<b>福德宮</b><br/><div style="display: flex;justify-content: center;"}><img src="/blogs/1a.png" alt="斗數命盤例子_福德宮坐廉貞生年祿" /></div>',
+          '2. <b>福德宮</b>化<b>偏財星祿</b> (破 / 廉 / 貪)<br/><div style="display: flex;justify-content: center;"}><img src="/blogs/1b.png" alt="斗數命盤例子_福德宮戊貪狼化祿" /></div>',
+          '3. <b>遷移宮</b>化<b>偏財星祿</b> (破 / 廉 / 貪)<br/><div style="display: flex;justify-content: center;"}><img src="/blogs/1c.png" alt="斗數命盤例子_遷移宮甲廉貞化祿" /></div>',
           '大家可以排盤看看，自己有沒有以上結構。<a href="/chart" target="_blank">排盤連結</a>',
-          "但即使偏財運強，也建議理性投資 / 賭博，小賭怡情！",
+          "但即使偏財運強，也建議<b>理性</b>投資 / 賭博，小賭怡情！",
         ],
       },
     ],
@@ -24,7 +36,7 @@ export const myBlogs = [
 
   {
     blogCate: "十二宮位介紹",
-    cateTitle: "十二宮位介紹",
+    cateTitle: "飛星紫微斗數 - 十二宮位介紹",
     blogs: [
       {
         blogId: "命宮",

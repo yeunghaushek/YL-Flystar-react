@@ -46,16 +46,20 @@ const BlogContent = ({ blogCate, blogId }) => {
           <div className={aboutStyle.pageText}>
             {blog.contentHtmls && blog.contentHtmls.length > 0
               ? blog.contentHtmls.map((contentHtml, cIndex) => (
-                  <div key={`${blog.blogTitle}content${cIndex}`}>
-                    <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
-                    <br />
-                  </div>
-                ))
+                <div key={`${blog.blogTitle}content${cIndex}`}>
+                  <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
+                  <br />
+                </div>
+              ))
               : null}
           </div>
           <br />
           <br />
           <Divider light variant="middle" sx={{ margin: "20px 0" }} />
+          <br />
+          <div className={aboutStyle.pageText}>
+            如果想瞭解更多？ <a href={"/#contact"}>聯絡我們</a>
+          </div>
         </div>
       </>
     );
@@ -89,10 +93,10 @@ const BlogCate = () => {
                 <a href={`/blog/${cate.blogCate}/${cate.blogs[0].blogId}`}>{`${cate.cateTitle}`}</a>
                 {cate.blogCate === blogCate
                   ? cate.blogs.map((blog, bIndex) => (
-                      <div key={`blog${bIndex}`}>
-                        <a href={`/blog/${cate.blogCate}/${blog.blogId}`}>{`${blog.blogTitle}`}</a>
-                      </div>
-                    ))
+                    <div key={`blog${bIndex}`}>
+                      <a href={`/blog/${cate.blogCate}/${blog.blogId}`}>{`${blog.blogTitle}`}</a>
+                    </div>
+                  ))
                   : null}
               </div>
             ))}
