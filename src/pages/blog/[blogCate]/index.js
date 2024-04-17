@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 
 import { Header } from "@/components/header";
-import { Divider } from "@mui/material";
 
 import aboutStyle from "@/styles/About.module.scss";
 import blogStyle from "@/styles/Blog.module.scss";
@@ -14,6 +13,15 @@ import { myBlogs } from "@/constants/blogs";
 const BlogCate = () => {
   const router = useRouter();
   const { blogCate } = router.query;
+
+  useEffect(() => {
+    if (blogCate) {
+      const myBlogCate = myBlogs.find((cate) => cate.blogCate == blogCate);
+      if (!myBlogCate) {
+        router.push("/blog");
+      }
+    }
+  }, [blogCate]);
 
   return (
     <>

@@ -73,6 +73,20 @@ const BlogCate = () => {
   const router = useRouter();
   const { blogCate, blogId } = router.query;
 
+  useEffect(() => {
+    if (blogCate && blogId) {
+      const myBlogCate = myBlogs.find((cate) => cate.blogCate == blogCate);
+      if (!myBlogCate) {
+        router.push("/blog");
+      } else {
+        const blog = myBlogCate.blogs.find((blog) => blog.blogId == blogId);
+        if (!blog) {
+          router.push("/blog");
+        }
+      }
+    }
+  }, [blogCate, blogId]);
+
   return (
     <>
       <Head>
