@@ -260,10 +260,23 @@ export default function About() {
           <div className={aboutStyle.right}>
             <div className={aboutStyle.title}>曜靈星軌理數</div>
             <div className={aboutStyle.caption}>您的智能人生定位系統</div>
+            <br />
+            <br />
             <div className={aboutStyle.link}>
-              <Link href="#contact">立即預約</Link>
-              {/* <a href="#begin">瞭解更多</a> */}
-              <Link href="/chart">線上排盤</Link>
+              <Link href="#contact">
+                <button>立即預約</button>
+              </Link>{" "}
+            </div>
+            {/* <a href="#begin">瞭解更多</a> */}
+            <div className={aboutStyle.link}>
+              <Link href="/chart">
+                <button>線上排盤</button>
+              </Link>{" "}
+            </div>
+            <div className={aboutStyle.link}>
+              <Link href="/blog">
+                <button>網誌</button>
+              </Link>{" "}
             </div>
           </div>
         </div>
