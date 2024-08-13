@@ -94,6 +94,10 @@ const BlogCate = () => {
     <>
       <Head>
         <title>{blogId}</title>
+        <meta
+          name="description"
+          content="發掘您的人生地圖！我們提供專業命理分析，助您預見未來趨勢與機遇，規劃事業與人生策略。立即探索，打造成功的人生藍圖。"
+        />
         <meta name="description" content={`${myBlog?.blogTitle ?? ``}`} />
         <link rel="canonical" href={`https://yl-flystar.pro/blog/${blogCate}/${blogId}`} />
       </Head>
