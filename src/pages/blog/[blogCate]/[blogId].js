@@ -1,7 +1,7 @@
 import Head from "next/head";
 
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 
 import { Header } from "@/components/header";
 import { Divider } from "@mui/material";
@@ -72,6 +72,7 @@ const BlogContent = ({ blogCate, blogId }) => {
 const BlogCate = () => {
   const router = useRouter();
   const { blogCate, blogId } = router.query;
+  const [myBlog, setMyBlog] = useState(null);
 
   useEffect(() => {
     if (blogCate && blogId) {
@@ -82,6 +83,8 @@ const BlogCate = () => {
         const blog = myBlogCate.blogs.find((blog) => blog.blogId == blogId);
         if (!blog) {
           router.push("/blog");
+        } else {
+          setMyBlog(blog);
         }
       }
     }
@@ -90,11 +93,12 @@ const BlogCate = () => {
   return (
     <>
       <Head>
-        <title>{blogId}</title>
+        <title>曜靈星軌理數 - 您的智能人生定位系統</title>
         <meta
           name="description"
           content="發掘您的人生地圖！我們提供專業命理分析，助您預見未來趨勢與機遇，規劃事業與人生策略。立即探索，打造成功的人生藍圖。"
         />
+        <link rel="canonical" href={`https://yl-flystar.pro/blog/${blogCate}/${blogId}`} />
       </Head>
       <Header />
       <div className={aboutStyle.bg}>
