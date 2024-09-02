@@ -18,7 +18,7 @@ const BlogCate = () => {
     if (blogCate) {
       const myBlogCate = myBlogs.find((cate) => cate.blogCate == blogCate);
       if (!myBlogCate) {
-        router.push("/blog");
+        router.push("/error");
       }
     }
   }, [blogCate]);

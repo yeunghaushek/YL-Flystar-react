@@ -1,5 +1,6 @@
 import Head from "next/head";
 
+import { notFound } from "next/navigation";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 
@@ -78,11 +79,11 @@ const BlogCate = () => {
     if (blogCate && blogId) {
       const myBlogCate = myBlogs.find((cate) => cate.blogCate == blogCate);
       if (!myBlogCate) {
-        router.push("/blog");
+        router.push("/error");
       } else {
         const blog = myBlogCate.blogs.find((blog) => blog.blogId == blogId);
         if (!blog) {
-          router.push("/blog");
+          router.push("/error");
         } else {
           setMyBlog(blog);
         }
