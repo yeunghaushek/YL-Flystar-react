@@ -18,16 +18,13 @@ function generateSiteMap() {
      </url>
       ${myBlogs
         .map((cate) => {
-          return `<url>
-          <loc>https://yl-flystar.pro/blog/${cate.blogCate}</loc>
-        </url>
-        ${cate.blogs
-          .map((blog) => {
-            return `<url>
+          return `${cate.blogs
+            .map((blog) => {
+              return `<url>
           <loc>https://yl-flystar.pro/blog/${cate.blogCate}/${blog.blogId}</loc>
         </url>`;
-          })
-          .join("")}`;
+            })
+            .join("")}`;
         })
         .join("")}
    </urlset>
