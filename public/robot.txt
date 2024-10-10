@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /blog/a
+Disallow: /blog/b
+Disallow: /blog/c
