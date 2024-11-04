@@ -6,6 +6,12 @@
   min-width: 180px;
   border: 1px solid #ccc;
 
+  @media only screen and (max-width: 767px) {
+    width: 22.5dvw;
+    min-width: unset;
+    /* background-size: auto 100%; */
+  }
+
   .header {
     flex: 3;
     /* background-color: #ddd; */
@@ -172,6 +178,11 @@
           font-size: 12px;
           padding: 2px 4px;
           margin: 2px;
+
+          @media only screen and (max-width: 767px) {
+            font-size: 8px;
+            /* background-size: auto 100%; */
+          }
         }
 
         &.selected {
@@ -206,6 +217,11 @@
         button {
           font-size: 10px;
         }
+
+        @media only screen and (max-width: 767px) {
+          font-size: 8px;
+          /* background-size: auto 100%; */
+        }
       }
     }
 
@@ -220,11 +236,21 @@
       .smallMonth {
         color: #c9f;
         font-size: 12px;
+
+        @media only screen and (max-width: 767px) {
+          font-size: 8px;
+          /* background-size: auto 100%; */
+        }
       }
 
       .smallLuck {
         color: #f69;
         font-size: 14px;
+
+        @media only screen and (max-width: 767px) {
+          font-size: 8px;
+          /* background-size: auto 100%; */
+        }
       }
 
       .childLuck {
@@ -235,20 +261,40 @@
           font-size: 12px;
           margin-bottom: -2px;
         }
+
+        @media only screen and (max-width: 767px) {
+          font-size: 8px;
+          /* background-size: auto 100%; */
+        }
       }
 
       .borrow {
         color: #0c6;
         font-size: 15px;
+
+        @media only screen and (max-width: 767px) {
+          font-size: 8px;
+          /* background-size: auto 100%; */
+        }
       }
 
       .bigLuck {
         color: #cc5200;
         font-size: 15px;
 
+        @media only screen and (max-width: 767px) {
+          font-size: 8px;
+          /* background-size: auto 100%; */
+        }
+
         &.smallerByBorrow {
           font-size: 12px;
           margin-bottom: -2px;
+
+          @media only screen and (max-width: 767px) {
+            font-size: 8px;
+            /* background-size: auto 100%; */
+          }
         }
       }
 
@@ -260,6 +306,11 @@
         font-size: 13px;
         padding: 2px 8px;
         margin-top: 2px;
+
+        @media only screen and (max-width: 767px) {
+          font-size: 8px;
+          /* background-size: auto 100%; */
+        }
 
         &.selected {
           background-color: #ccc;
@@ -275,6 +326,11 @@
         font-weight: bold;
         letter-spacing: 2px;
         cursor: pointer;
+
+        @media only screen and (max-width: 767px) {
+          font-size: 10px;
+          /* background-size: auto 100%; */
+        }
       }
     }
 
@@ -290,6 +346,11 @@
         margin: 0 4px;
         color: #29ad29;
         font-size: 18px;
+
+        @media only screen and (max-width: 767px) {
+          font-size: 8px;
+          /* background-size: auto 100%; */
+        }
       }
     }
   }
@@ -301,6 +362,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
+    @media only screen and (max-width: 767px) {
+      font-size: 8px;
+      /* background-size: auto 100%; */
+    }
 
     &.leftTop {
       flex-direction: column;
@@ -404,14 +470,29 @@
       .right {
         .star {
           font-size: 16px;
+
+          @media only screen and (max-width: 767px) {
+            font-size: 8px;
+            /* background-size: auto 100%; */
+          }
         }
 
         .mutagen {
           font-size: 14px;
+
+          @media only screen and (max-width: 767px) {
+            font-size: 8px;
+            /* background-size: auto 100%; */
+          }
         }
 
         .hollowMutagen {
           font-size: 12px;
+
+          @media only screen and (max-width: 767px) {
+            font-size: 8px;
+            /* background-size: auto 100%; */
+          }
         }
       }
     }
@@ -421,12 +502,22 @@
         .age {
           button {
             font-size: 11px;
+
+            @media only screen and (max-width: 767px) {
+              font-size: 8px;
+              /* background-size: auto 100%; */
+            }
           }
         }
 
         .month {
           button {
             font-size: 10px;
+
+            @media only screen and (max-width: 767px) {
+              font-size: 8px;
+              /* background-size: auto 100%; */
+            }
           }
         }
       }
@@ -434,48 +525,102 @@
       .middle {
         .smallMonth {
           font-size: 12px;
+
+          @media only screen and (max-width: 767px) {
+            font-size: 8px;
+            /* background-size: auto 100%; */
+          }
         }
 
         .smallLuck {
           font-size: 13px;
+
+          @media only screen and (max-width: 767px) {
+            font-size: 8px;
+            /* background-size: auto 100%; */
+          }
         }
 
         .childLuck {
           font-size: 14px;
 
+          @media only screen and (max-width: 767px) {
+            font-size: 8px;
+            /* background-size: auto 100%; */
+          }
+
           &.smallerByBorrow {
             font-size: 11px;
+
+            @media only screen and (max-width: 767px) {
+              font-size: 8px;
+              /* background-size: auto 100%; */
+            }
           }
         }
 
         .borrow {
           font-size: 14px;
+
+          @media only screen and (max-width: 767px) {
+            font-size: 8px;
+            /* background-size: auto 100%; */
+          }
         }
 
         .bigLuck {
           font-size: 14px;
           &.smallerByBorrow {
             font-size: 11px;
+
+            @media only screen and (max-width: 767px) {
+              font-size: 8px;
+              /* background-size: auto 100%; */
+            }
+          }
+
+          @media only screen and (max-width: 767px) {
+            font-size: 8px;
+            /* background-size: auto 100%; */
           }
         }
 
         .decadal {
           font-size: 12px;
+          @media only screen and (max-width: 767px) {
+            font-size: 8px;
+            /* background-size: auto 100%; */
+          }
         }
 
         .name {
           font-size: 20px;
+
+          @media only screen and (max-width: 767px) {
+            font-size: 8px;
+            /* background-size: auto 100%; */
+          }
         }
       }
       .right {
         .decadal {
           font-size: 16px;
+
+          @media only screen and (max-width: 767px) {
+            font-size: 8px;
+            /* background-size: auto 100%; */
+          }
         }
       }
     }
 
     .arrow {
       font-size: 12px;
+
+      @media only screen and (max-width: 767px) {
+        font-size: 8px;
+        /* background-size: auto 100%; */
+      }
     }
   }
 }
@@ -484,82 +629,210 @@
   .palace {
     height: 220px;
 
+    @media only screen and (max-width: 767px) {
+      height: 20dvh;
+    }
+
+    @media only screen and (max-width: 767px) {
+      font-size: 8px;
+      /* background-size: auto 100%; */
+    }
+
     .header {
       .right {
+        @media only screen and (max-width: 767px) {
+          flex: 19;
+          flex-wrap: wrap-reverse;
+        }
+
+        .major {
+          .star {
+            color: #33f;
+            font-weight: bold;
+
+            @media only screen and (max-width: 767px) {
+              font-size: 11px;
+
+              /* background-size: auto 100%; */
+            }
+          }
+        }
+
         .star {
           font-size: 16px;
+
+          @media only screen and (max-width: 767px) {
+            font-size: 10px;
+
+            /* background-size: auto 100%; */
+          }
         }
 
         .mutagen {
           font-size: 13px;
+
+          @media only screen and (max-width: 767px) {
+            font-size: 8px;
+            /* background-size: auto 100%; */
+          }
         }
 
         .hollowMutagen {
           font-size: 12px;
+
+          @media only screen and (max-width: 767px) {
+            font-size: 8px;
+
+            /* background-size: auto 100%; */
+          }
         }
       }
     }
 
     .footer {
       .left {
+        @media only screen and (max-width: 767px) {
+          flex: 2;
+        }
+
         .age {
           button {
             font-size: 11px;
+
+            @media only screen and (max-width: 767px) {
+              font-size: 8px;
+              margin: 0;
+              padding: 1px;
+              min-height: unset;
+              /* background-size: auto 100%; */
+            }
           }
         }
 
         .month {
           button {
             font-size: 10px;
+
+            @media only screen and (max-width: 767px) {
+              font-size: 8px;
+              margin: 0;
+              padding: 1px;
+              /* background-size: auto 100%; */
+            }
           }
         }
       }
 
       .middle {
+        @media only screen and (max-width: 767px) {
+          flex: 5;
+        }
         .smallMonth {
           font-size: 12px;
+
+          @media only screen and (max-width: 767px) {
+            font-size: 8px;
+            /* background-size: auto 100%; */
+          }
         }
 
         .smallLuck {
           font-size: 13px;
+
+          @media only screen and (max-width: 767px) {
+            font-size: 8px;
+            /* background-size: auto 100%; */
+          }
         }
 
         .childLuck {
           font-size: 14px;
 
+          @media only screen and (max-width: 767px) {
+            font-size: 8px;
+            /* background-size: auto 100%; */
+          }
+
           &.smallerByBorrow {
             font-size: 11px;
+
+            @media only screen and (max-width: 767px) {
+              font-size: 8px;
+              /* background-size: auto 100%; */
+            }
           }
         }
 
         .borrow {
           font-size: 14px;
+
+          @media only screen and (max-width: 767px) {
+            font-size: 8px;
+            /* background-size: auto 100%; */
+          }
         }
 
         .bigLuck {
           font-size: 14px;
           &.smallerByBorrow {
             font-size: 11px;
+
+            @media only screen and (max-width: 767px) {
+              font-size: 9px;
+              /* background-size: auto 100%; */
+            }
+          }
+
+          @media only screen and (max-width: 767px) {
+            font-size: 9px;
+            /* background-size: auto 100%; */
           }
         }
 
         .decadal {
           font-size: 12px;
+          @media only screen and (max-width: 767px) {
+            font-size: 8px;
+            margin: 0;
+            padding: 1px;
+            /* background-size: auto 100%; */
+          }
         }
 
         .name {
           font-size: 20px;
+          @media only screen and (max-width: 767px) {
+            font-size: 11px;
+            letter-spacing: 1px;
+            margin: 0;
+            padding: 1px;
+            /* background-size: auto 100%; */
+          }
         }
       }
       .right {
+        @media only screen and (max-width: 767px) {
+          flex: 1;
+        }
         .decadal {
           font-size: 16px;
+          @media only screen and (max-width: 767px) {
+            font-size: 8px;
+            margin: 0;
+            padding: 1px;
+            /* background-size: auto 100%; */
+          }
         }
       }
     }
 
     .arrow {
       font-size: 12px;
+
+      @media only screen and (max-width: 767px) {
+        font-size: 8px;
+        /* background-size: auto 100%; */
+      }
     }
   }
 }

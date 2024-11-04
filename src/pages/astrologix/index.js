@@ -266,11 +266,11 @@ export default function Astrolabe() {
     setClientWidth(document.body.clientWidth);
   }, []);
 
-  useEffect(() => {
+  /* useEffect(() => {
     if (clientWidth > -1 && clientWidth <= 767) {
       router.push("/info");
     }
-  }, [clientWidth]);
+  }, [clientWidth]); */
 
   const [astrolabe, setAstrolabe] = useState(null);
   const [lifePalaceIndex, setLifePalaceIndex] = useState(-1);
@@ -920,1116 +920,1111 @@ export default function Astrolabe() {
         </div>
       </div>
 
-      {clientWidth > 767 ? (
-        <div className="container">
-          <Modal open={showSearch} onClose={toggleSearch} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
-            <Box sx={modalStyle}>
-              <br />
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={4}>
-                  <FormControl fullWidth>
-                    <TextField label="姓名" name="name" value={name} onChange={handleName} />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={4} md={3} sx={{ marginTop: -1, textAlign: "center" }}>
-                  <FormControl>
-                    <RadioGroup aria-labelledby="gender-radio" name="gender-radio-group" value={gender} onChange={handleGender}>
-                      <FormControlLabel
-                        value={0}
-                        control={
-                          <Radio
-                            sx={{
-                              "& .MuiSvgIcon-root": {
-                                fontSize: 18,
-                              },
-                            }}
-                          />
-                        }
-                        label="男"
-                      />
-                      <FormControlLabel
-                        value={1}
-                        control={
-                          <Radio
-                            sx={{
-                              "& .MuiSvgIcon-root": {
-                                fontSize: 18,
-                              },
-                            }}
-                          />
-                        }
-                        label="女"
-                      />
-                    </RadioGroup>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={4} md={3} sx={{ marginTop: -1 }}>
-                  <FormControl>
-                    <RadioGroup aria-labelledby="calendar-radio" name="calendar-radio-group" value={calendar} onChange={handleCalendar}>
-                      <FormControlLabel
-                        value={0}
-                        control={
-                          <Radio
-                            sx={{
-                              "& .MuiSvgIcon-root": {
-                                fontSize: 18,
-                              },
-                            }}
-                          />
-                        }
-                        label="陽曆"
-                      />
-                      <FormControlLabel
-                        value={1}
-                        control={
-                          <Radio
-                            sx={{
-                              "& .MuiSvgIcon-root": {
-                                fontSize: 18,
-                              },
-                            }}
-                          />
-                        }
-                        label="農曆"
-                      />
-                    </RadioGroup>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={4} md={2} sx={{ marginTop: -1 }}>
-                  <FormControl>
+      <div className="container">
+        <Modal open={showSearch} onClose={toggleSearch} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+          <Box sx={modalStyle}>
+            <br />
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={4}>
+                <FormControl fullWidth>
+                  <TextField label="姓名" name="name" value={name} onChange={handleName} />
+                </FormControl>
+              </Grid>
+              <Grid item xs={4} md={3} sx={{ marginTop: -1, textAlign: "center" }}>
+                <FormControl>
+                  <RadioGroup aria-labelledby="gender-radio" name="gender-radio-group" value={gender} onChange={handleGender}>
                     <FormControlLabel
+                      value={0}
                       control={
-                        <Checkbox
-                          checked={isLeapMonth}
-                          onChange={handleLeapMonth}
-                          name="leap-month"
-                          disabled={calendar == 0}
-                          sx={{ "& .MuiSvgIcon-root": { fontSize: 20 } }}
+                        <Radio
+                          sx={{
+                            "& .MuiSvgIcon-root": {
+                              fontSize: 18,
+                            },
+                          }}
                         />
                       }
-                      label="閏月"
+                      label="男"
                     />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} md={4}>
+                    <FormControlLabel
+                      value={1}
+                      control={
+                        <Radio
+                          sx={{
+                            "& .MuiSvgIcon-root": {
+                              fontSize: 18,
+                            },
+                          }}
+                        />
+                      }
+                      label="女"
+                    />
+                  </RadioGroup>
+                </FormControl>
+              </Grid>
+              <Grid item xs={4} md={3} sx={{ marginTop: -1 }}>
+                <FormControl>
+                  <RadioGroup aria-labelledby="calendar-radio" name="calendar-radio-group" value={calendar} onChange={handleCalendar}>
+                    <FormControlLabel
+                      value={0}
+                      control={
+                        <Radio
+                          sx={{
+                            "& .MuiSvgIcon-root": {
+                              fontSize: 18,
+                            },
+                          }}
+                        />
+                      }
+                      label="陽曆"
+                    />
+                    <FormControlLabel
+                      value={1}
+                      control={
+                        <Radio
+                          sx={{
+                            "& .MuiSvgIcon-root": {
+                              fontSize: 18,
+                            },
+                          }}
+                        />
+                      }
+                      label="農曆"
+                    />
+                  </RadioGroup>
+                </FormControl>
+              </Grid>
+              <Grid item xs={4} md={2} sx={{ marginTop: -1 }}>
+                <FormControl>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={isLeapMonth}
+                        onChange={handleLeapMonth}
+                        name="leap-month"
+                        disabled={calendar == 0}
+                        sx={{ "& .MuiSvgIcon-root": { fontSize: 20 } }}
+                      />
+                    }
+                    label="閏月"
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <FormControl fullWidth>
+                  <TextField label="年" name="year" value={year} onChange={handleYear} />
+                </FormControl>
+              </Grid>
+              <Grid item xs={6} md={4}>
+                {calendar == 1 ? (
                   <FormControl fullWidth>
-                    <TextField label="年" name="year" value={year} onChange={handleYear} />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={6} md={4}>
-                  {calendar == 1 ? (
-                    <FormControl fullWidth>
-                      <InputLabel id="lunarMonth-label">月</InputLabel>
-                      <Select labelId="lunarMonth-label" id="lunarMonth" name="lunarMonth" value={month} label="月" onChange={handleMonth}>
-                        {lunarMonthList.map((item, index) => {
-                          return (
-                            <MenuItem value={index + 1} key={`key-lunarMonth-${index}`}>
-                              {item}
-                            </MenuItem>
-                          );
-                        })}
-                      </Select>
-                    </FormControl>
-                  ) : (
-                    <FormControl fullWidth>
-                      <InputLabel id="solarMonth-label">月</InputLabel>
-                      <Select labelId="solarMonth-label" id="solarMonth" name="solarMonth" value={month} label="月" onChange={handleMonth}>
-                        {solarMonthList.map((item, index) => {
-                          return (
-                            <MenuItem value={index + 1} key={`key-solarMonth-${index}`}>
-                              {item}
-                            </MenuItem>
-                          );
-                        })}
-                      </Select>
-                    </FormControl>
-                  )}
-                </Grid>
-                <Grid item xs={6} md={4}>
-                  {calendar == 1 ? (
-                    <FormControl fullWidth>
-                      <InputLabel id="lunarDay-label">日</InputLabel>
-                      <Select
-                        labelId="lunarDay-label"
-                        id="lunarDay"
-                        name="lunarDay"
-                        value={day}
-                        label="日"
-                        onChange={handleDay}
-                        MenuProps={{ PaperProps: { sx: { maxHeight: 450 } } }}
-                      >
-                        {lunarDayList.map((item, index) => {
-                          return (
-                            <MenuItem value={index + 1} key={`key-lunarDay-${index}`}>
-                              {item}
-                            </MenuItem>
-                          );
-                        })}
-                      </Select>
-                    </FormControl>
-                  ) : (
-                    <FormControl fullWidth>
-                      <InputLabel id="solarDay-label">日</InputLabel>
-                      <Select
-                        labelId="solarDay-label"
-                        id="solarDay"
-                        name="solarDay"
-                        value={day}
-                        label="日"
-                        onChange={handleDay}
-                        MenuProps={{ PaperProps: { sx: { maxHeight: 450 } } }}
-                      >
-                        {solarDayList.map((item, index) => {
-                          return (
-                            <MenuItem value={index + 1} key={`key-solarDay-${index}`}>
-                              {item}
-                            </MenuItem>
-                          );
-                        })}
-                      </Select>
-                    </FormControl>
-                  )}
-                </Grid>
-                <Grid item xs={4}></Grid>
-                {/* 
-                <Grid item xs={12}>
-                  <FormControl fullWidth>
-                    <TextField label="出生日期" name="birthday" value={`${year}-${month}-${day}`} onChange={() => {}} />
-                  </FormControl>
-                </Grid> */}
-                <Grid item xs={12}>
-                  <FormControl fullWidth>
-                    <InputLabel id="birthTime-label">時辰</InputLabel>
-                    <Select
-                      labelId="birthTime-label"
-                      id="birthTime"
-                      name="birthTime"
-                      value={birthTime}
-                      label="時辰"
-                      onChange={handleBirthTime}
-                    >
-                      {birthTimeList.map((item, index) => {
+                    <InputLabel id="lunarMonth-label">月</InputLabel>
+                    <Select labelId="lunarMonth-label" id="lunarMonth" name="lunarMonth" value={month} label="月" onChange={handleMonth}>
+                      {lunarMonthList.map((item, index) => {
                         return (
-                          <MenuItem value={index} key={`key-birthTime-${index}`}>
+                          <MenuItem value={index + 1} key={`key-lunarMonth-${index}`}>
                             {item}
                           </MenuItem>
                         );
                       })}
                     </Select>
                   </FormControl>
-                </Grid>
+                ) : (
+                  <FormControl fullWidth>
+                    <InputLabel id="solarMonth-label">月</InputLabel>
+                    <Select labelId="solarMonth-label" id="solarMonth" name="solarMonth" value={month} label="月" onChange={handleMonth}>
+                      {solarMonthList.map((item, index) => {
+                        return (
+                          <MenuItem value={index + 1} key={`key-solarMonth-${index}`}>
+                            {item}
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
+                  </FormControl>
+                )}
+              </Grid>
+              <Grid item xs={6} md={4}>
+                {calendar == 1 ? (
+                  <FormControl fullWidth>
+                    <InputLabel id="lunarDay-label">日</InputLabel>
+                    <Select
+                      labelId="lunarDay-label"
+                      id="lunarDay"
+                      name="lunarDay"
+                      value={day}
+                      label="日"
+                      onChange={handleDay}
+                      MenuProps={{ PaperProps: { sx: { maxHeight: 450 } } }}
+                    >
+                      {lunarDayList.map((item, index) => {
+                        return (
+                          <MenuItem value={index + 1} key={`key-lunarDay-${index}`}>
+                            {item}
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
+                  </FormControl>
+                ) : (
+                  <FormControl fullWidth>
+                    <InputLabel id="solarDay-label">日</InputLabel>
+                    <Select
+                      labelId="solarDay-label"
+                      id="solarDay"
+                      name="solarDay"
+                      value={day}
+                      label="日"
+                      onChange={handleDay}
+                      MenuProps={{ PaperProps: { sx: { maxHeight: 450 } } }}
+                    >
+                      {solarDayList.map((item, index) => {
+                        return (
+                          <MenuItem value={index + 1} key={`key-solarDay-${index}`}>
+                            {item}
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
+                  </FormControl>
+                )}
+              </Grid>
+              <Grid item xs={4}></Grid>
+              {/* 
                 <Grid item xs={12}>
                   <FormControl fullWidth>
-                    <Button
-                      variant="contained"
-                      color="success"
-                      sx={{ height: "55px" }}
-                      disabled={!isValidBirthday}
-                      onClick={() => setUpdateCounter(updateCounter + 1)}
-                    >
-                      <AssignmentIcon />
-                    </Button>
+                    <TextField label="出生日期" name="birthday" value={`${year}-${month}-${day}`} onChange={() => {}} />
                   </FormControl>
-                </Grid>
+                </Grid> */}
+              <Grid item xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel id="birthTime-label">時辰</InputLabel>
+                  <Select
+                    labelId="birthTime-label"
+                    id="birthTime"
+                    name="birthTime"
+                    value={birthTime}
+                    label="時辰"
+                    onChange={handleBirthTime}
+                  >
+                    {birthTimeList.map((item, index) => {
+                      return (
+                        <MenuItem value={index} key={`key-birthTime-${index}`}>
+                          {item}
+                        </MenuItem>
+                      );
+                    })}
+                  </Select>
+                </FormControl>
               </Grid>
-              <br />
-            </Box>
-          </Modal>
-          <ArcherContainer lineStyle={"straight"} strokeWidth={1} svgContainerStyle={{ zIndex: 10 }}>
-            {astrolabe ? (
-              <div className={astrolabeStyle.astrolabe}>
-                {astrolabe.palaces.map((palaceItem, palaceIndex) => {
-                  return (
-                    <div className={palaceStyle.palace} style={{ gridArea: `g${palaceIndex}` }} key={`key-palace-${palaceIndex}`}>
-                      <div className={palaceStyle.header}>
-                        <div className={palaceStyle.left}>
-                          {/* {palaceIndex} */}
-                          {pluginBorrow ? (
-                            <div className={`${palaceStyle.borrow} ${currentBorrowIndex === palaceIndex ? palaceStyle.selected : ``}`}>
-                              <VisibilityIcon
-                                sx={{
-                                  fontSize: "16px",
-                                }}
-                                onClick={() => {
-                                  clickBorrow(palaceIndex);
-                                }}
-                              />
-                            </div>
-                          ) : null}
-                        </div>
-                        <div className={palaceStyle.right}>
-                          {palaceItem.minorStars.map((star, sIndex) => {
-                            return (
-                              <div className={palaceStyle.minor} key={`key-minorStars-${sIndex}`}>
-                                <div className={palaceStyle.starContainer}>
-                                  <div className={palaceStyle.starLeft}>
-                                    <StyledTooltipForStar
-                                      onClose={closeMutagenPanel}
-                                      open={revMutagenPanelIndex === starList.findIndex((s) => s === star.name)}
-                                      disableFocusListener
-                                      disableHoverListener
-                                      disableTouchListener
-                                      title={
-                                        <div>
-                                          <button
-                                            style={{
-                                              backgroundColor: "#181",
-                                              padding: "1px 3px",
-                                              margin: "1px",
-                                              fontSize: "14px",
-                                              color: "#fff",
-                                              border: 0,
-                                              borderRadius: "4px",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() =>
-                                              toggleRevArrows(
-                                                starList.findIndex((s) => s === star.name),
-                                                0
-                                              )
-                                            }
-                                          >
-                                            祿
-                                          </button>
-
-                                          <button
-                                            style={{
-                                              backgroundColor: "#d00",
-                                              padding: "1px 3px",
-                                              margin: "1px",
-                                              fontSize: "14px",
-                                              color: "#fff",
-                                              border: 0,
-                                              borderRadius: "4px",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() =>
-                                              toggleRevArrows(
-                                                starList.findIndex((s) => s === star.name),
-                                                1
-                                              )
-                                            }
-                                          >
-                                            權
-                                          </button>
-                                          <br />
-                                          <button
-                                            style={{
-                                              backgroundColor: "#00d",
-                                              padding: "1px 3px",
-                                              margin: "1px",
-                                              fontSize: "14px",
-                                              color: "#fff",
-                                              border: 0,
-                                              borderRadius: "4px",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() =>
-                                              toggleRevArrows(
-                                                starList.findIndex((s) => s === star.name),
-                                                3
-                                              )
-                                            }
-                                          >
-                                            忌
-                                          </button>
-                                          <button
-                                            style={{
-                                              backgroundColor: "#eb0",
-                                              padding: "1px 3px",
-                                              margin: "1px",
-                                              fontSize: "14px",
-                                              color: "#fff",
-                                              border: 0,
-                                              borderRadius: "4px",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() =>
-                                              toggleRevArrows(
-                                                starList.findIndex((s) => s === star.name),
-                                                2
-                                              )
-                                            }
-                                          >
-                                            科
-                                          </button>
-                                        </div>
-                                      }
-                                    >
-                                      <button
-                                        className={palaceStyle.star}
-                                        onClick={() => clickStar(starList.findIndex((s) => s === star.name))}
-                                      >
-                                        <div>{star.name[0]}</div>
-                                        <ArcherElement id={`star-${starList.findIndex((s) => s === star.name)}`}>
-                                          <div>{star.name[1]}</div>
-                                        </ArcherElement>
-                                      </button>
-                                    </StyledTooltipForStar>
-                                  </div>
-                                  <div className={palaceStyle.starRight}>
-                                    {pluginUnderline && currentArrows.length > 0
-                                      ? currentArrows.map((arrow) => {
-                                          if (arrow[1] == starList.findIndex((s) => s === star.name))
-                                            return <div className={`${palaceStyle.line} ${palaceStyle[getMutagenStyle(arrow[2])]}`}></div>;
-                                          return null;
-                                        })
-                                      : null}
-                                  </div>
-                                </div>
-
-                                {star.mutagen ? (
-                                  <div className={`${palaceStyle.mutagen} ${palaceStyle[getMutagenStyle(mutagenToIndex[star.mutagen])]}`}>
-                                    {star.mutagen}
-                                  </div>
-                                ) : null}
-
-                                {star.hollowMutagen && palaceIndex != lifePalaceIndex ? (
-                                  <div
-                                    className={`${palaceStyle.hollowMutagen} ${
-                                      palaceStyle[getMutagenStyle(mutagenToIndex[star.hollowMutagen])]
-                                    }`}
-                                  >
-                                    {star.hollowMutagen}
-                                  </div>
-                                ) : null}
-                              </div>
-                            );
-                          })}
-                          {palaceItem.majorStars.map((star, sIndex) => {
-                            return (
-                              <div className={palaceStyle.major} key={`key-majorStars-${sIndex}`}>
-                                <div className={palaceStyle.starContainer}>
-                                  <div className={palaceStyle.starLeft}>
-                                    <StyledTooltipForStar
-                                      onClose={closeMutagenPanel}
-                                      open={revMutagenPanelIndex === starList.findIndex((s) => s === star.name)}
-                                      disableFocusListener
-                                      disableHoverListener
-                                      disableTouchListener
-                                      title={
-                                        <div>
-                                          <button
-                                            style={{
-                                              backgroundColor: "#181",
-                                              padding: "1px 3px",
-                                              margin: "1px",
-                                              fontSize: "14px",
-                                              color: "#fff",
-                                              border: 0,
-                                              borderRadius: "4px",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() =>
-                                              toggleRevArrows(
-                                                starList.findIndex((s) => s === star.name),
-                                                0
-                                              )
-                                            }
-                                          >
-                                            祿
-                                          </button>
-
-                                          <button
-                                            style={{
-                                              backgroundColor: "#d00",
-                                              padding: "1px 3px",
-                                              margin: "1px",
-                                              fontSize: "14px",
-                                              color: "#fff",
-                                              border: 0,
-                                              borderRadius: "4px",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() =>
-                                              toggleRevArrows(
-                                                starList.findIndex((s) => s === star.name),
-                                                1
-                                              )
-                                            }
-                                          >
-                                            權
-                                          </button>
-                                          <br />
-                                          <button
-                                            style={{
-                                              backgroundColor: "#00d",
-                                              padding: "1px 3px",
-                                              margin: "1px",
-                                              fontSize: "14px",
-                                              color: "#fff",
-                                              border: 0,
-                                              borderRadius: "4px",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() =>
-                                              toggleRevArrows(
-                                                starList.findIndex((s) => s === star.name),
-                                                3
-                                              )
-                                            }
-                                          >
-                                            忌
-                                          </button>
-                                          <button
-                                            style={{
-                                              backgroundColor: "#eb0",
-                                              padding: "1px 3px",
-                                              margin: "1px",
-                                              fontSize: "14px",
-                                              color: "#fff",
-                                              border: 0,
-                                              borderRadius: "4px",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() =>
-                                              toggleRevArrows(
-                                                starList.findIndex((s) => s === star.name),
-                                                2
-                                              )
-                                            }
-                                          >
-                                            科
-                                          </button>
-                                        </div>
-                                      }
-                                    >
-                                      <button
-                                        className={palaceStyle.star}
-                                        onClick={() => clickStar(starList.findIndex((s) => s === star.name))}
-                                      >
-                                        <div>{star.name[0]}</div>
-                                        <ArcherElement id={`star-${starList.findIndex((s) => s === star.name)}`}>
-                                          <div>{star.name[1]}</div>
-                                        </ArcherElement>
-                                      </button>
-                                    </StyledTooltipForStar>
-                                  </div>
-                                  <div className={palaceStyle.starRight}>
-                                    {pluginUnderline && currentArrows.length > 0
-                                      ? currentArrows.map((arrow) => {
-                                          if (arrow[1] == starList.findIndex((s) => s === star.name))
-                                            return <div className={`${palaceStyle.line} ${palaceStyle[getMutagenStyle(arrow[2])]}`}></div>;
-                                          return null;
-                                        })
-                                      : null}
-                                  </div>
-                                </div>
-
-                                {star.mutagen ? (
-                                  <div className={`${palaceStyle.mutagen} ${palaceStyle[getMutagenStyle(mutagenToIndex[star.mutagen])]}`}>
-                                    {star.mutagen}
-                                  </div>
-                                ) : null}
-
-                                {star.hollowMutagen && palaceIndex != lifePalaceIndex ? (
-                                  <div
-                                    className={`${palaceStyle.hollowMutagen} ${
-                                      palaceStyle[getMutagenStyle(mutagenToIndex[star.hollowMutagen])]
-                                    }`}
-                                  >
-                                    {star.hollowMutagen}
-                                  </div>
-                                ) : null}
-                              </div>
-                            );
-                          })}
-                        </div>
+              <Grid item xs={12}>
+                <FormControl fullWidth>
+                  <Button
+                    variant="contained"
+                    color="success"
+                    sx={{ height: "55px" }}
+                    disabled={!isValidBirthday}
+                    onClick={() => setUpdateCounter(updateCounter + 1)}
+                  >
+                    <AssignmentIcon />
+                  </Button>
+                </FormControl>
+              </Grid>
+            </Grid>
+            <br />
+          </Box>
+        </Modal>
+        <ArcherContainer lineStyle={"straight"} strokeWidth={1} svgContainerStyle={{ zIndex: 10 }}>
+          {astrolabe ? (
+            <div className={astrolabeStyle.astrolabe}>
+              {astrolabe.palaces.map((palaceItem, palaceIndex) => {
+                return (
+                  <div className={palaceStyle.palace} style={{ gridArea: `g${palaceIndex}` }} key={`key-palace-${palaceIndex}`}>
+                    <div className={palaceStyle.header}>
+                      <div className={palaceStyle.left}>
+                        {/* {palaceIndex} */}
+                        {pluginBorrow ? (
+                          <div className={`${palaceStyle.borrow} ${currentBorrowIndex === palaceIndex ? palaceStyle.selected : ``}`}>
+                            <VisibilityIcon
+                              sx={{
+                                fontSize: "16px",
+                              }}
+                              onClick={() => {
+                                clickBorrow(palaceIndex);
+                              }}
+                            />
+                          </div>
+                        ) : null}
                       </div>
-                      <div className={palaceStyle.body}>
-                        {currentArrows.flatMap((arrow) => {
-                          if (arrow[0] === palaceIndex) {
-                            return [
-                              <ArcherElement
-                                id={`arrow-${arrow[0]}-${arrow[2]}`}
-                                key={`key-arrow-${arrow[0]}-${arrow[2]}`}
-                                relations={[
-                                  {
-                                    targetId: `star-${arrow[1]}`,
-                                    targetAnchor: "top",
-                                    sourceAnchor: "middle",
-                                    style: {
-                                      strokeColor:
-                                        arrow[2] === 0
-                                          ? "#181"
-                                          : arrow[2] === 1
-                                          ? "#d00"
-                                          : arrow[2] === 2
-                                          ? "#eb0"
-                                          : arrow[2] === 3
-                                          ? "#00d"
-                                          : "#111",
-                                      strokeWidth: 1.5,
-                                    },
-                                  },
-                                ]}
-                              >
-                                <div></div>
-                              </ArcherElement>,
-                            ];
-                          }
-                          return [];
+                      <div className={palaceStyle.right}>
+                        {palaceItem.minorStars.map((star, sIndex) => {
+                          return (
+                            <div className={palaceStyle.minor} key={`key-minorStars-${sIndex}`}>
+                              <div className={palaceStyle.starContainer}>
+                                <div className={palaceStyle.starLeft}>
+                                  <StyledTooltipForStar
+                                    onClose={closeMutagenPanel}
+                                    open={revMutagenPanelIndex === starList.findIndex((s) => s === star.name)}
+                                    disableFocusListener
+                                    disableHoverListener
+                                    disableTouchListener
+                                    title={
+                                      <div>
+                                        <button
+                                          style={{
+                                            backgroundColor: "#181",
+                                            padding: "1px 3px",
+                                            margin: "1px",
+                                            fontSize: "14px",
+                                            color: "#fff",
+                                            border: 0,
+                                            borderRadius: "4px",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() =>
+                                            toggleRevArrows(
+                                              starList.findIndex((s) => s === star.name),
+                                              0
+                                            )
+                                          }
+                                        >
+                                          祿
+                                        </button>
+
+                                        <button
+                                          style={{
+                                            backgroundColor: "#d00",
+                                            padding: "1px 3px",
+                                            margin: "1px",
+                                            fontSize: "14px",
+                                            color: "#fff",
+                                            border: 0,
+                                            borderRadius: "4px",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() =>
+                                            toggleRevArrows(
+                                              starList.findIndex((s) => s === star.name),
+                                              1
+                                            )
+                                          }
+                                        >
+                                          權
+                                        </button>
+                                        <br />
+                                        <button
+                                          style={{
+                                            backgroundColor: "#00d",
+                                            padding: "1px 3px",
+                                            margin: "1px",
+                                            fontSize: "14px",
+                                            color: "#fff",
+                                            border: 0,
+                                            borderRadius: "4px",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() =>
+                                            toggleRevArrows(
+                                              starList.findIndex((s) => s === star.name),
+                                              3
+                                            )
+                                          }
+                                        >
+                                          忌
+                                        </button>
+                                        <button
+                                          style={{
+                                            backgroundColor: "#eb0",
+                                            padding: "1px 3px",
+                                            margin: "1px",
+                                            fontSize: "14px",
+                                            color: "#fff",
+                                            border: 0,
+                                            borderRadius: "4px",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() =>
+                                            toggleRevArrows(
+                                              starList.findIndex((s) => s === star.name),
+                                              2
+                                            )
+                                          }
+                                        >
+                                          科
+                                        </button>
+                                      </div>
+                                    }
+                                  >
+                                    <button
+                                      className={palaceStyle.star}
+                                      onClick={() => clickStar(starList.findIndex((s) => s === star.name))}
+                                    >
+                                      <div>{star.name[0]}</div>
+                                      <ArcherElement id={`star-${starList.findIndex((s) => s === star.name)}`}>
+                                        <div>{star.name[1]}</div>
+                                      </ArcherElement>
+                                    </button>
+                                  </StyledTooltipForStar>
+                                </div>
+                                <div className={palaceStyle.starRight}>
+                                  {pluginUnderline && currentArrows.length > 0
+                                    ? currentArrows.map((arrow) => {
+                                        if (arrow[1] == starList.findIndex((s) => s === star.name))
+                                          return <div className={`${palaceStyle.line} ${palaceStyle[getMutagenStyle(arrow[2])]}`}></div>;
+                                        return null;
+                                      })
+                                    : null}
+                                </div>
+                              </div>
+
+                              {star.mutagen ? (
+                                <div className={`${palaceStyle.mutagen} ${palaceStyle[getMutagenStyle(mutagenToIndex[star.mutagen])]}`}>
+                                  {star.mutagen}
+                                </div>
+                              ) : null}
+
+                              {star.hollowMutagen && palaceIndex != lifePalaceIndex ? (
+                                <div
+                                  className={`${palaceStyle.hollowMutagen} ${
+                                    palaceStyle[getMutagenStyle(mutagenToIndex[star.hollowMutagen])]
+                                  }`}
+                                >
+                                  {star.hollowMutagen}
+                                </div>
+                              ) : null}
+                            </div>
+                          );
+                        })}
+                        {palaceItem.majorStars.map((star, sIndex) => {
+                          return (
+                            <div className={palaceStyle.major} key={`key-majorStars-${sIndex}`}>
+                              <div className={palaceStyle.starContainer}>
+                                <div className={palaceStyle.starLeft}>
+                                  <StyledTooltipForStar
+                                    onClose={closeMutagenPanel}
+                                    open={revMutagenPanelIndex === starList.findIndex((s) => s === star.name)}
+                                    disableFocusListener
+                                    disableHoverListener
+                                    disableTouchListener
+                                    title={
+                                      <div>
+                                        <button
+                                          style={{
+                                            backgroundColor: "#181",
+                                            padding: "1px 3px",
+                                            margin: "1px",
+                                            fontSize: "14px",
+                                            color: "#fff",
+                                            border: 0,
+                                            borderRadius: "4px",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() =>
+                                            toggleRevArrows(
+                                              starList.findIndex((s) => s === star.name),
+                                              0
+                                            )
+                                          }
+                                        >
+                                          祿
+                                        </button>
+
+                                        <button
+                                          style={{
+                                            backgroundColor: "#d00",
+                                            padding: "1px 3px",
+                                            margin: "1px",
+                                            fontSize: "14px",
+                                            color: "#fff",
+                                            border: 0,
+                                            borderRadius: "4px",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() =>
+                                            toggleRevArrows(
+                                              starList.findIndex((s) => s === star.name),
+                                              1
+                                            )
+                                          }
+                                        >
+                                          權
+                                        </button>
+                                        <br />
+                                        <button
+                                          style={{
+                                            backgroundColor: "#00d",
+                                            padding: "1px 3px",
+                                            margin: "1px",
+                                            fontSize: "14px",
+                                            color: "#fff",
+                                            border: 0,
+                                            borderRadius: "4px",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() =>
+                                            toggleRevArrows(
+                                              starList.findIndex((s) => s === star.name),
+                                              3
+                                            )
+                                          }
+                                        >
+                                          忌
+                                        </button>
+                                        <button
+                                          style={{
+                                            backgroundColor: "#eb0",
+                                            padding: "1px 3px",
+                                            margin: "1px",
+                                            fontSize: "14px",
+                                            color: "#fff",
+                                            border: 0,
+                                            borderRadius: "4px",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() =>
+                                            toggleRevArrows(
+                                              starList.findIndex((s) => s === star.name),
+                                              2
+                                            )
+                                          }
+                                        >
+                                          科
+                                        </button>
+                                      </div>
+                                    }
+                                  >
+                                    <button
+                                      className={palaceStyle.star}
+                                      onClick={() => clickStar(starList.findIndex((s) => s === star.name))}
+                                    >
+                                      <div>{star.name[0]}</div>
+                                      <ArcherElement id={`star-${starList.findIndex((s) => s === star.name)}`}>
+                                        <div>{star.name[1]}</div>
+                                      </ArcherElement>
+                                    </button>
+                                  </StyledTooltipForStar>
+                                </div>
+                                <div className={palaceStyle.starRight}>
+                                  {pluginUnderline && currentArrows.length > 0
+                                    ? currentArrows.map((arrow) => {
+                                        if (arrow[1] == starList.findIndex((s) => s === star.name))
+                                          return <div className={`${palaceStyle.line} ${palaceStyle[getMutagenStyle(arrow[2])]}`}></div>;
+                                        return null;
+                                      })
+                                    : null}
+                                </div>
+                              </div>
+
+                              {star.mutagen ? (
+                                <div className={`${palaceStyle.mutagen} ${palaceStyle[getMutagenStyle(mutagenToIndex[star.mutagen])]}`}>
+                                  {star.mutagen}
+                                </div>
+                              ) : null}
+
+                              {star.hollowMutagen && palaceIndex != lifePalaceIndex ? (
+                                <div
+                                  className={`${palaceStyle.hollowMutagen} ${
+                                    palaceStyle[getMutagenStyle(mutagenToIndex[star.hollowMutagen])]
+                                  }`}
+                                >
+                                  {star.hollowMutagen}
+                                </div>
+                              ) : null}
+                            </div>
+                          );
                         })}
                       </div>
-                      <div className={palaceStyle.footer}>
-                        <div className={palaceStyle.left}>
-                          {pluginSmallMonth && currentAgeIndex > -1 ? (
-                            <div className={`${palaceStyle.month} ${currentMonthIndex === palaceIndex ? palaceStyle.selected : ``}`}>
-                              <button onClick={() => clickMonth(palaceIndex)}>
-                                {lunarMonthList[(palaceIndex - currentFirstMonthIndex + 12) % 12]}
-                                {/* <br />
-                                {lunarMonthList[(palaceIndex - currentAgeIndex + 9 + 12) % 12]} */}
-                              </button>
-                            </div>
-                          ) : null}
-                          {currentDecadalIndex > -1 && getDecadalAge(palaceItem.ages) ? (
-                            <div className={`${palaceStyle.age} ${currentAgeIndex === palaceIndex ? palaceStyle.selected : ``}`}>
-                              <button onClick={() => clickAge(palaceIndex)}>
-                                <div>{getDecadalAge(palaceItem.ages)}</div>
-                                <div>{`(${astrolabe.lunarYear + getDecadalAge(palaceItem.ages) - 1})`}</div>
-                              </button>
-                            </div>
-                          ) : (
-                            <div className={`${palaceStyle.age} ${palaceStyle.empty}`}>
-                              <button></button>
-                            </div>
-                          )}
-                        </div>
-                        <div className={palaceStyle.middle}>
-                          {showSmallMonth ? (
-                            <div className={palaceStyle.smallMonth}>
-                              {`流月${astrolabe.palaces[(lifePalaceIndex - currentMonthIndex + palaceIndex + 12) % 12].name.slice(0, 2)}`}
-                            </div>
-                          ) : null}
-                          {showSmallLuck ? (
-                            <div className={palaceStyle.smallLuck}>
-                              {`流年${astrolabe.palaces[(lifePalaceIndex - currentAgeIndex + palaceIndex + 12) % 12].name.slice(0, 2)}`}
-                            </div>
-                          ) : null}
-
-                          {showChildLuck ? (
-                            <div className={`${palaceStyle.childLuck} ${showBorrow ? `${palaceStyle.smallerByBorrow}` : ``}`}>
-                              {`少小運${astrolabe.palaces[(lifePalaceIndex - currentDecadalIndex + palaceIndex + 12) % 12].name.slice(
-                                0,
-                                2
-                              )}`}
-                            </div>
-                          ) : showBigLuck ? (
-                            <div className={`${palaceStyle.bigLuck} ${showBorrow ? `${palaceStyle.smallerByBorrow}` : ``}`}>
-                              {`大運${astrolabe.palaces[(lifePalaceIndex - currentDecadalIndex + palaceIndex + 12) % 12].name.slice(0, 2)}`}
-                            </div>
-                          ) : null}
-                          {showBorrow ? (
-                            <div className={palaceStyle.borrow}>
-                              {`${astrolabe.palaces[currentBorrowIndex].name.slice(0, 2)}的${astrolabe.palaces[
-                                (lifePalaceIndex - currentBorrowIndex + palaceIndex + 12) % 12
-                              ].name.slice(0, 2)}`}
-                            </div>
-                          ) : null}
-                          <div>
-                            <button
-                              className={`${palaceStyle.decadal} ${currentDecadalIndex === palaceIndex ? palaceStyle.selected : ``}`}
-                              onClick={() => clickDecadal(palaceIndex)}
-                            >
-                              {palaceItem.decadal.range.toString().replace(",", " - ")}
-                            </button>
-                          </div>
-
-                          <StyledTooltip
-                            onClose={closeMutagenPanel}
-                            open={currentMutagenPanelIndex === palaceIndex}
-                            disableFocusListener
-                            disableHoverListener
-                            disableTouchListener
-                            title={
-                              <div>
-                                <button
-                                  style={{
-                                    backgroundColor: "#181",
-                                    padding: "1px 3px",
-                                    margin: "1px",
-                                    fontSize: "14px",
-                                    color: "#fff",
-                                    border: 0,
-                                    borderRadius: "4px",
-                                    cursor: "pointer",
-                                  }}
-                                  onClick={() =>
-                                    toggleArrows(
-                                      palaceIndex,
-                                      starList.findIndex((star) => star === palaceItem.mutagenStars[0]),
-                                      0
-                                    )
-                                  }
-                                >
-                                  祿
-                                </button>
-
-                                <button
-                                  style={{
-                                    backgroundColor: "#d00",
-                                    padding: "1px 3px",
-                                    margin: "1px",
-                                    fontSize: "14px",
-                                    color: "#fff",
-                                    border: 0,
-                                    borderRadius: "4px",
-                                    cursor: "pointer",
-                                  }}
-                                  onClick={() =>
-                                    toggleArrows(
-                                      palaceIndex,
-                                      starList.findIndex((star) => star === palaceItem.mutagenStars[1]),
-                                      1
-                                    )
-                                  }
-                                >
-                                  權
-                                </button>
-                                <br />
-                                <button
-                                  style={{
-                                    backgroundColor: "#00d",
-                                    padding: "1px 3px",
-                                    margin: "1px",
-                                    fontSize: "14px",
-                                    color: "#fff",
-                                    border: 0,
-                                    borderRadius: "4px",
-                                    cursor: "pointer",
-                                  }}
-                                  onClick={() =>
-                                    toggleArrows(
-                                      palaceIndex,
-                                      starList.findIndex((star) => star === palaceItem.mutagenStars[3]),
-                                      3
-                                    )
-                                  }
-                                >
-                                  忌
-                                </button>
-                                <button
-                                  style={{
-                                    backgroundColor: "#eb0",
-                                    padding: "1px 3px",
-                                    margin: "1px",
-                                    fontSize: "14px",
-                                    color: "#fff",
-                                    border: 0,
-                                    borderRadius: "4px",
-                                    cursor: "pointer",
-                                  }}
-                                  onClick={() =>
-                                    toggleArrows(
-                                      palaceIndex,
-                                      starList.findIndex((star) => star === palaceItem.mutagenStars[2]),
-                                      2
-                                    )
-                                  }
-                                >
-                                  科
-                                </button>
-                              </div>
-                            }
-                          >
-                            <button className={palaceStyle.name} onClick={() => clickPalace(palaceIndex)}>
-                              {palaceItem.name}
-                            </button>
-                          </StyledTooltip>
-                        </div>
-                        <div className={palaceStyle.right}>
-                          <div className={palaceStyle.decadal}>{palaceItem.decadal.heavenlyStem}</div>
-                          <div className={palaceStyle.decadal}>{palaceItem.decadal.earthlyBranch}</div>
-                        </div>
-                      </div>
-                      {palaceItem.outsideMutagenIndexes.length > 0 ? (
-                        palaceIndex === 0 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.leftBottom} ${palaceStyle.outside}`}>
-                            {palaceItem.outsideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}↙`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 1 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.leftMiddle}`}>
-                            {palaceItem.outsideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}↙`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 2 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.leftMiddle}`}>
-                            {palaceItem.outsideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}↖`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 3 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.leftTop} ${palaceStyle.outside}`}>
-                            {palaceItem.outsideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}↖`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 4 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.middleTop}`}>
-                            {palaceItem.outsideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}↖`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 5 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.middleTop}`}>
-                            {palaceItem.outsideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`↗${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 6 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.rightTop} ${palaceStyle.outside}`}>
-                            {palaceItem.outsideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`↗${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 7 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.rightMiddle}`}>
-                            {palaceItem.outsideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`↗${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 8 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.rightMiddle}`}>
-                            {palaceItem.outsideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`↘${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 9 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.rightBottom} ${palaceStyle.outside}`}>
-                            {palaceItem.outsideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`↘${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 10 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.middleBottom}`}>
-                            {palaceItem.outsideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`↘${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 11 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.middleBottom}`}>
-                            {palaceItem.outsideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}↙`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : null
-                      ) : null}
-                      {palaceItem.insideMutagenIndexes.length > 0 ? (
-                        palaceIndex === 0 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.rightTop}`}>
-                            {palaceItem.insideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`↗${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 1 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.rightMiddle}`}>
-                            {palaceItem.insideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`↗${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 2 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.rightMiddle}`}>
-                            {palaceItem.insideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`↘${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 3 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.rightBottom}`}>
-                            {palaceItem.insideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`↘${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 4 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.middleBottom}`}>
-                            {palaceItem.insideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`↘${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 5 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.middleBottom}`}>
-                            {palaceItem.insideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}↙`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 6 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.leftBottom}`}>
-                            {palaceItem.insideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}↙`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 7 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.leftMiddle}`}>
-                            {palaceItem.insideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}↙`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 8 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.leftMiddle}`}>
-                            {palaceItem.insideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}↖`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 9 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.leftTop}`}>
-                            {palaceItem.insideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}↖`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 10 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.middleTop}`}>
-                            {palaceItem.insideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}↖`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : palaceIndex === 11 ? (
-                          <div className={`${palaceStyle.arrow} ${palaceStyle.middleTop}`}>
-                            {palaceItem.insideMutagenIndexes.map((item, index) => {
-                              return (
-                                <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`↗${Object.keys(
-                                  mutagenToIndex
-                                ).find((key) => mutagenToIndex[key] === item)}`}</div>
-                              );
-                            })}
-                          </div>
-                        ) : null
-                      ) : null}
                     </div>
-                  );
-                })}
-                <div className={centerPalaceStyle.centerPalace}>
-                  <div className={centerPalaceStyle.header}>
-                    {/* <button className={centerPalaceStyle.next} onClick={addBirthTime}>
+                    <div className={palaceStyle.body}>
+                      {currentArrows.flatMap((arrow) => {
+                        if (arrow[0] === palaceIndex) {
+                          return [
+                            <ArcherElement
+                              id={`arrow-${arrow[0]}-${arrow[2]}`}
+                              key={`key-arrow-${arrow[0]}-${arrow[2]}`}
+                              relations={[
+                                {
+                                  targetId: `star-${arrow[1]}`,
+                                  targetAnchor: "top",
+                                  sourceAnchor: "middle",
+                                  style: {
+                                    strokeColor:
+                                      arrow[2] === 0
+                                        ? "#181"
+                                        : arrow[2] === 1
+                                        ? "#d00"
+                                        : arrow[2] === 2
+                                        ? "#eb0"
+                                        : arrow[2] === 3
+                                        ? "#00d"
+                                        : "#111",
+                                    strokeWidth: 1.5,
+                                  },
+                                },
+                              ]}
+                            >
+                              <div></div>
+                            </ArcherElement>,
+                          ];
+                        }
+                        return [];
+                      })}
+                    </div>
+                    <div className={palaceStyle.footer}>
+                      <div className={palaceStyle.left}>
+                        {pluginSmallMonth && currentAgeIndex > -1 ? (
+                          <div className={`${palaceStyle.month} ${currentMonthIndex === palaceIndex ? palaceStyle.selected : ``}`}>
+                            <button onClick={() => clickMonth(palaceIndex)}>
+                              {lunarMonthList[(palaceIndex - currentFirstMonthIndex + 12) % 12]}
+                              {/* <br />
+                                {lunarMonthList[(palaceIndex - currentAgeIndex + 9 + 12) % 12]} */}
+                            </button>
+                          </div>
+                        ) : null}
+                        {currentDecadalIndex > -1 && getDecadalAge(palaceItem.ages) ? (
+                          <div className={`${palaceStyle.age} ${currentAgeIndex === palaceIndex ? palaceStyle.selected : ``}`}>
+                            <button onClick={() => clickAge(palaceIndex)}>
+                              <div>{getDecadalAge(palaceItem.ages)}</div>
+                              <div>{`(${astrolabe.lunarYear + getDecadalAge(palaceItem.ages) - 1})`}</div>
+                            </button>
+                          </div>
+                        ) : (
+                          <div className={`${palaceStyle.age} ${palaceStyle.empty}`}>
+                            <button></button>
+                          </div>
+                        )}
+                      </div>
+                      <div className={palaceStyle.middle}>
+                        {showSmallMonth ? (
+                          <div className={palaceStyle.smallMonth}>
+                            {`流月${astrolabe.palaces[(lifePalaceIndex - currentMonthIndex + palaceIndex + 12) % 12].name.slice(0, 2)}`}
+                          </div>
+                        ) : null}
+                        {showSmallLuck ? (
+                          <div className={palaceStyle.smallLuck}>
+                            {`流年${astrolabe.palaces[(lifePalaceIndex - currentAgeIndex + palaceIndex + 12) % 12].name.slice(0, 2)}`}
+                          </div>
+                        ) : null}
+
+                        {showChildLuck ? (
+                          <div className={`${palaceStyle.childLuck} ${showBorrow ? `${palaceStyle.smallerByBorrow}` : ``}`}>
+                            {`少小運${astrolabe.palaces[(lifePalaceIndex - currentDecadalIndex + palaceIndex + 12) % 12].name.slice(0, 2)}`}
+                          </div>
+                        ) : showBigLuck ? (
+                          <div className={`${palaceStyle.bigLuck} ${showBorrow ? `${palaceStyle.smallerByBorrow}` : ``}`}>
+                            {`大運${astrolabe.palaces[(lifePalaceIndex - currentDecadalIndex + palaceIndex + 12) % 12].name.slice(0, 2)}`}
+                          </div>
+                        ) : null}
+                        {showBorrow ? (
+                          <div className={palaceStyle.borrow}>
+                            {`${astrolabe.palaces[currentBorrowIndex].name.slice(0, 2)}的${astrolabe.palaces[
+                              (lifePalaceIndex - currentBorrowIndex + palaceIndex + 12) % 12
+                            ].name.slice(0, 2)}`}
+                          </div>
+                        ) : null}
+                        <div>
+                          <button
+                            className={`${palaceStyle.decadal} ${currentDecadalIndex === palaceIndex ? palaceStyle.selected : ``}`}
+                            onClick={() => clickDecadal(palaceIndex)}
+                          >
+                            {palaceItem.decadal.range.toString().replace(",", " - ")}
+                          </button>
+                        </div>
+
+                        <StyledTooltip
+                          onClose={closeMutagenPanel}
+                          open={currentMutagenPanelIndex === palaceIndex}
+                          disableFocusListener
+                          disableHoverListener
+                          disableTouchListener
+                          title={
+                            <div>
+                              <button
+                                style={{
+                                  backgroundColor: "#181",
+                                  padding: "1px 3px",
+                                  margin: "1px",
+                                  fontSize: "14px",
+                                  color: "#fff",
+                                  border: 0,
+                                  borderRadius: "4px",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() =>
+                                  toggleArrows(
+                                    palaceIndex,
+                                    starList.findIndex((star) => star === palaceItem.mutagenStars[0]),
+                                    0
+                                  )
+                                }
+                              >
+                                祿
+                              </button>
+
+                              <button
+                                style={{
+                                  backgroundColor: "#d00",
+                                  padding: "1px 3px",
+                                  margin: "1px",
+                                  fontSize: "14px",
+                                  color: "#fff",
+                                  border: 0,
+                                  borderRadius: "4px",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() =>
+                                  toggleArrows(
+                                    palaceIndex,
+                                    starList.findIndex((star) => star === palaceItem.mutagenStars[1]),
+                                    1
+                                  )
+                                }
+                              >
+                                權
+                              </button>
+                              <br />
+                              <button
+                                style={{
+                                  backgroundColor: "#00d",
+                                  padding: "1px 3px",
+                                  margin: "1px",
+                                  fontSize: "14px",
+                                  color: "#fff",
+                                  border: 0,
+                                  borderRadius: "4px",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() =>
+                                  toggleArrows(
+                                    palaceIndex,
+                                    starList.findIndex((star) => star === palaceItem.mutagenStars[3]),
+                                    3
+                                  )
+                                }
+                              >
+                                忌
+                              </button>
+                              <button
+                                style={{
+                                  backgroundColor: "#eb0",
+                                  padding: "1px 3px",
+                                  margin: "1px",
+                                  fontSize: "14px",
+                                  color: "#fff",
+                                  border: 0,
+                                  borderRadius: "4px",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() =>
+                                  toggleArrows(
+                                    palaceIndex,
+                                    starList.findIndex((star) => star === palaceItem.mutagenStars[2]),
+                                    2
+                                  )
+                                }
+                              >
+                                科
+                              </button>
+                            </div>
+                          }
+                        >
+                          <button className={palaceStyle.name} onClick={() => clickPalace(palaceIndex)}>
+                            {palaceItem.name}
+                          </button>
+                        </StyledTooltip>
+                      </div>
+                      <div className={palaceStyle.right}>
+                        <div className={palaceStyle.decadal}>{palaceItem.decadal.heavenlyStem}</div>
+                        <div className={palaceStyle.decadal}>{palaceItem.decadal.earthlyBranch}</div>
+                      </div>
+                    </div>
+                    {palaceItem.outsideMutagenIndexes.length > 0 ? (
+                      palaceIndex === 0 ? (
+                        <div className={`${palaceStyle.arrow} ${palaceStyle.leftBottom} ${palaceStyle.outside}`}>
+                          {palaceItem.outsideMutagenIndexes.map((item, index) => {
+                            return (
+                              <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`${Object.keys(
+                                mutagenToIndex
+                              ).find((key) => mutagenToIndex[key] === item)}↙`}</div>
+                            );
+                          })}
+                        </div>
+                      ) : palaceIndex === 1 ? (
+                        <div className={`${palaceStyle.arrow} ${palaceStyle.leftMiddle}`}>
+                          {palaceItem.outsideMutagenIndexes.map((item, index) => {
+                            return (
+                              <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`${Object.keys(
+                                mutagenToIndex
+                              ).find((key) => mutagenToIndex[key] === item)}↙`}</div>
+                            );
+                          })}
+                        </div>
+                      ) : palaceIndex === 2 ? (
+                        <div className={`${palaceStyle.arrow} ${palaceStyle.leftMiddle}`}>
+                          {palaceItem.outsideMutagenIndexes.map((item, index) => {
+                            return (
+                              <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`${Object.keys(
+                                mutagenToIndex
+                              ).find((key) => mutagenToIndex[key] === item)}↖`}</div>
+                            );
+                          })}
+                        </div>
+                      ) : palaceIndex === 3 ? (
+                        <div className={`${palaceStyle.arrow} ${palaceStyle.leftTop} ${palaceStyle.outside}`}>
+                          {palaceItem.outsideMutagenIndexes.map((item, index) => {
+                            return (
+                              <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`${Object.keys(
+                                mutagenToIndex
+                              ).find((key) => mutagenToIndex[key] === item)}↖`}</div>
+                            );
+                          })}
+                        </div>
+                      ) : palaceIndex === 4 ? (
+                        <div className={`${palaceStyle.arrow} ${palaceStyle.middleTop}`}>
+                          {palaceItem.outsideMutagenIndexes.map((item, index) => {
+                            return (
+                              <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`${Object.keys(
+                                mutagenToIndex
+                              ).find((key) => mutagenToIndex[key] === item)}↖`}</div>
+                            );
+                          })}
+                        </div>
+                      ) : palaceIndex === 5 ? (
+                        <div className={`${palaceStyle.arrow} ${palaceStyle.middleTop}`}>
+                          {palaceItem.outsideMutagenIndexes.map((item, index) => {
+                            return (
+                              <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`↗${Object.keys(
+                                mutagenToIndex
+                              ).find((key) => mutagenToIndex[key] === item)}`}</div>
+                            );
+                          })}
+                        </div>
+                      ) : palaceIndex === 6 ? (
+                        <div className={`${palaceStyle.arrow} ${palaceStyle.rightTop} ${palaceStyle.outside}`}>
+                          {palaceItem.outsideMutagenIndexes.map((item, index) => {
+                            return (
+                              <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`↗${Object.keys(
+                                mutagenToIndex
+                              ).find((key) => mutagenToIndex[key] === item)}`}</div>
+                            );
+                          })}
+                        </div>
+                      ) : palaceIndex === 7 ? (
+                        <div className={`${palaceStyle.arrow} ${palaceStyle.rightMiddle}`}>
+                          {palaceItem.outsideMutagenIndexes.map((item, index) => {
+                            return (
+                              <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`↗${Object.keys(
+                                mutagenToIndex
+                              ).find((key) => mutagenToIndex[key] === item)}`}</div>
+                            );
+                          })}
+                        </div>
+                      ) : palaceIndex === 8 ? (
+                        <div className={`${palaceStyle.arrow} ${palaceStyle.rightMiddle}`}>
+                          {palaceItem.outsideMutagenIndexes.map((item, index) => {
+                            return (
+                              <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`↘${Object.keys(
+                                mutagenToIndex
+                              ).find((key) => mutagenToIndex[key] === item)}`}</div>
+                            );
+                          })}
+                        </div>
+                      ) : palaceIndex === 9 ? (
+                        <div className={`${palaceStyle.arrow} ${palaceStyle.rightBottom} ${palaceStyle.outside}`}>
+                          {palaceItem.outsideMutagenIndexes.map((item, index) => {
+                            return (
+                              <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`↘${Object.keys(
+                                mutagenToIndex
+                              ).find((key) => mutagenToIndex[key] === item)}`}</div>
+                            );
+                          })}
+                        </div>
+                      ) : palaceIndex === 10 ? (
+                        <div className={`${palaceStyle.arrow} ${palaceStyle.middleBottom}`}>
+                          {palaceItem.outsideMutagenIndexes.map((item, index) => {
+                            return (
+                              <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`↘${Object.keys(
+                                mutagenToIndex
+                              ).find((key) => mutagenToIndex[key] === item)}`}</div>
+                            );
+                          })}
+                        </div>
+                      ) : palaceIndex === 11 ? (
+                        <div className={`${palaceStyle.arrow} ${palaceStyle.middleBottom}`}>
+                          {palaceItem.outsideMutagenIndexes.map((item, index) => {
+                            return (
+                              <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-outside-${index}`}>{`${Object.keys(
+                                mutagenToIndex
+                              ).find((key) => mutagenToIndex[key] === item)}↙`}</div>
+                            );
+                          })}
+                        </div>
+                      ) : null
+                    ) : null}
+                    {palaceItem.insideMutagenIndexes.length > 0 ? (
+                      palaceIndex === 0 ? (
+                        <div className={`${palaceStyle.arrow} ${palaceStyle.rightTop}`}>
+                          {palaceItem.insideMutagenIndexes.map((item, index) => {
+                            return (
+                              <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`↗${Object.keys(
+                                mutagenToIndex
+                              ).find((key) => mutagenToIndex[key] === item)}`}</div>
+                            );
+                          })}
+                        </div>
+                      ) : palaceIndex === 1 ? (
+                        <div className={`${palaceStyle.arrow} ${palaceStyle.rightMiddle}`}>
+                          {palaceItem.insideMutagenIndexes.map((item, index) => {
+                            return (
+                              <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`↗${Object.keys(
+                                mutagenToIndex
+                              ).find((key) => mutagenToIndex[key] === item)}`}</div>
+                            );
+                          })}
+                        </div>
+                      ) : palaceIndex === 2 ? (
+                        <div className={`${palaceStyle.arrow} ${palaceStyle.rightMiddle}`}>
+                          {palaceItem.insideMutagenIndexes.map((item, index) => {
+                            return (
+                              <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`↘${Object.keys(
+                                mutagenToIndex
+                              ).find((key) => mutagenToIndex[key] === item)}`}</div>
+                            );
+                          })}
+                        </div>
+                      ) : palaceIndex === 3 ? (
+                        <div className={`${palaceStyle.arrow} ${palaceStyle.rightBottom}`}>
+                          {palaceItem.insideMutagenIndexes.map((item, index) => {
+                            return (
+                              <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`↘${Object.keys(
+                                mutagenToIndex
+                              ).find((key) => mutagenToIndex[key] === item)}`}</div>
+                            );
+                          })}
+                        </div>
+                      ) : palaceIndex === 4 ? (
+                        <div className={`${palaceStyle.arrow} ${palaceStyle.middleBottom}`}>
+                          {palaceItem.insideMutagenIndexes.map((item, index) => {
+                            return (
+                              <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`↘${Object.keys(
+                                mutagenToIndex
+                              ).find((key) => mutagenToIndex[key] === item)}`}</div>
+                            );
+                          })}
+                        </div>
+                      ) : palaceIndex === 5 ? (
+                        <div className={`${palaceStyle.arrow} ${palaceStyle.middleBottom}`}>
+                          {palaceItem.insideMutagenIndexes.map((item, index) => {
+                            return (
+                              <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`${Object.keys(
+                                mutagenToIndex
+                              ).find((key) => mutagenToIndex[key] === item)}↙`}</div>
+                            );
+                          })}
+                        </div>
+                      ) : palaceIndex === 6 ? (
+                        <div className={`${palaceStyle.arrow} ${palaceStyle.leftBottom}`}>
+                          {palaceItem.insideMutagenIndexes.map((item, index) => {
+                            return (
+                              <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`${Object.keys(
+                                mutagenToIndex
+                              ).find((key) => mutagenToIndex[key] === item)}↙`}</div>
+                            );
+                          })}
+                        </div>
+                      ) : palaceIndex === 7 ? (
+                        <div className={`${palaceStyle.arrow} ${palaceStyle.leftMiddle}`}>
+                          {palaceItem.insideMutagenIndexes.map((item, index) => {
+                            return (
+                              <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`${Object.keys(
+                                mutagenToIndex
+                              ).find((key) => mutagenToIndex[key] === item)}↙`}</div>
+                            );
+                          })}
+                        </div>
+                      ) : palaceIndex === 8 ? (
+                        <div className={`${palaceStyle.arrow} ${palaceStyle.leftMiddle}`}>
+                          {palaceItem.insideMutagenIndexes.map((item, index) => {
+                            return (
+                              <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`${Object.keys(
+                                mutagenToIndex
+                              ).find((key) => mutagenToIndex[key] === item)}↖`}</div>
+                            );
+                          })}
+                        </div>
+                      ) : palaceIndex === 9 ? (
+                        <div className={`${palaceStyle.arrow} ${palaceStyle.leftTop}`}>
+                          {palaceItem.insideMutagenIndexes.map((item, index) => {
+                            return (
+                              <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`${Object.keys(
+                                mutagenToIndex
+                              ).find((key) => mutagenToIndex[key] === item)}↖`}</div>
+                            );
+                          })}
+                        </div>
+                      ) : palaceIndex === 10 ? (
+                        <div className={`${palaceStyle.arrow} ${palaceStyle.middleTop}`}>
+                          {palaceItem.insideMutagenIndexes.map((item, index) => {
+                            return (
+                              <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`${Object.keys(
+                                mutagenToIndex
+                              ).find((key) => mutagenToIndex[key] === item)}↖`}</div>
+                            );
+                          })}
+                        </div>
+                      ) : palaceIndex === 11 ? (
+                        <div className={`${palaceStyle.arrow} ${palaceStyle.middleTop}`}>
+                          {palaceItem.insideMutagenIndexes.map((item, index) => {
+                            return (
+                              <div className={`${palaceStyle[getMutagenStyle(item)]}`} key={`key-inside-${index}`}>{`↗${Object.keys(
+                                mutagenToIndex
+                              ).find((key) => mutagenToIndex[key] === item)}`}</div>
+                            );
+                          })}
+                        </div>
+                      ) : null
+                    ) : null}
+                  </div>
+                );
+              })}
+              <div className={centerPalaceStyle.centerPalace}>
+                <div className={centerPalaceStyle.header}>
+                  {/* <button className={centerPalaceStyle.next} onClick={addBirthTime}>
                     <AddCircleIcon />
                   </button>
                   <button className={centerPalaceStyle.previous} onClick={reduceBirthTime}>
                     <RemoveCircleIcon />
                   </button> */}
 
-                    <button className={`${centerPalaceStyle.info} ${showInfo ? centerPalaceStyle.selected : ``}`} onClick={toggleInfo}>
-                      <InfoIcon />
-                    </button>
-                    <button
-                      className={`${centerPalaceStyle.info} ${showTextfield ? centerPalaceStyle.selected : ``}`}
-                      onClick={toggleTextfield}
-                    >
-                      <RttIcon />
-                    </button>
-                    <button
-                      className={`${centerPalaceStyle.info} ${pluginSmallMonth ? centerPalaceStyle.selected : ``}`}
-                      onClick={togglePluginSmallMonth}
-                    >
-                      <CalendarMonthIcon />
-                    </button>
-                    <button
-                      className={`${centerPalaceStyle.info} ${pluginBorrow ? centerPalaceStyle.selected : ``}`}
-                      onClick={togglePluginBorrow}
-                    >
-                      <VisibilityIcon />
-                    </button>
-                    <button
-                      className={`${centerPalaceStyle.info} ${pluginUnderline ? centerPalaceStyle.selected : ``}`}
-                      onClick={togglePluginUnderline}
-                    >
-                      <UpgradeIcon />
-                    </button>
-                    <button
-                      className={`${centerPalaceStyle.info} ${pluginQuickArrow ? centerPalaceStyle.selected : ``}`}
-                      onClick={togglePluginQuickArrow}
-                    >
-                      <SwitchAccessShortcutAddIcon />
-                    </button>
-                    <button className={centerPalaceStyle.arrow} onClick={cleanArrows}>
-                      <MobiledataOffIcon />
-                    </button>
-                  </div>
-                  <div className={centerPalaceStyle.body}>
-                    {showInfo ? (
-                      <>
-                        {`姓名: ${astrolabe.name}`}
-                        <br />
-                        {`性別: ${astrolabe.gender}`}
-                        <br />
-                        {`陽曆: ${astrolabe.solarDate}`}
-                        <br />
-                        {`農曆: ${astrolabe.lunarDate} ${astrolabe.isLeapMonth ? `(閏月)` : ``}`}
-                        <br />
-                        {`時辰: ${astrolabe.time} (${astrolabe.timeRange})`}
-                        <br />
-                        {`五行局: ${astrolabe.fiveElementsClass}`}
-                        <br />
-                        {`四柱: ${astrolabe.chineseDate}`}
-                        <br />
-                      </>
-                    ) : null}
-                    {showTextfield ? (
-                      <TextField
-                        id="standard-multiline-flexible"
-                        hiddenLabel
-                        multiline
-                        fullWidth
-                        rows={6}
-                        maxRows={6}
-                        value={note}
-                        onChange={handleNote}
-                        sx={{
-                          "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
-                            border: "1px solid #bbb",
-                          },
-                          "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                            border: "1px solid #bbb",
-                          },
-                        }}
-                      />
-                    ) : null}
-                  </div>
+                  <button className={`${centerPalaceStyle.info} ${showInfo ? centerPalaceStyle.selected : ``}`} onClick={toggleInfo}>
+                    <InfoIcon />
+                  </button>
+                  <button
+                    className={`${centerPalaceStyle.info} ${showTextfield ? centerPalaceStyle.selected : ``}`}
+                    onClick={toggleTextfield}
+                  >
+                    <RttIcon />
+                  </button>
+                  <button
+                    className={`${centerPalaceStyle.info} ${pluginSmallMonth ? centerPalaceStyle.selected : ``}`}
+                    onClick={togglePluginSmallMonth}
+                  >
+                    <CalendarMonthIcon />
+                  </button>
+                  <button
+                    className={`${centerPalaceStyle.info} ${pluginBorrow ? centerPalaceStyle.selected : ``}`}
+                    onClick={togglePluginBorrow}
+                  >
+                    <VisibilityIcon />
+                  </button>
+                  <button
+                    className={`${centerPalaceStyle.info} ${pluginUnderline ? centerPalaceStyle.selected : ``}`}
+                    onClick={togglePluginUnderline}
+                  >
+                    <UpgradeIcon />
+                  </button>
+                  <button
+                    className={`${centerPalaceStyle.info} ${pluginQuickArrow ? centerPalaceStyle.selected : ``}`}
+                    onClick={togglePluginQuickArrow}
+                  >
+                    <SwitchAccessShortcutAddIcon />
+                  </button>
+                  <button className={centerPalaceStyle.arrow} onClick={cleanArrows}>
+                    <MobiledataOffIcon />
+                  </button>
+                </div>
+                <div className={centerPalaceStyle.body}>
+                  {showInfo ? (
+                    <>
+                      {`姓名: ${astrolabe.name}`}
+                      <br />
+                      {`性別: ${astrolabe.gender}`}
+                      <br />
+                      {`陽曆: ${astrolabe.solarDate}`}
+                      <br />
+                      {`農曆: ${astrolabe.lunarDate} ${astrolabe.isLeapMonth ? `(閏月)` : ``}`}
+                      <br />
+                      {`時辰: ${astrolabe.time} (${astrolabe.timeRange})`}
+                      <br />
+                      {`五行局: ${astrolabe.fiveElementsClass}`}
+                      <br />
+                      {`四柱: ${astrolabe.chineseDate}`}
+                      <br />
+                    </>
+                  ) : null}
+                  {showTextfield ? (
+                    <TextField
+                      id="standard-multiline-flexible"
+                      hiddenLabel
+                      multiline
+                      fullWidth
+                      rows={6}
+                      maxRows={6}
+                      value={note}
+                      onChange={handleNote}
+                      sx={{
+                        "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
+                          border: "1px solid #bbb",
+                        },
+                        "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                          border: "1px solid #bbb",
+                        },
+                      }}
+                    />
+                  ) : null}
+                </div>
 
-                  <div className={centerPalaceStyle.timePanel}>
-                    <button className={centerPalaceStyle.next} onClick={addBirthTime}>
-                      <AddCircleIcon />
-                    </button>
-                    <button className={centerPalaceStyle.previous} onClick={reduceBirthTime}>
-                      <RemoveCircleIcon />
-                    </button>
-                  </div>
-                  <div className={centerPalaceStyle.footer}>
-                    {/*  <div className={centerPalaceStyle.searchBox}>
+                <div className={centerPalaceStyle.timePanel}>
+                  <button className={centerPalaceStyle.next} onClick={addBirthTime}>
+                    <AddCircleIcon />
+                  </button>
+                  <button className={centerPalaceStyle.previous} onClick={reduceBirthTime}>
+                    <RemoveCircleIcon />
+                  </button>
+                </div>
+                <div className={centerPalaceStyle.footer}>
+                  {/*  <div className={centerPalaceStyle.searchBox}>
                     <button className={centerPalaceStyle.search} onClick={toggleSearch}>
                       <AssignmentIcon />
                     </button>
                   </div> */}
-                    <div className={centerPalaceStyle.starBox}>
-                      {inFavList() === -1 ? (
-                        <button className={centerPalaceStyle.star} onClick={addFavList}>
-                          <StarBorderIcon />
-                        </button>
-                      ) : (
-                        <button className={centerPalaceStyle.star} onClick={removeFavList}>
-                          <StarIcon />
-                        </button>
-                      )}
-                    </div>
-                    <div className={centerPalaceStyle.searchBox}>
-                      <button className={centerPalaceStyle.search} onClick={toggleSearch}>
-                        <AssignmentIcon />
+                  <div className={centerPalaceStyle.starBox}>
+                    {inFavList() === -1 ? (
+                      <button className={centerPalaceStyle.star} onClick={addFavList}>
+                        <StarBorderIcon />
                       </button>
-                    </div>
+                    ) : (
+                      <button className={centerPalaceStyle.star} onClick={removeFavList}>
+                        <StarIcon />
+                      </button>
+                    )}
+                  </div>
+                  <div className={centerPalaceStyle.searchBox}>
+                    <button className={centerPalaceStyle.search} onClick={toggleSearch}>
+                      <AssignmentIcon />
+                    </button>
                   </div>
                 </div>
               </div>
-            ) : null}
-          </ArcherContainer>
-          <br />
-          <Select value={currentFavIndex} onChange={selectFav} autoWidth sx={{ backgroundColor: "#fff" }}>
-            <MenuItem disabled value={-1}>
-              <em>已收藏</em>
-            </MenuItem>
-            {favList.map((fav, index) => {
-              return (
-                <MenuItem value={index} key={`key-astrolabe-list-${index}`}>
-                  {`${fav.name} ${fav.gender == 0 ? "男" : fav.gender == 1 ? "女" : ""} ${
-                    fav.calendar == 0 ? "陽曆" : fav.calendar == 1 ? "農曆" : ""
-                  } ${fav.year}-${fav.month}-${fav.day} ${birthTimeList[fav.birthTime]}`}
-                </MenuItem>
-              );
-            })}
-          </Select>
-        </div>
-      ) : null}
+            </div>
+          ) : null}
+        </ArcherContainer>
+        <br />
+        <Select value={currentFavIndex} onChange={selectFav} autoWidth sx={{ backgroundColor: "#fff" }}>
+          <MenuItem disabled value={-1}>
+            <em>已收藏</em>
+          </MenuItem>
+          {favList.map((fav, index) => {
+            return (
+              <MenuItem value={index} key={`key-astrolabe-list-${index}`}>
+                {`${fav.name} ${fav.gender == 0 ? "男" : fav.gender == 1 ? "女" : ""} ${
+                  fav.calendar == 0 ? "陽曆" : fav.calendar == 1 ? "農曆" : ""
+                } ${fav.year}-${fav.month}-${fav.day} ${birthTimeList[fav.birthTime]}`}
+              </MenuItem>
+            );
+          })}
+        </Select>
+      </div>
 
       {/* <br />
       <br />
