@@ -1435,41 +1435,140 @@ export default function Astrolabe() {
                         })}
                       </div>
                     </div>
-                    <div className={palaceStyle.body}>
-                      {currentArrows.flatMap((arrow) => {
-                        if (arrow[0] === palaceIndex) {
-                          return [
-                            <ArcherElement
-                              id={`arrow-${arrow[0]}-${arrow[2]}`}
-                              key={`key-arrow-${arrow[0]}-${arrow[2]}`}
-                              relations={[
-                                {
-                                  targetId: `star-${arrow[1]}`,
-                                  targetAnchor: "top",
-                                  sourceAnchor: "middle",
-                                  style: {
-                                    strokeColor:
-                                      arrow[2] === 0
-                                        ? "#181"
-                                        : arrow[2] === 1
-                                        ? "#d00"
-                                        : arrow[2] === 2
-                                        ? "#eb0"
-                                        : arrow[2] === 3
-                                        ? "#00d"
-                                        : "#111",
-                                    strokeWidth: 1.5,
+                    <StyledTooltip
+                      onClose={closeMutagenPanel}
+                      open={currentMutagenPanelIndex === palaceIndex}
+                      disableFocusListener
+                      disableHoverListener
+                      disableTouchListener
+                      title={
+                        <div>
+                          <button
+                            style={{
+                              backgroundColor: "#181",
+                              padding: "1px 4px",
+                              margin: "2px",
+                              fontSize: "18px",
+                              color: "#fff",
+                              border: 0,
+                              borderRadius: "4px",
+                              cursor: "pointer",
+                            }}
+                            onClick={() =>
+                              toggleArrows(
+                                palaceIndex,
+                                starList.findIndex((star) => star === palaceItem.mutagenStars[0]),
+                                0
+                              )
+                            }
+                          >
+                            祿
+                          </button>
+
+                          <button
+                            style={{
+                              backgroundColor: "#d00",
+                              padding: "1px 4px",
+                              margin: "2px",
+                              fontSize: "18px",
+                              color: "#fff",
+                              border: 0,
+                              borderRadius: "4px",
+                              cursor: "pointer",
+                            }}
+                            onClick={() =>
+                              toggleArrows(
+                                palaceIndex,
+                                starList.findIndex((star) => star === palaceItem.mutagenStars[1]),
+                                1
+                              )
+                            }
+                          >
+                            權
+                          </button>
+                          <br />
+                          <button
+                            style={{
+                              backgroundColor: "#00d",
+                              padding: "1px 4px",
+                              margin: "2px",
+                              fontSize: "18px",
+                              color: "#fff",
+                              border: 0,
+                              borderRadius: "4px",
+                              cursor: "pointer",
+                            }}
+                            onClick={() =>
+                              toggleArrows(
+                                palaceIndex,
+                                starList.findIndex((star) => star === palaceItem.mutagenStars[3]),
+                                3
+                              )
+                            }
+                          >
+                            忌
+                          </button>
+                          <button
+                            style={{
+                              backgroundColor: "#eb0",
+                              padding: "1px 4px",
+                              margin: "2px",
+                              fontSize: "18px",
+                              color: "#fff",
+                              border: 0,
+                              borderRadius: "4px",
+                              cursor: "pointer",
+                            }}
+                            onClick={() =>
+                              toggleArrows(
+                                palaceIndex,
+                                starList.findIndex((star) => star === palaceItem.mutagenStars[2]),
+                                2
+                              )
+                            }
+                          >
+                            科
+                          </button>
+                        </div>
+                      }
+                    >
+                      <div className={palaceStyle.body} onClick={() => clickPalace(palaceIndex)}>
+                        {currentArrows.flatMap((arrow) => {
+                          if (arrow[0] === palaceIndex) {
+                            return [
+                              <ArcherElement
+                                id={`arrow-${arrow[0]}-${arrow[2]}`}
+                                key={`key-arrow-${arrow[0]}-${arrow[2]}`}
+                                relations={[
+                                  {
+                                    targetId: `star-${arrow[1]}`,
+                                    targetAnchor: "top",
+                                    sourceAnchor: "middle",
+                                    style: {
+                                      strokeColor:
+                                        arrow[2] === 0
+                                          ? "#181"
+                                          : arrow[2] === 1
+                                          ? "#d00"
+                                          : arrow[2] === 2
+                                          ? "#eb0"
+                                          : arrow[2] === 3
+                                          ? "#00d"
+                                          : "#111",
+                                      strokeWidth: 1.5,
+                                    },
                                   },
-                                },
-                              ]}
-                            >
-                              <div></div>
-                            </ArcherElement>,
-                          ];
-                        }
-                        return [];
-                      })}
-                    </div>
+                                ]}
+                              >
+                                <div></div>
+                              </ArcherElement>,
+                            ];
+                          }
+                          return [];
+                        })}
+                      </div>
+                    </StyledTooltip>
+
                     <div className={palaceStyle.footer}>
                       <div className={palaceStyle.left}>
                         {pluginSmallMonth && currentAgeIndex > -1 ? (
@@ -1531,107 +1630,9 @@ export default function Astrolabe() {
                           </button>
                         </div>
 
-                        <StyledTooltip
-                          onClose={closeMutagenPanel}
-                          open={currentMutagenPanelIndex === palaceIndex}
-                          disableFocusListener
-                          disableHoverListener
-                          disableTouchListener
-                          title={
-                            <div>
-                              <button
-                                style={{
-                                  backgroundColor: "#181",
-                                  padding: "1px 3px",
-                                  margin: "1px",
-                                  fontSize: "14px",
-                                  color: "#fff",
-                                  border: 0,
-                                  borderRadius: "4px",
-                                  cursor: "pointer",
-                                }}
-                                onClick={() =>
-                                  toggleArrows(
-                                    palaceIndex,
-                                    starList.findIndex((star) => star === palaceItem.mutagenStars[0]),
-                                    0
-                                  )
-                                }
-                              >
-                                祿
-                              </button>
-
-                              <button
-                                style={{
-                                  backgroundColor: "#d00",
-                                  padding: "1px 3px",
-                                  margin: "1px",
-                                  fontSize: "14px",
-                                  color: "#fff",
-                                  border: 0,
-                                  borderRadius: "4px",
-                                  cursor: "pointer",
-                                }}
-                                onClick={() =>
-                                  toggleArrows(
-                                    palaceIndex,
-                                    starList.findIndex((star) => star === palaceItem.mutagenStars[1]),
-                                    1
-                                  )
-                                }
-                              >
-                                權
-                              </button>
-                              <br />
-                              <button
-                                style={{
-                                  backgroundColor: "#00d",
-                                  padding: "1px 3px",
-                                  margin: "1px",
-                                  fontSize: "14px",
-                                  color: "#fff",
-                                  border: 0,
-                                  borderRadius: "4px",
-                                  cursor: "pointer",
-                                }}
-                                onClick={() =>
-                                  toggleArrows(
-                                    palaceIndex,
-                                    starList.findIndex((star) => star === palaceItem.mutagenStars[3]),
-                                    3
-                                  )
-                                }
-                              >
-                                忌
-                              </button>
-                              <button
-                                style={{
-                                  backgroundColor: "#eb0",
-                                  padding: "1px 3px",
-                                  margin: "1px",
-                                  fontSize: "14px",
-                                  color: "#fff",
-                                  border: 0,
-                                  borderRadius: "4px",
-                                  cursor: "pointer",
-                                }}
-                                onClick={() =>
-                                  toggleArrows(
-                                    palaceIndex,
-                                    starList.findIndex((star) => star === palaceItem.mutagenStars[2]),
-                                    2
-                                  )
-                                }
-                              >
-                                科
-                              </button>
-                            </div>
-                          }
-                        >
-                          <button className={palaceStyle.name} onClick={() => clickPalace(palaceIndex)}>
-                            {palaceItem.name}
-                          </button>
-                        </StyledTooltip>
+                        <button className={palaceStyle.name} onClick={() => clickPalace(palaceIndex)}>
+                          {palaceItem.name}
+                        </button>
                       </div>
                       <div className={palaceStyle.right}>
                         <div className={palaceStyle.decadal}>{palaceItem.decadal.heavenlyStem}</div>
@@ -2010,7 +2011,12 @@ export default function Astrolabe() {
           ) : null}
         </ArcherContainer>
         <br />
-        <Select value={currentFavIndex} onChange={selectFav} autoWidth sx={{ backgroundColor: "#fff" }}>
+        <Select
+          value={currentFavIndex}
+          onChange={selectFav}
+          autoWidth
+          sx={{ backgroundColor: "#fff", fontSize: "12px", padding: "0", height: "32px" }}
+        >
           <MenuItem disabled value={-1}>
             <em>已收藏</em>
           </MenuItem>
