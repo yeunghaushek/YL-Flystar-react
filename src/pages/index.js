@@ -136,7 +136,7 @@ const columns = [
       return <strong>{"課程目標"}</strong>;
     },
   },
-  {
+  /* {
     field: "price",
     headerName: "費用",
     sortable: false,
@@ -145,7 +145,7 @@ const columns = [
     renderHeader: (params) => {
       return <strong>{"費用"}</strong>;
     },
-  },
+  }, */
 ];
 
 const rows = [
@@ -312,8 +312,8 @@ export default function About() {
             <Grid item xs={12} sm={8}>
               <div className={aboutStyle.price}>
                 <div className={aboutStyle.title}>全面命理分析會談</div>
-                價格：HKD $2,000
-                <br />
+                {/* 價格：HKD $2,000
+                <br /> */}
                 形式：面對面或在線會談
                 <br />
                 <br />
@@ -335,8 +335,8 @@ export default function About() {
             <Grid item xs={12} sm={6}>
               <div className={aboutStyle.price}>
                 <div className={aboutStyle.title}>深度跟進分析</div>
-                價格：HKD $1,200
-                <br />
+                {/* 價格：HKD $1,200
+                <br /> */}
                 <br />
                 <br />
                 針對已經接受過全面命理分析的客戶，提供針對性的深入跟進。
@@ -348,8 +348,8 @@ export default function About() {
             <Grid item xs={12} sm={6}>
               <div className={aboutStyle.price}>
                 <div className={aboutStyle.title}>年度命理更新</div>
-                價格：HKD $1,200
-                <br />
+                {/* 價格：HKD $1,200
+                <br /> */}
                 <br />
                 <br />
                 為長期客戶提供每年的命理更新，反映最新的生活變化和即將到來的機遇。
@@ -362,8 +362,8 @@ export default function About() {
             <Grid item xs={12} sm={6}>
               <div className={aboutStyle.price}>
                 <div className={aboutStyle.title}>長期諮詢計劃</div>
-                價格：HKD $5,000 / 年
-                <br />
+                {/* 價格：HKD $5,000 / 年
+                <br /> */}
                 <br />
                 <br />
                 為有持續諮詢需求的客戶提供定期會談服務。
@@ -383,8 +383,8 @@ export default function About() {
             <Grid item xs={6} sm={4}>
               <div className={aboutStyle.price}>
                 <div className={aboutStyle.title}>創業與事業規劃</div>
-                價格：HKD $1,500
-                <br />
+                {/* 價格：HKD $1,500
+                <br /> */}
                 <br />
                 <br />
                 專注於創業機會評估、事業發展策略、職場機遇。
@@ -394,8 +394,8 @@ export default function About() {
             <Grid item xs={6} sm={4}>
               <div className={aboutStyle.price}>
                 <div className={aboutStyle.title}>感情與婚姻</div>
-                價格：HKD $1,500
-                <br />
+                {/* 價格：HKD $1,500
+                <br /> */}
                 <br />
                 <br />
                 專注於感情生活、人際互動、婚姻諮詢等。
@@ -405,8 +405,8 @@ export default function About() {
             <Grid item xs={6} sm={4}>
               <div className={aboutStyle.price}>
                 <div className={aboutStyle.title}>財富與投資規劃</div>
-                價格：HKD $1,500
-                <br />
+                {/* 價格：HKD $1,500
+                <br /> */}
                 <br />
                 <br />
                 針對財務規劃、投資機會、財富管理提供指導。
@@ -417,8 +417,8 @@ export default function About() {
             <Grid item xs={6} sm={4}>
               <div className={aboutStyle.price}>
                 <div className={aboutStyle.title}>個人成長與自我實現</div>
-                價格：HKD $1,000
-                <br />
+                {/* 價格：HKD $1,000
+                <br /> */}
                 <br />
                 <br />
                 專注於個人目標設定、生活技能提升、自我實現的途徑。
@@ -428,8 +428,8 @@ export default function About() {
             <Grid item xs={6} sm={4}>
               <div className={aboutStyle.price}>
                 <div className={aboutStyle.title}>教育與學業發展</div>
-                價格：HKD $1,000
-                <br />
+                {/* 價格：HKD $1,000
+                <br /> */}
                 <br />
                 <br />
                 針對學業規劃、職業教育選擇、專業技能提升提供諮詢。
@@ -439,8 +439,8 @@ export default function About() {
             <Grid item xs={6} sm={4}>
               <div className={aboutStyle.price}>
                 <div className={aboutStyle.title}>人際關係與社交網絡</div>
-                價格：HKD $1,000
-                <br />
+                {/* 價格：HKD $1,000
+                <br /> */}
                 <br />
                 <br />
                 針對建立和維護健康的人際關係、擴大社交網絡提供專業建議。
@@ -619,7 +619,7 @@ export default function About() {
           <br id="contact" />
           <Divider light variant="middle" sx={{ margin: "20px 0" }} />
           <br />
-          <div className={aboutStyle.pageTitle}>立即預約</div>
+          {/* <div className={aboutStyle.pageTitle}>立即預約</div>
           <div className={aboutStyle.contact}>
             <iframe
               src="https://docs.google.com/forms/d/e/1FAIpQLSfOT_w2D4V7WxUP_BHPHv1PFJAUsU8z2IXKn17uCrh7nzcaoQ/viewform?embedded=true"
@@ -629,9 +629,9 @@ export default function About() {
             >
               正在載入…
             </iframe>
-          </div>
+          </div> */}
           <div className={aboutStyle.pageTitle}>聯絡我們</div>
-          <div className={aboutStyle.contact}>
+          {/* <div className={aboutStyle.contact}>
             <a target="_blank" href="https://www.instagram.com/yl_astrologix?igsh=N2psYm8wZzhjNDJ1">
               <img src="/ig.jpg" alt="instagram" />
             </a>
@@ -641,15 +641,15 @@ export default function About() {
             <a target="_blank" href="https://www.threads.net/@yl_astrologix">
               <img src="/thread.png" alt="thread" />
             </a>
-          </div>
+          </div> */}
           <div className={aboutStyle.contact}>
             <a target="_blank" href="https://wa.me/85294780643?text=你好，我想了解一下命理分析服務">
               <img src="/whatsapp.png" alt="whatsapp" />
             </a>
-            <a target="_blank" href="https://www.youtube.com/@yl-astrologix">
+            {/*  <a target="_blank" href="https://www.youtube.com/@yl-astrologix">
               <img src="/youtube.png" alt="youtube" />
             </a>
-            <img src="/wechat.png" alt="wechat" />
+            <img src="/wechat.png" alt="wechat" /> */}
           </div>
           <br />
           <div className={aboutStyle.contact}>
@@ -665,16 +665,18 @@ export default function About() {
           <br />
           <br />
           <br />
-          <SpeedDial
-            ariaLabel="SpeedDial basic example"
-            sx={{ position: "fixed", bottom: 64, right: 64 }}
-            FabProps={{ sx: { backgroundColor: "#009", "&:hover": { backgroundColor: "#009" } } }}
-            icon={<CallIcon />}
-          >
-            {actions.map((action) => (
+          <a target="_blank" href="https://wa.me/85294780643?text=你好，我想了解一下命理分析服務">
+            <SpeedDial
+              ariaLabel="SpeedDial basic example"
+              sx={{ position: "fixed", bottom: 64, right: 64 }}
+              FabProps={{ sx: { backgroundColor: "#090", "&:hover": { backgroundColor: "#090" } } }}
+              icon={<WhatsAppIcon />}
+            >
+              {/*  {actions.map((action) => (
               <SpeedDialAction key={action.name} icon={action.icon} tooltipTitle={action.name} sx={{ lineHeight: "unset" }} />
-            ))}
-          </SpeedDial>
+            ))} */}
+            </SpeedDial>
+          </a>
         </div>
       </div>
       <div className="footer">{`${new Date().getFullYear()} © 曜靈紫微飛星 版權所有`}</div>
