@@ -767,24 +767,36 @@ export default function Astrolabe() {
   const addBirthTime = async () => {
     if (birthTime < 12) {
       setBirthTime(birthTime + 1);
-      setUpdateCounter(updateCounter + 1);
+      //setUpdateCounter(updateCounter + 1);
+      setBirthTimeCounter(birthTimeCounter + 1);
     } else {
       addDay();
       setBirthTime(0);
-      setUpdateCounter(updateCounter + 1);
+      //setUpdateCounter(updateCounter + 1);
+      setBirthTimeCounter(birthTimeCounter + 1);
     }
   };
 
   const reduceBirthTime = () => {
     if (birthTime > 0) {
       setBirthTime(birthTime - 1);
-      setUpdateCounter(updateCounter + 1);
+      //setUpdateCounter(updateCounter + 1);
+      setBirthTimeCounter(birthTimeCounter + 1);
     } else {
       minusDay();
       setBirthTime(12);
-      setUpdateCounter(updateCounter + 1);
+      //setUpdateCounter(updateCounter + 1);
+      setBirthTimeCounter(birthTimeCounter + 1);
     }
   };
+
+  const [birthTimeCounter, setBirthTimeCounter] = useState(0);
+
+  useEffect(() => {
+    if (birthTimeCounter > 0) {
+      updateUrlParams();
+    }
+  }, [birthTimeCounter]);
 
   const [favList, setFavList] = useState([]);
   const [currentFavIndex, setCurrentFavIndex] = useState(-1);
@@ -841,9 +853,18 @@ export default function Astrolabe() {
       setDay(favList[currentFavIndex].day);
       setBirthTime(favList[currentFavIndex].birthTime);
       setIsLeapMonth(favList[currentFavIndex].isLeapMonth);
-      setUpdateCounter(updateCounter + 1);
+      //setUpdateCounter(updateCounter + 1);
+      setFindFavCounter(findFavCounter + 1);
     }
   }, [currentFavIndex]);
+
+  const [findFavCounter, setFindFavCounter] = useState(0);
+
+  useEffect(() => {
+    if (findFavCounter > 0) {
+      updateUrlParams();
+    }
+  }, [findFavCounter]);
 
   const [updateCounter, setUpdateCounter] = useState(0);
   useEffect(() => {
@@ -860,7 +881,9 @@ export default function Astrolabe() {
             fixLeap: true,
             lang: "zh-TW",
          */
-    setUpdateCounter(updateCounter + 1);
+
+    //setUpdateCounter(updateCounter + 1);
+    updateUrlParams();
   }, []);
 
   useEffect(() => {
@@ -873,6 +896,47 @@ export default function Astrolabe() {
     //console.log(ast3);
     //console.log(ast4);
   }, []);
+
+  const { n, g, c, y, m, d, bt, lm } = router.query;
+  useEffect(() => {
+    if (g && c && y && m && d && bt && lm) {
+      // c == 0 ? "陽曆" : "農曆"
+      // g == 0 ? "男" : "女"
+      // lm == 1 ? "閏月" : "非閏月"
+
+      if (n) setName(n);
+      setName(n);
+      setGender(parseInt(g));
+      setCalendar(parseInt(c));
+      setYear(parseInt(y));
+      setMonth(parseInt(m));
+      setDay(parseInt(d));
+      setBirthTime(parseInt(bt));
+      setIsLeapMonth(lm === "1" ? true : false);
+      setUpdateCounter(updateCounter + 1);
+    }
+  }, [n, g, c, y, m, d, bt, lm]);
+
+  const updateUrlParams = () => {
+    router.push(
+      {
+        pathname: router.pathname,
+        query: {
+          ...router.query,
+          n: name,
+          g: gender,
+          c: calendar,
+          y: year,
+          m: month,
+          d: day,
+          bt: birthTime,
+          lm: isLeapMonth ? "1" : "0",
+        },
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
 
   return (
     <>
@@ -1124,7 +1188,8 @@ export default function Astrolabe() {
                     color="success"
                     sx={{ height: "55px" }}
                     disabled={!isValidBirthday}
-                    onClick={() => setUpdateCounter(updateCounter + 1)}
+                    //onClick={() => setUpdateCounter(updateCounter + 1)}
+                    onClick={updateUrlParams}
                   >
                     <AssignmentIcon />
                   </Button>
