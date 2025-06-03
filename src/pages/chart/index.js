@@ -694,6 +694,10 @@ export default function Astrolabe() {
     }
 
     if (inFavList() === -1) setCurrentFavIndex(-1);
+
+    /* if (Object.keys(router.query).length === 0) {
+      updateUrlParams();
+    } */
   };
 
   useEffect(() => {
@@ -881,9 +885,8 @@ export default function Astrolabe() {
             fixLeap: true,
             lang: "zh-TW",
          */
-
     //setUpdateCounter(updateCounter + 1);
-    updateUrlParams();
+    //updateUrlParams();
   }, []);
 
   useEffect(() => {
@@ -899,6 +902,9 @@ export default function Astrolabe() {
 
   const { n, g, c, y, m, d, bt, lm } = router.query;
   useEffect(() => {
+    console.log(n, g, c, y, m, d, bt, lm);
+    console.log(router.pathname);
+    console.log(router.query);
     if (g && c && y && m && d && bt && lm) {
       // c == 0 ? "陽曆" : "農曆"
       // g == 0 ? "男" : "女"
