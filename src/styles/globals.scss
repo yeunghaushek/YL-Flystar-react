@@ -172,6 +172,12 @@ a {
   }
 }
 
+.container-flow {
+  width: 100%;
+  margin: 0 auto;
+  font-family: "Noto Sans TC", sans-serif;
+}
+
 .carousel .slider-wrapper.axis-horizontal .slider {
   -ms-box-orient: horizontal;
   -webkit-box-orient: horizontal;

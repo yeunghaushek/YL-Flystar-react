@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 
 import { astro } from "iztro";
 import { useEffect, useMemo, useState } from "react";
-import ReactFlow, { Controls, Background, Handle, Position, MarkerType } from "reactflow";
+import ReactFlow, { Controls, Handle, Position, MarkerType, BaseEdge } from "reactflow";
 
 Date.prototype.toLocalDate = function () {
     let tzoffset = this.getTimezoneOffset() * 60000; //offset in milliseconds
@@ -71,21 +71,26 @@ export default function Astrolabe() {
 
     // Shared sizing for nodes and side edge lengths
     const NODE_WIDTH = 140; // main node width
-    const MAIN_NODE_HEIGHT = 32; // fixed height to align handles vertically
+    const MAIN_NODE_HEIGHT = 60; // increased height to accommodate two lines of text
     const SIDE_NODE_WIDTH = 100; // red/green node width (shorter)
     const SIDE_NODE_HEIGHT = 32; // fixed height to align handles vertically
     const TARGET_SIDE_LINE = 40; // target visual line length for red/green edges
 
-    // Custom nodes with 4 connection points for main nodes, and side handles for tags
-    const PalaceNode = ({ data }) => (
-        <div style={{ width: NODE_WIDTH, height: MAIN_NODE_HEIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center', border: "1px solid #ddd", borderRadius: 8, background: "#fff", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
-            <div style={{ fontWeight: 600, textAlign: 'center' }}>{data.label}</div>
-            <Handle type="target" position={Position.Top} id="T" />
-            <Handle type="source" position={Position.Bottom} id="B" />
-            <Handle type="target" position={Position.Left} id="L" />
-            <Handle type="source" position={Position.Right} id="R" />
-        </div>
-    );
+    // Custom nodes with conditional connection points for main nodes
+    const PalaceNode = ({ data }) => {
+        const [star, name] = data.label.split('・');
+        const { handles = {} } = data; // Get which handles should be visible
+        return (
+            <div style={{ width: NODE_WIDTH, height: MAIN_NODE_HEIGHT, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: "1px solid #ddd", borderRadius: 8, background: "#fff", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
+                <div style={{ fontWeight: 600, textAlign: 'center', fontSize: '14px', lineHeight: '1.5' }}>{star}</div>
+                <div style={{ textAlign: 'center', fontSize: '12px', lineHeight: '1.5' }}>{name}</div>
+                {handles.T && <Handle type="target" position={Position.Top} id="T" />}
+                {handles.B && <Handle type="source" position={Position.Bottom} id="B" />}
+                {handles.L && <Handle type="target" position={Position.Left} id="L" />}
+                {handles.R && <Handle type="source" position={Position.Right} id="R" />}
+            </div>
+        );
+    };
 
     const RedNode = ({ data }) => (
         <div style={{ width:  SIDE_NODE_WIDTH, height: SIDE_NODE_HEIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center', border: "1px solid #fca5a5", borderRadius: 6, background: "#fff4f4", textAlign: 'center' }}>{data.label}
@@ -99,13 +104,41 @@ export default function Astrolabe() {
         </div>
     );
 
-    const BlueNode = ({ data }) => (
-        <div style={{ width: NODE_WIDTH, height: SIDE_NODE_HEIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center', border: "1px solid #93c5fd", borderRadius: 6, background: "#eff6ff", textAlign: 'center' }}>{data.label}
-            <Handle type="target" position={Position.Top} id="T" />
-        </div>
-    );
+    const LastNode = ({ data }) => {
+        const [star, name] = data.label.split('・');
+        const { handles = { T: true, B: false } } = data; // Default to showing only T handle for last nodes
+        return (
+            <div style={{ width: NODE_WIDTH, height: MAIN_NODE_HEIGHT, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: "1px solid #ddd", borderRadius: 8, background: "#fff", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
+                <div style={{ fontWeight: 600, textAlign: 'center', fontSize: '14px', lineHeight: '1.5' }}>{star}</div>
+                <div style={{ textAlign: 'center', fontSize: '12px', lineHeight: '1.5' }}>{name}</div>
+                {handles.T && <Handle type="target" position={Position.Top} id="T" />}
+                {handles.B && <Handle type="source" position={Position.Bottom} id="B" />}
+            </div>
+        );
+    };
 
-    const nodeTypes = useMemo(() => ({ palace: PalaceNode, red: RedNode, green: GreenNode, blue: BlueNode }), []);
+    const nodeTypes = useMemo(() => ({ palace: PalaceNode, red: RedNode, green: GreenNode, last: LastNode }), []);
+
+    // Custom 90-degree edge with optional vertical offset to reduce overlaps
+    const RightAngleEdge = ({ id, sourceX, sourceY, targetX, targetY, markerEnd, style, data }) => {
+        const offsetY = (data && typeof data.offsetY === 'number') ? data.offsetY : 0;
+        const avoidNodes = (data && typeof data.avoidNodes === 'boolean') ? data.avoidNodes : false;
+        const turnPointOffset = (data && typeof data.turnPointOffset === 'number') ? data.turnPointOffset : 0;
+        
+        let midY = Math.round(((sourceY + targetY) / 2) + offsetY);
+        
+        // If we need to avoid red/green nodes, adjust the middle path to go around them
+        if (avoidNodes) {
+            // For bottom-to-top connections, we need to go down first to avoid red/green nodes
+            const clearance = 80; // further increased clearance to accommodate separated blue arrows and red/green nodes
+            midY = sourceY + clearance + turnPointOffset; // add individual turn point offset to separate overlapping lines
+        }
+        
+        const path = `M ${sourceX} ${sourceY} L ${sourceX} ${midY} L ${targetX} ${midY} L ${targetX} ${targetY}`;
+        return <BaseEdge id={id} path={path} markerEnd={markerEnd} style={style} />;
+    };
+
+    const edgeTypes = useMemo(() => ({ rightangle: RightAngleEdge }), []);
 
 
     const [name, setName] = useState("");
@@ -289,8 +322,8 @@ export default function Astrolabe() {
         const buildEntry = (starName) => ({
           name: p.name,
             star: starName,
-            innerGreen: (greenMap.get(starName) || []).map((palaceName) => (palaceName === p.name ? "祿" : palaceName)).concat(mutagenStars.find((s) => s.star === starName && s.mutagen === "祿") ? ["生"] : []),
-          innerRed: (redMap.get(starName) || []).map((palaceName) => (palaceName === p.name ? "權" : palaceName)).concat(mutagenStars.find((s) => s.star === starName && s.mutagen === "權") ? ["生"] : []),
+            innerGreen: (greenMap.get(starName) || []).map((palaceName) => (palaceName === p.name ? "自化祿" : palaceName)).concat(mutagenStars.find((s) => s.star === starName && s.mutagen === "祿") ? ["生年祿"] : []),
+          innerRed: (redMap.get(starName) || []).map((palaceName) => (palaceName === p.name ? "自化權" : palaceName)).concat(mutagenStars.find((s) => s.star === starName && s.mutagen === "權") ? ["生年權"] : []),
           outerBlue,
         });
     
@@ -400,7 +433,7 @@ export default function Astrolabe() {
         if (!graph || graph.length === 0) return [];
         const comps = buildComponents(graph);
         return comps.map((comp) => {
-            const layerHeight = 120; // vertical space between main nodes
+            const layerHeight = 280; // adjusted vertical space to accommodate taller main nodes (60px height)
             const colGap = 220;
             const LINK_LENGTH = 40; // fixed visual line length for red/green links
             const subItemGap = 32;
@@ -481,15 +514,104 @@ export default function Astrolabe() {
                     const x = cx - NODE_WIDTH / 2; // convert to top-left for React Flow
                     const y = l * layerHeight;
                     posByIdx.set(idx, { x, y, cx });
-                    nodes.push({ id: `m-${idx}`, type: 'palace', data: { label: `${graph[idx].name}・${graph[idx].star}` }, position: { x, y } });
+                    
+                    // Determine which handles are needed for this node
+                    const handles = {};
+                    
+                    // Check if node has incoming blue arrows (needs T handle)
+                    const hasIncomingBlue = comp.some(sourceIdx => {
+                        const t = graph[sourceIdx].tail;
+                        if (typeof t === 'number' && t === idx) {
+                            const sourceLayer = layerByIdx.get(sourceIdx) || 0;
+                            const targetLayer = layerByIdx.get(idx) || 0;
+                            return sourceLayer < targetLayer; // only downward arrows
+                        }
+                        return false;
+                    });
+                    if (hasIncomingBlue) handles.T = true;
+                    
+                    // Check if node has outgoing blue arrows (needs B handle)
+                    const t = graph[idx].tail;
+                    if (typeof t === 'number' && comp.includes(t)) {
+                        const sourceLayer = layerByIdx.get(idx) || 0;
+                        const targetLayer = layerByIdx.get(t) || 0;
+                        if (sourceLayer < targetLayer) handles.B = true; // only downward arrows
+                    }
+                    
+                    // Check if node has external last node connection (needs B handle)
+                    const ob = graph[idx].outerBlue;
+                    if (ob && ob.star && ob.name && !comp.includes(graph[idx].tail)) {
+                        handles.B = true; // node is a sink with external last node
+                    }
+                    
+                    // Check if node has red/green connections (needs L and R handles)
+                    const reds = graph[idx].innerRed || [];
+                    const greens = graph[idx].innerGreen || [];
+                    if (reds.length > 0) handles.L = true;
+                    if (greens.length > 0) handles.R = true;
+                    
+                    nodes.push({ id: `m-${idx}`, type: 'palace', data: { label: `${graph[idx].star}・${graph[idx].name}`, handles }, position: { x, y } });
                 });
             });
 
             // Tail edges between main nodes
+            // Build incoming list for each tail to compute slight offsets and reduce overlap
+            const incomingByTarget = new Map();
             comp.forEach((idx) => {
                 const t = graph[idx].tail;
                 if (typeof t === 'number' && comp.includes(t)) {
-                    edges.push({ id: `t-${idx}-${t}`, source: `m-${idx}`, target: `m-${t}`, sourceHandle: 'B', targetHandle: 'T', type: 'straight', style: { stroke: '#3b82f6' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#3b82f6' } });
+                    if (!incomingByTarget.has(t)) incomingByTarget.set(t, []);
+                    incomingByTarget.get(t).push(idx);
+                }
+            });
+
+            // Collect all blue arrows and group by source layer for global turn point assignment
+            // Only include arrows that flow downward (from lower layer to higher layer)
+            const blueArrows = [];
+            comp.forEach((idx) => {
+                const t = graph[idx].tail;
+                if (typeof t === 'number' && comp.includes(t)) {
+                    const sourceLayer = layerByIdx.get(idx) || 0;
+                    const targetLayer = layerByIdx.get(t) || 0;
+                    
+                    // Only collect downward flowing arrows
+                    if (sourceLayer < targetLayer) {
+                        blueArrows.push({ source: idx, target: t, sourceLayer });
+                    }
+                }
+            });
+
+            // Group by source layer and assign turn point offsets globally within each layer
+            const arrowsBySourceLayer = new Map();
+            blueArrows.forEach((arrow) => {
+                if (!arrowsBySourceLayer.has(arrow.sourceLayer)) arrowsBySourceLayer.set(arrow.sourceLayer, []);
+                arrowsBySourceLayer.get(arrow.sourceLayer).push(arrow);
+            });
+
+            // Sort arrows within each layer by source index for consistent ordering
+            arrowsBySourceLayer.forEach((arrows) => {
+                arrows.sort((a, b) => a.source - b.source);
+            });
+
+            comp.forEach((idx) => {
+                const t = graph[idx].tail;
+                if (typeof t === 'number' && comp.includes(t)) {
+                    const sourceLayer = layerByIdx.get(idx) || 0;
+                    const targetLayer = layerByIdx.get(t) || 0;
+                    
+                    // Only draw arrows that flow downward (from lower layer number to higher layer number)
+                    if (sourceLayer < targetLayer) {
+                        const arr = incomingByTarget.get(t) || [];
+                        const oi = Math.max(0, arr.indexOf(idx));
+                        const offsetY = (oi - (arr.length - 1) / 2) * 18; // small stagger to reduce line overlap
+                        
+                        // Find global turn point offset based on position in source layer
+                        const layerArrows = arrowsBySourceLayer.get(sourceLayer) || [];
+                        const globalIndex = layerArrows.findIndex(arrow => arrow.source === idx);
+                        const turnPointOffset = globalIndex * 15; // global stagger to avoid overlapping horizontal lines across all arrows from same layer
+                        
+                        edges.push({ id: `t-${idx}-${t}`, source: `m-${idx}`, target: `m-${t}`, sourceHandle: 'B', targetHandle: 'T', type: 'rightangle', data: { offsetY, avoidNodes: true, turnPointOffset }, style: { stroke: '#3b82f6' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#3b82f6', width: 20, height: 20 } });
+                    }
                 }
             });
 
@@ -502,10 +624,10 @@ export default function Astrolabe() {
                 const ob = graph[idx].outerBlue;
                 if (ob && ob.star && ob.name) {
                     const pos = posByIdx.get(idx) || { x: 0, y: 0 };
-                    const blueId = `m-${idx}-OB`;
-                    const by = pos.y + 60; // place beneath the sink
-                    nodes.push({ id: blueId, type: 'blue', data: { label: `${ob.name}・${ob.star}` }, position: { x: pos.x, y: by } });
-                    edges.push({ id: `ob-${idx}`, source: `m-${idx}`, target: blueId, sourceHandle: 'B', targetHandle: 'T', type: 'straight', style: { stroke: '#3b82f6' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#3b82f6' } });
+                    const lastId = `m-${idx}-LAST`;
+                    const by = pos.y + 120; // increased gap to accommodate taller main nodes and provide better spacing
+                    nodes.push({ id: lastId, type: 'last', data: { label: `${ob.star}・${ob.name}`, handles: { T: true, B: false } }, position: { x: pos.x, y: by } });
+                    edges.push({ id: `ob-${idx}`, source: `m-${idx}`, target: lastId, sourceHandle: 'B', targetHandle: 'T', type: 'straight', style: { stroke: '#3b82f6' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#3b82f6', width: 20, height: 20 } });
                 }
             });
 
@@ -519,24 +641,24 @@ export default function Astrolabe() {
                 const redCenterOffset = reds.length > 0 ? (reds.length - 1) / 2 : 0;
                 reds.forEach((txt, k) => {
                     const redId = `${mainId}-R-${k}`;
-                    const ry = pos.y + (k - redCenterOffset) * subItemGap;
+                    const ry = pos.y + (k - redCenterOffset) * subItemGap - 32; // offset upward by 8px
                     const redX = pos.x - (LINK_LENGTH + SIDE_NODE_WIDTH);
                     nodes.push({ id: redId, type: 'red', data: { label: txt }, position: { x: redX, y: ry } });
-                    const redArrow = (txt === '權')
-                      ? { markerStart: { type: MarkerType.ArrowClosed, color: '#ef4444' } }
-                      : { markerEnd: { type: MarkerType.ArrowClosed, color: '#ef4444' } };
+                    const redArrow = (txt === '自化權')
+                      ? { markerStart: { type: MarkerType.ArrowClosed, color: '#ef4444', width: 20, height: 20 } }
+                      : { markerEnd: { type: MarkerType.ArrowClosed, color: '#ef4444', width: 20, height: 20 } };
                     edges.push({ id: `r-${idx}-${k}`, source: redId, target: mainId, sourceHandle: 'R', targetHandle: 'L', type: 'straight', style: { stroke: '#ef4444' }, animated: false, ...redArrow });
                 });
 
                 const greenCenterOffset = greens.length > 0 ? (greens.length - 1) / 2 : 0;
                 greens.forEach((txt, k) => {
                     const greenId = `${mainId}-G-${k}`;
-                    const gy = pos.y + (k - greenCenterOffset) * subItemGap;
+                    const gy = pos.y + (k - greenCenterOffset) * subItemGap - 32; // offset upward by 8px
                     const greenX = pos.x + NODE_WIDTH + LINK_LENGTH;
                     nodes.push({ id: greenId, type: 'green', data: { label: txt }, position: { x: greenX, y: gy } });
-                    const greenArrow = (txt === '祿')
-                      ? { markerEnd: { type: MarkerType.ArrowClosed, color: '#16a34a' } }
-                      : { markerStart: { type: MarkerType.ArrowClosed, color: '#16a34a' } };
+                    const greenArrow = (txt === '自化祿')
+                      ? { markerEnd: { type: MarkerType.ArrowClosed, color: '#16a34a', width: 20, height: 20 } }
+                      : { markerStart: { type: MarkerType.ArrowClosed, color: '#16a34a', width: 20, height: 20 } };
                     edges.push({ id: `g-${idx}-${k}`, source: mainId, target: greenId, sourceHandle: 'R', targetHandle: 'L', type: 'straight', style: { stroke: '#16a34a' }, animated: false, ...greenArrow });
                 });
             });
@@ -580,16 +702,15 @@ export default function Astrolabe() {
                 </div>
             </div> */}
 
-            <div className="container">
+            <div className="container-flow">
                 {mounted && flows.map((flow, idx) => {
-                    const height = Math.max(360, (flow.layerCount || 1) * 260);
+                    const height = Math.max(440, (flow.layerCount || 1) * 420); // adjusted height calculation to match new layerHeight (280px)
                     return (
                     <div key={idx} style={{ border: "1px solid #eee", borderRadius: 8, padding: 12, margin: "16px 0" }}>
                         {/* <div style={{ fontSize: 14, marginBottom: 8 }}>圖 {idx + 1} ・ 節點 {flow.comp.length}</div> */}
                         <div style={{ width: "100%", height: height }}>
-                            <ReactFlow key={`rf-${idx}-${flow.nodes.length}-${flow.edges.length}`} nodes={flow.nodes} edges={flow.edges} nodeTypes={nodeTypes} defaultEdgeOptions={{ type: 'straight' }} fitView fitViewOptions={{ padding: 0.2 }} proOptions={{ hideAttribution: true }}>
+                            <ReactFlow key={`rf-${idx}-${flow.nodes.length}-${flow.edges.length}`} nodes={flow.nodes} edges={flow.edges} nodeTypes={nodeTypes} edgeTypes={edgeTypes} defaultEdgeOptions={{ type: 'straight' }} fitView fitViewOptions={{ padding: 0.2 }} proOptions={{ hideAttribution: true }}>
                                 <Controls showInteractive={false} position="top-right" />
-                                <Background />
                             </ReactFlow>
                         </div>
                     </div>
