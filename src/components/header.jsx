@@ -8,7 +8,7 @@ export const Header = () => {
           <Link href="/">
             <div className="logo">
               <img src={"/logo.png"} alt="logo" />
-              <div className="name">曜靈星軌理數</div>
+              <div className="name">星軌堂</div>
             </div>
           </Link>
           <Link href="/chart">

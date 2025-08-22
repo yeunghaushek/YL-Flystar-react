@@ -79,7 +79,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 40px;
+      height: 36px;
       width: 100%;
       margin: 2px;
       border: 0;
@@ -102,7 +102,6 @@
   }
 
   .footer {
-    flex: 1;
     display: inline-flex;
     justify-content: center;
     align-items: flex-start;
@@ -121,7 +120,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 40px;
+      height: 36px;
       width: 100%;
       border: 0;
       border-radius: 4px;
@@ -139,6 +138,46 @@
 
     .star {
       background-color: #fc0;
+    }
+  }
+
+  .flow {
+    flex: 1;
+    display: inline-flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 36px;
+      width: 100%;
+      margin: 2px;
+      border: 0;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #fff;
+
+      a {
+        width: 100%;
+        height: inherit;
+
+        display: flex;
+      justify-content: center;
+      align-items: center;
+
+        text-decoration: none;
+        color: #fff;
+      }
+
+      @media only screen and (max-width: 767px) {
+        height: 32px;
+      }
+    }
+
+    .flow1 {
+      background-color: #686;
     }
   }
 }

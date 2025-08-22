@@ -958,7 +958,7 @@ export default function Astrolabe() {
           <Link href="/">
             <div className="logo">
               <img src={"logo.png"} alt="logo" />
-              <div className="name">曜靈星軌理數</div>
+              <div className="name">星軌堂</div>
             </div>
           </Link>
           <Link href="/chart">
@@ -2076,6 +2076,14 @@ export default function Astrolabe() {
                       <AssignmentIcon />
                     </button>
                   </div>
+                </div>
+                <div className={centerPalaceStyle.flow}>
+                 
+                  <button className={centerPalaceStyle.flow1}>
+                  <Link href="/flow" target="_blank">
+                    吉化串連 (Beta)
+                    </Link>
+                  </button>
                 </div>
               </div>
             </div>

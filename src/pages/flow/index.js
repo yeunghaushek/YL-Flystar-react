@@ -1,3 +1,5 @@
+// http://localhost:3000/flow?n=&g=0&c=0&y=2025&m=8&d=21&bt=3&lm=0
+
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -70,24 +72,39 @@ export default function Astrolabe() {
     }, []);
 
     // Shared sizing for nodes and side edge lengths
-    const NODE_WIDTH = 140; // main node width
-    const MAIN_NODE_HEIGHT = 60; // increased height to accommodate two lines of text
+    const NODE_WIDTH = 140; // star node (main rectangle) width
+    const MAIN_NODE_HEIGHT = 60; // star node height
     const SIDE_NODE_WIDTH = 100; // red/green node width (shorter)
     const SIDE_NODE_HEIGHT = 32; // fixed height to align handles vertically
-    const TARGET_SIDE_LINE = 40; // target visual line length for red/green edges
+    const TARGET_SIDE_LINE = 40; // (legacy) remained for readability
+    const ELLIPSE_WIDTH = 120; // palace ellipse node width
+    const ELLIPSE_HEIGHT = 32; // palace ellipse node height
 
-    // Custom nodes with conditional connection points for main nodes
-    const PalaceNode = ({ data }) => {
-        const [star, name] = data.label.split('・');
+    // Star (rectangle) node: shows star name only; top receives blue, left/right for red/green
+    const StarNode = ({ data }) => {
         const { handles = {} } = data; // Get which handles should be visible
+        const offsetLeft = Math.max(0, data.offsetLeft || 0);
+        const offsetRight = Math.max(0, data.offsetRight || 0);
+        const containerWidth = NODE_WIDTH + offsetLeft + offsetRight;
         return (
-            <div style={{ width: NODE_WIDTH, height: MAIN_NODE_HEIGHT, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: "1px solid #ddd", borderRadius: 8, background: "#fff", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
-                <div style={{ fontWeight: 600, textAlign: 'center', fontSize: '14px', lineHeight: '1.5' }}>{star}</div>
-                <div style={{ textAlign: 'center', fontSize: '12px', lineHeight: '1.5' }}>{name}</div>
-                {handles.T && <Handle type="target" position={Position.Top} id="T" />}
+            <div style={{ width: containerWidth, height: MAIN_NODE_HEIGHT, position: 'relative' }}>
+                <div style={{ position: 'absolute', left: offsetLeft, right: offsetRight, top: 0, bottom: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: "1px solid #ddd", borderRadius: 8, background: "#fff", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
+                    <div style={{ fontWeight: 600, textAlign: 'center', fontSize: '14px', lineHeight: '1.5' }}>{data.label}</div>
+                    {handles.T && <Handle type="target" position={Position.Top} id="T" />}
+                    {handles.L && <Handle type="target" position={Position.Left} id="L" />}
+                    {handles.R && <Handle type="source" position={Position.Right} id="R" />}
+                </div>
+            </div>
+        );
+    };
+
+    // Palace (ellipse) node: shows palace name only; bottom sends blue
+    const EclipseNode = ({ data }) => {
+        const { handles = {} } = data;
+        return (
+            <div style={{ width: ELLIPSE_WIDTH, height: ELLIPSE_HEIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center', border: "1px solid #ddd", borderRadius: 9999, background: "#fff", boxShadow: "0 1px 2px rgba(0,0,0,0.05)", textAlign: 'center' }}>
+                {data.label}
                 {handles.B && <Handle type="source" position={Position.Bottom} id="B" />}
-                {handles.L && <Handle type="target" position={Position.Left} id="L" />}
-                {handles.R && <Handle type="source" position={Position.Right} id="R" />}
             </div>
         );
     };
@@ -104,6 +121,17 @@ export default function Astrolabe() {
         </div>
     );
 
+    const BlueNode = ({ data }) => {
+        const { handles = { T: true, B: false } } = data;
+        return (
+            <div style={{ width: SIDE_NODE_WIDTH, height: SIDE_NODE_HEIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center', border: "1px solid #93c5fd", borderRadius: 6, background: "#eff6ff", textAlign: 'center' }}>
+                {data.label}
+                {handles.T && <Handle type="target" position={Position.Top} id="T" />}
+                {handles.B && <Handle type="source" position={Position.Bottom} id="B" />}
+            </div>
+        );
+    };
+
     const LastNode = ({ data }) => {
         const [star, name] = data.label.split('・');
         const { handles = { T: true, B: false } } = data; // Default to showing only T handle for last nodes
@@ -117,23 +145,64 @@ export default function Astrolabe() {
         );
     };
 
-    const nodeTypes = useMemo(() => ({ palace: PalaceNode, red: RedNode, green: GreenNode, last: LastNode }), []);
+    const nodeTypes = useMemo(() => ({ star: StarNode, eclipse: EclipseNode, red: RedNode, green: GreenNode, blue: BlueNode, last: LastNode }), []);
 
     // Custom 90-degree edge with optional vertical offset to reduce overlaps
     const RightAngleEdge = ({ id, sourceX, sourceY, targetX, targetY, markerEnd, style, data }) => {
         const offsetY = (data && typeof data.offsetY === 'number') ? data.offsetY : 0;
         const avoidNodes = (data && typeof data.avoidNodes === 'boolean') ? data.avoidNodes : false;
         const turnPointOffset = (data && typeof data.turnPointOffset === 'number') ? data.turnPointOffset : 0;
-        
-        let midY = Math.round(((sourceY + targetY) / 2) + offsetY);
-        
-        // If we need to avoid red/green nodes, adjust the middle path to go around them
-        if (avoidNodes) {
-            // For bottom-to-top connections, we need to go down first to avoid red/green nodes
-            const clearance = 80; // further increased clearance to accommodate separated blue arrows and red/green nodes
-            midY = sourceY + clearance + turnPointOffset; // add individual turn point offset to separate overlapping lines
+        const fixedMidY = (data && typeof data.fixedMidY === 'number') ? data.fixedMidY : undefined;
+        const centered = (data && data.centered === true);
+        const maxMidY = (data && typeof data.maxMidY === 'number') ? data.maxMidY : undefined;
+        const minMidY = (data && typeof data.minMidY === 'number') ? data.minMidY : undefined;
+        const bendY1 = (data && typeof data.bendY1 === 'number') ? data.bendY1 : undefined;
+        const bendY2 = (data && typeof data.bendY2 === 'number') ? data.bendY2 : undefined;
+        const bendX = (data && typeof data.bendX === 'number') ? data.bendX : Math.round((sourceX + targetX) / 2);
+
+        // Multi-turn path (4 turning points):
+        if (typeof bendY1 === 'number' && typeof bendY2 === 'number') {
+            const path = `M ${sourceX} ${sourceY} L ${sourceX} ${bendY1} L ${bendX} ${bendY1} L ${bendX} ${bendY2} L ${targetX} ${bendY2} L ${targetX} ${targetY}`;
+            return <BaseEdge id={id} path={path} markerEnd={markerEnd} style={style} />;
         }
-        
+
+        let midY = Math.round(((sourceY + targetY) / 2) + offsetY);
+
+        // If we need to avoid nodes, keep midY as centered as possible within a safe band
+        if (avoidNodes) {
+            const baseClearance = MAIN_NODE_HEIGHT + 60; // moderate clearance to avoid pushing midY too low
+            const minGapToTarget = 56; // ensure a longer lower segment and avoid target overlap
+            let minMid = sourceY + baseClearance; // lower bound independent from per-layer shifts
+            if (typeof minMidY === 'number') minMid = Math.max(minMid, minMidY);
+            let maxMid = targetY - minGapToTarget;
+            if (typeof maxMidY === 'number') maxMid = Math.min(maxMid, maxMidY);
+            // Use per-layer offset as a centered shift rather than raising the lower bound
+            const centeredGuess = Math.round(((sourceY + targetY) / 2) + offsetY + turnPointOffset);
+            if (minMid <= maxMid) {
+                const clamped = Math.max(minMid, Math.min(centeredGuess, maxMid));
+                midY = clamped;
+            } else {
+                // fallback when band collapses
+                midY = Math.round((minMid + maxMid) / 2);
+            }
+        }
+
+        // If explicitly centered, make upper and lower vertical segments same length
+        if (centered) {
+            // For centered mode we still respect a minimal downward margin to target
+            const minGapToTarget = 16;
+            const ideal = Math.round((sourceY + targetY) / 2);
+            midY = Math.min(ideal, targetY - minGapToTarget);
+        }
+
+        // Allow callers to pin the midY to separate parallel edges and avoid overlaps
+        if (!centered && typeof fixedMidY === 'number') {
+            let lower = (typeof minMidY === 'number') ? minMidY : (sourceY + MAIN_NODE_HEIGHT + 40);
+            let upper = targetY - 16;
+            if (typeof maxMidY === 'number') upper = Math.min(upper, maxMidY);
+            midY = Math.max(lower, Math.min(fixedMidY, upper));
+        }
+
         const path = `M ${sourceX} ${sourceY} L ${sourceX} ${midY} L ${targetX} ${midY} L ${targetX} ${targetY}`;
         return <BaseEdge id={id} path={path} markerEnd={markerEnd} style={style} />;
     };
@@ -317,15 +386,21 @@ export default function Astrolabe() {
         .flatMap((p) => {
         const targetStar = p.mutagenStars[3];
         const ownerName = targetStar ? starToPalace.get(targetStar) : undefined;
-        const outerBlue = ownerName ? { star: targetStar, name: ownerName } : "";
     
-        const buildEntry = (starName) => ({
-          name: p.name,
+        const buildEntry = (starName) => {
+          let ob = ownerName ? { star: targetStar, name: ownerName } : "";
+          // If outerBlue points back to the same palace and same star, mark as 自化忌
+          if (ob && ob.star && ob.name && ob.name === p.name && ob.star === starName) {
+            ob = { name: "自化忌", star: "" };
+          }
+          return {
+            name: p.name,
             star: starName,
             innerGreen: (greenMap.get(starName) || []).map((palaceName) => (palaceName === p.name ? "自化祿" : palaceName)).concat(mutagenStars.find((s) => s.star === starName && s.mutagen === "祿") ? ["生年祿"] : []),
-          innerRed: (redMap.get(starName) || []).map((palaceName) => (palaceName === p.name ? "自化權" : palaceName)).concat(mutagenStars.find((s) => s.star === starName && s.mutagen === "權") ? ["生年權"] : []),
-          outerBlue,
-        });
+            innerRed: (redMap.get(starName) || []).map((palaceName) => (palaceName === p.name ? "自化權" : palaceName)).concat(mutagenStars.find((s) => s.star === starName && s.mutagen === "權") ? ["生年權"] : []),
+            outerBlue: ob,
+          };
+        };
     
         return [
           ...p.majorStarNames.map(buildEntry),
@@ -431,16 +506,91 @@ export default function Astrolabe() {
 
     const flows = useMemo(() => {
         if (!graph || graph.length === 0) return [];
-        const comps = buildComponents(graph);
+        // Build diagrams by unique heads (items with no incoming heads)
+        const headIndexes = graph
+          .map((item, idx) => ({ idx, heads: item && item.heads ? item.heads : [] }))
+          .filter((x) => !x.heads || x.heads.length === 0)
+          .map((x) => x.idx);
+
+        const buildChainFromHead = (startIdx) => {
+            const chain = [];
+            const visited = new Set();
+            let cur = startIdx;
+            while (typeof cur === 'number' && !visited.has(cur)) {
+                visited.add(cur);
+                chain.push(cur);
+                const t = graph[cur] ? graph[cur].tail : undefined;
+                if (typeof t !== 'number') break;
+                cur = t;
+            }
+            return chain;
+        };
+
+        const uniqueChain = (start) => {
+            const chain = buildChainFromHead(start);
+            return Array.from(new Set(chain));
+        };
+        const chains = (headIndexes && headIndexes.length > 0)
+          ? headIndexes.map((h) => uniqueChain(h))
+          : [];
+
+        // Add pure cycles not covered by chains
+        const covered = new Set(chains.flat());
+        const comps = [...chains];
+        const buildCycleFrom = (startIdx) => {
+            const order = [];
+            const seen = new Map();
+            let cur = startIdx;
+            while (typeof cur === 'number' && !seen.has(cur)) {
+                seen.set(cur, order.length);
+                order.push(cur);
+                const t = graph[cur] ? graph[cur].tail : undefined;
+                if (typeof t !== 'number') return [];
+                cur = t;
+            }
+            if (seen.has(cur)) {
+                const begin = seen.get(cur) || 0;
+                return order.slice(begin);
+            }
+            return [];
+        };
+        for (let i = 0; i < graph.length; i++) {
+            if (covered.has(i)) continue;
+            const cyc = buildCycleFrom(i);
+            if (cyc.length > 0) {
+                comps.push(cyc);
+                cyc.forEach((n) => covered.add(n));
+            }
+        }
+        if (comps.length === 0) {
+            // fallback to connected components if nothing found
+            const fallback = buildComponents(graph);
+            fallback.forEach((c) => comps.push(c));
+        }
         return comps.map((comp) => {
-            const layerHeight = 280; // adjusted vertical space to accommodate taller main nodes (60px height)
-            const colGap = 220;
+            const layerHeight = 200; // reduced vertical clearance: straight flows need less space between layers
             const LINK_LENGTH = 40; // fixed visual line length for red/green links
             const subItemGap = 32;
 
             // Build indegree for tail edges within this component
             const inDegree = new Map();
             comp.forEach((idx) => inDegree.set(idx, 0));
+            const usedMidY = new Set(); // track integer midY values to avoid global overlaps
+            const allocateMidY = (base, minY, maxY, step = 4) => {
+                let y = Math.round(base);
+                const clamp = (v) => Math.max(Math.ceil(minY), Math.min(Math.floor(maxY), v));
+                y = clamp(y);
+                if (!usedMidY.has(y)) { usedMidY.add(y); return y; }
+                for (let k = 1; k < 100; k++) {
+                    const up = clamp(y + k * step);
+                    if (!usedMidY.has(up)) { usedMidY.add(up); return up; }
+                    const down = clamp(y - k * step);
+                    if (!usedMidY.has(down)) { usedMidY.add(down); return down; }
+                }
+                usedMidY.add(y);
+                return y;
+            };
+
             comp.forEach((idx) => {
                 const t = graph[idx].tail;
                 if (typeof t === 'number' && comp.includes(t)) {
@@ -448,23 +598,9 @@ export default function Astrolabe() {
                 }
             });
 
-            // Kahn layering: heads (inDegree 0) at top, tails downwards
+            // 強制以組件順序垂直配置：第 i 個節點在第 i 層，保證直向排列
             const layerByIdx = new Map();
-            const queue = [];
-            comp.forEach((idx) => { if ((inDegree.get(idx) || 0) === 0) { layerByIdx.set(idx, 0); queue.push(idx); } });
-            while (queue.length) {
-                const u = queue.shift();
-                const uLayer = layerByIdx.get(u) || 0;
-                const v = graph[u].tail;
-                if (typeof v === 'number' && comp.includes(v)) {
-                    const nextLayer = Math.max((layerByIdx.get(v) ?? -1), uLayer + 1);
-                    layerByIdx.set(v, nextLayer);
-                    inDegree.set(v, (inDegree.get(v) || 0) - 1);
-                    if ((inDegree.get(v) || 0) === 0) queue.push(v);
-                }
-            }
-            // For any remaining (cycles), default to 0
-            comp.forEach((idx) => { if (!layerByIdx.has(idx)) layerByIdx.set(idx, 0); });
+            comp.forEach((nodeIdx, order) => { layerByIdx.set(nodeIdx, order); });
 
             // Group by layers
             const layers = new Map();
@@ -480,15 +616,40 @@ export default function Astrolabe() {
             const posByIdx = new Map();
 
             const mainWidth = NODE_WIDTH;
-            const minGapX = 40;
 
-            const getHalves = (idx) => {
-                const hasRed = (graph[idx].innerRed || []).length > 0;
-                const hasGreen = (graph[idx].innerGreen || []).length > 0;
-                const leftHalf = mainWidth / 2 + (hasRed ? (LINK_LENGTH + SIDE_NODE_WIDTH) : 0);
-                const rightHalf = mainWidth / 2 + (hasGreen ? (LINK_LENGTH + SIDE_NODE_WIDTH) : 0);
+            const getHalves = () => {
+                const reserve = LINK_LENGTH + SIDE_NODE_WIDTH;
+                const leftHalf = mainWidth / 2 + reserve;
+                const rightHalf = mainWidth / 2 + reserve;
                 return { leftHalf, rightHalf };
             };
+
+            // Detect cycles (loops) to ensure we still render linkage as straight lines with a duplicate end
+            const tailInComp = (idx) => {
+                const t = graph[idx].tail;
+                return (typeof t === 'number' && comp.includes(t)) ? t : undefined;
+            };
+            const cycles = [];
+            const globallyVisited = new Set();
+            comp.forEach((startIdx) => {
+                if (globallyVisited.has(startIdx)) return;
+                const localOrder = new Map();
+                let cur = startIdx;
+                while (cur !== undefined && !localOrder.has(cur) && !globallyVisited.has(cur)) {
+                    localOrder.set(cur, localOrder.size);
+                    cur = tailInComp(cur);
+                }
+                if (cur !== undefined && localOrder.has(cur)) {
+                    const begin = localOrder.get(cur) || 0;
+                    const seq = Array.from(localOrder.keys());
+                    const cyc = seq.slice(begin);
+                    if (cyc.length > 1) cycles.push(cyc);
+                }
+                for (const k of localOrder.keys()) globallyVisited.add(k);
+            });
+            const cycleNodeSet = new Set(cycles.flat());
+            const nodeToCycle = new Map();
+            cycles.forEach((cyc, ci) => { cyc.forEach((n) => nodeToCycle.set(n, ci)); });
 
             sortedLayers.forEach(([l, arr]) => {
                 arr.sort((a,b) => a-b);
@@ -511,9 +672,11 @@ export default function Astrolabe() {
                 }
                 arr.forEach((idx, i) => {
                     const cx = xs[i] || 0; // center x
-                    const x = cx - NODE_WIDTH / 2; // convert to top-left for React Flow
+                    const reserve = LINK_LENGTH + SIDE_NODE_WIDTH;
+                    const containerWidth = NODE_WIDTH + reserve * 2;
+                    const x = cx - containerWidth / 2; // convert to top-left for React Flow (container width)
                     const y = l * layerHeight;
-                    posByIdx.set(idx, { x, y, cx });
+                    posByIdx.set(idx, { x, y, cx, offsetLeft: reserve, offsetRight: reserve });
                     
                     // Determine which handles are needed for this node
                     const handles = {};
@@ -521,28 +684,19 @@ export default function Astrolabe() {
                     // Check if node has incoming blue arrows (needs T handle)
                     const hasIncomingBlue = comp.some(sourceIdx => {
                         const t = graph[sourceIdx].tail;
-                        if (typeof t === 'number' && t === idx) {
-                            const sourceLayer = layerByIdx.get(sourceIdx) || 0;
-                            const targetLayer = layerByIdx.get(idx) || 0;
-                            return sourceLayer < targetLayer; // only downward arrows
-                        }
-                        return false;
-                    });
+                        if (!(typeof t === 'number' && t === idx)) return false;
+                        const sourceLayer = layerByIdx.get(sourceIdx) || 0;
+                        const targetLayer = layerByIdx.get(idx) || 0;
+                        return sourceLayer < targetLayer; // only downward arrows
+                    }) || cycles.some((cyc) => (cyc.length > 0 && cyc[0] === idx)); // cycle head receives return edge
                     if (hasIncomingBlue) handles.T = true;
                     
-                    // Check if node has outgoing blue arrows (needs B handle)
+                    // Prepare outgoing blue info for ellipse node
                     const t = graph[idx].tail;
-                    if (typeof t === 'number' && comp.includes(t)) {
-                        const sourceLayer = layerByIdx.get(idx) || 0;
-                        const targetLayer = layerByIdx.get(t) || 0;
-                        if (sourceLayer < targetLayer) handles.B = true; // only downward arrows
-                    }
-                    
-                    // Check if node has external last node connection (needs B handle)
                     const ob = graph[idx].outerBlue;
-                    if (ob && ob.star && ob.name && !comp.includes(graph[idx].tail)) {
-                        handles.B = true; // node is a sink with external last node
-                    }
+                    const hasOutgoingBlue = (typeof t === 'number' && comp.includes(t)) || (ob && ob.name) || cycleNodeSet.has(idx);
+                    // store for later ellipse creation
+                    posByIdx.set(idx, { x, y, cx, offsetLeft: reserve, offsetRight: reserve, hasOutgoingBlue });
                     
                     // Check if node has red/green connections (needs L and R handles)
                     const reds = graph[idx].innerRed || [];
@@ -550,7 +704,19 @@ export default function Astrolabe() {
                     if (reds.length > 0) handles.L = true;
                     if (greens.length > 0) handles.R = true;
                     
-                    nodes.push({ id: `m-${idx}`, type: 'palace', data: { label: `${graph[idx].star}・${graph[idx].name}`, handles }, position: { x, y } });
+                    // Star node (rectangle): use star name only
+                    nodes.push({ id: `m-${idx}`, type: 'star', data: { label: `${graph[idx].star}`, handles, offsetLeft: reserve, offsetRight: reserve }, position: { x, y } });
+                });
+
+                // Create palace ellipse node under each star node (do not move star)
+                arr.forEach((idx) => {
+                    const pos = posByIdx.get(idx) || { x: 0, y: 0, offsetLeft: 0 };
+                    const contentCenterX = pos.x + (pos.offsetLeft || 0) + NODE_WIDTH / 2;
+                    const ex = contentCenterX - ELLIPSE_WIDTH / 2;
+                    const ey = pos.y + MAIN_NODE_HEIGHT + 8;
+                    const eHandles = {};
+                    if (pos.hasOutgoingBlue) eHandles.B = true; // only bottom dot
+                    nodes.push({ id: `p-${idx}`, type: 'eclipse', data: { label: `${graph[idx].name}`, handles: eHandles }, position: { x: ex, y: ey } });
                 });
             });
 
@@ -588,29 +754,85 @@ export default function Astrolabe() {
                 arrowsBySourceLayer.get(arrow.sourceLayer).push(arrow);
             });
 
-            // Sort arrows within each layer by source index for consistent ordering
-            arrowsBySourceLayer.forEach((arrows) => {
-                arrows.sort((a, b) => a.source - b.source);
+            // Sort arrows within each layer by source index for deterministic ordering
+            arrowsBySourceLayer.forEach((arrows) => { arrows.sort((a, b) => a.source - b.source); });
+
+            // Stair cap disabled – treat as infinite (no stair layer)
+            let stairTopCapY = Infinity;
+
+            // Plan fixed midY per source to separate horizontals within each source layer band
+            const plannedMidYBySource = new Map();
+            arrowsBySourceLayer.forEach((arrows, layer) => {
+                const count = arrows.length;
+                if (count === 0) return;
+                // Compute allowable band within this source layer
+                const haveStair = (stairTopCapY !== Infinity);
+                const baseBelow = (layer === 0 ? 20 : 60);
+                const bandBottom = layer * layerHeight + MAIN_NODE_HEIGHT + baseBelow; // lower bound (smaller for top layer)
+                // add a larger guard margin below stair top; if no stair, allow near layer mid
+                let bandTop = haveStair ? (stairTopCapY - 30) : ((layer + 0.5) * layerHeight - 4); // upper bound toward top or layer mid
+                if (bandTop <= bandBottom) {
+                    arrows.forEach((arrow) => plannedMidYBySource.set(arrow.source, bandBottom));
+                    return;
+                }
+                // If no stair in this component, center at exact layer mid; else bias to 25% away from stair top
+                const centerY = haveStair ? (bandBottom + (bandTop - bandBottom) * 0.25) : (layer * layerHeight + layerHeight / 2);
+                const available = bandTop - bandBottom;
+                // Use a tiny, fixed separation around center to avoid overlap but stay near center
+                const spacing = (count > 1) ? 4 : 0;
+                // Build centered slots: odd -> includes center; even -> straddles center
+                let slots = [];
+                if (count === 1) {
+                    const only = arrows[0];
+                    const jitter = (only.source % 2 === 0) ? -4 : 4; // small deterministic separation
+                    const planned = Math.max(bandBottom, Math.min(centerY + jitter, bandTop));
+                    plannedMidYBySource.set(only.source, planned);
+                } else {
+                    if (count % 2 === 1) {
+                        const half = (count - 1) / 2;
+                        for (let k = -half; k <= half; k++) slots.push(centerY + k * spacing);
+                    } else {
+                        const half = count / 2;
+                        for (let k = 0; k < count; k++) slots.push(centerY + (k - (half - 0.5)) * spacing);
+                    }
+                    // Clamp to band and assign in source order, with deterministic jitter (+/- 2px) to ensure visible 4px separation when rendering anti-aliased lines
+                    arrows.sort((a, b) => a.source - b.source).forEach((arrow, i) => {
+                        const jitter = ((arrow.source % 2) === 0) ? -2 : 2;
+                        let planned = Math.max(bandBottom, Math.min(slots[i] + jitter, bandTop));
+                        plannedMidYBySource.set(arrow.source, planned);
+                    });
+                }
             });
 
             comp.forEach((idx) => {
                 const t = graph[idx].tail;
                 if (typeof t === 'number' && comp.includes(t)) {
+                    // Draw edges even在循環內也保留，讓 4->6、6->8 等直線存在
                     const sourceLayer = layerByIdx.get(idx) || 0;
                     const targetLayer = layerByIdx.get(t) || 0;
                     
-                    // Only draw arrows that flow downward (from lower layer number to higher layer number)
+                    // Only draw downward arrows; upward/cycle return handled separately
                     if (sourceLayer < targetLayer) {
                         const arr = incomingByTarget.get(t) || [];
                         const oi = Math.max(0, arr.indexOf(idx));
                         const offsetY = (oi - (arr.length - 1) / 2) * 18; // small stagger to reduce line overlap
                         
                         // Find global turn point offset based on position in source layer
-                        const layerArrows = arrowsBySourceLayer.get(sourceLayer) || [];
-                        const globalIndex = layerArrows.findIndex(arrow => arrow.source === idx);
-                        const turnPointOffset = globalIndex * 15; // global stagger to avoid overlapping horizontal lines across all arrows from same layer
-                        
-                        edges.push({ id: `t-${idx}-${t}`, source: `m-${idx}`, target: `m-${t}`, sourceHandle: 'B', targetHandle: 'T', type: 'rightangle', data: { offsetY, avoidNodes: true, turnPointOffset }, style: { stroke: '#3b82f6' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#3b82f6', width: 20, height: 20 } });
+                        // offset 已由全域 midY 分配處理，這裡不再需要 layer 內階梯偏移
+                        const data = { offsetY, avoidNodes: true };
+                        // Per-source-layer cap: keep turns within upper half of the source layer
+                        // Constrain to the same band we planned in
+                        const baseBelow = (sourceLayer === 0 ? 20 : 60);
+                        const plannedBandBottom = sourceLayer * layerHeight + MAIN_NODE_HEIGHT + baseBelow;
+                        let plannedBandTop = (stairTopCapY !== Infinity) ? (stairTopCapY - 30) : ((sourceLayer + 0.5) * layerHeight - 4);
+                        data.minMidY = plannedBandBottom;
+                        data.maxMidY = plannedBandTop;
+                        const plannedMidY = plannedMidYBySource.get(idx);
+                        const baseMid = (typeof plannedMidY === 'number') ? plannedMidY : (plannedBandBottom + plannedBandTop) / 2;
+                        // Allocate a globally unique midY at 4px steps within the allowed band
+                        data.fixedMidY = allocateMidY(baseMid, plannedBandBottom, plannedBandTop, 4);
+                        // Blue arrow now starts from ellipse node bottom -> star node top
+                        edges.push({ id: `t-${idx}-${t}`, source: `p-${idx}`, target: `m-${t}`, sourceHandle: 'B', targetHandle: 'T', type: 'rightangle', data, style: { stroke: '#3b82f6' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#3b82f6', width: 20, height: 20 } });
                     }
                 }
             });
@@ -622,18 +844,53 @@ export default function Astrolabe() {
             const sinks = comp.filter((idx) => !comp.includes(graph[idx].tail));
             sinks.forEach((idx) => {
                 const ob = graph[idx].outerBlue;
-                if (ob && ob.star && ob.name) {
-                    const pos = posByIdx.get(idx) || { x: 0, y: 0 };
-                    const lastId = `m-${idx}-LAST`;
-                    const by = pos.y + 120; // increased gap to accommodate taller main nodes and provide better spacing
-                    nodes.push({ id: lastId, type: 'last', data: { label: `${ob.star}・${ob.name}`, handles: { T: true, B: false } }, position: { x: pos.x, y: by } });
-                    edges.push({ id: `ob-${idx}`, source: `m-${idx}`, target: lastId, sourceHandle: 'B', targetHandle: 'T', type: 'straight', style: { stroke: '#3b82f6' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#3b82f6', width: 20, height: 20 } });
+                if (ob && ob.name) {
+                    const pos = posByIdx.get(idx) || { x: 0, y: 0, offsetLeft: 0 };
+                    const by = pos.y + Math.max(180, layerHeight); // deeper spacing under the main node for better visual height
+                    // 自化忌: 使用藍色節點，且只顯示名稱（不含星）
+                    if (ob.name === '自化忌') {
+                        const blueId = `m-${idx}-BLUE`;
+                        const contentCenterX = pos.x + (pos.offsetLeft || 0) + NODE_WIDTH / 2;
+                        const blueX = contentCenterX - SIDE_NODE_WIDTH / 2;
+                        nodes.push({ id: blueId, type: 'blue', data: { label: ob.name, handles: { T: true, B: false } }, position: { x: blueX, y: by } });
+                        // use a straight vertical edge to ensure marker points downward correctly
+                        edges.push({ id: `ob-${idx}`, source: `p-${idx}`, target: blueId, sourceHandle: 'B', targetHandle: 'T', type: 'straight', style: { stroke: '#3b82f6' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#3b82f6', width: 20, height: 20 } });
+                    } else if (ob.star) {
+                        // Split into separate star node (top) and palace ellipse (bottom), like regular nodes
+                        const starId = `m-${idx}-LAST-STAR`;
+                        const contentCenterX = pos.x + (pos.offsetLeft || 0) + NODE_WIDTH / 2;
+                        const starX = contentCenterX - NODE_WIDTH / 2;
+                        nodes.push({ id: starId, type: 'star', data: { label: `${ob.star}`, handles: { T: true }, offsetLeft: 0, offsetRight: 0 }, position: { x: starX, y: by } });
+                        // Connect current palace ellipse to the last star node with a straight blue arrow
+                        edges.push({ id: `ob-${idx}`, source: `p-${idx}`, target: starId, sourceHandle: 'B', targetHandle: 'T', type: 'straight', style: { stroke: '#3b82f6' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#3b82f6', width: 20, height: 20 } });
+                        // Add the palace ellipse below the star node for the destination palace
+                        const epX = contentCenterX - ELLIPSE_WIDTH / 2;
+                        const epY = by + MAIN_NODE_HEIGHT + 8;
+                        const epId = `p-${idx}-LAST`;
+                        nodes.push({ id: epId, type: 'eclipse', data: { label: `${ob.name}`, handles: {} }, position: { x: epX, y: epY } });
+                    }
                 }
             });
 
+            // For each cycle, draw a 4-turn right-angle return path from last -> first (no duplicate nodes)
+            if (cycles.length > 0) {
+                cycles.forEach((cyc, ci) => {
+                    const firstIdx = cyc[0];
+                    const lastIdx = cyc[cyc.length - 1];
+                    const lastPos = posByIdx.get(lastIdx) || { x: 0, y: 0 };
+                    const firstPos = posByIdx.get(firstIdx) || { x: 0, y: 0 };
+                    const bendY1 = lastPos.y + MAIN_NODE_HEIGHT + 80; // first horizontal below last (more downward offset)
+                    const bendY2 = Math.min(firstPos.y - 80, bendY1 + 140); // second horizontal near head (more top offset)
+                    // vertical return slightly left of nodes, but not too far
+                    const bendX = Math.min(firstPos.x, lastPos.x) - 60;
+                    const data = { avoidNodes: true, bendY1, bendY2, bendX };
+                    edges.push({ id: `c-${ci}-return`, source: `p-${lastIdx}`, target: `m-${firstIdx}`, sourceHandle: 'B', targetHandle: 'T', type: 'rightangle', data, style: { stroke: '#3b82f6' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#3b82f6', width: 20, height: 20 } });
+                });
+            }
+
             // Add innerRed/innerGreen nodes around their main node
             comp.forEach((idx) => {
-                const pos = posByIdx.get(idx) || { x: 0, y: 0 };
+                const pos = posByIdx.get(idx) || { x: 0, y: 0, offsetLeft: 0, offsetRight: 0 };
                 const mainId = `m-${idx}`;
                 const reds = graph[idx].innerRed || [];
                 const greens = graph[idx].innerGreen || [];
@@ -642,7 +899,8 @@ export default function Astrolabe() {
                 reds.forEach((txt, k) => {
                     const redId = `${mainId}-R-${k}`;
                     const ry = pos.y + (k - redCenterOffset) * subItemGap - 32; // offset upward by 8px
-                    const redX = pos.x - (LINK_LENGTH + SIDE_NODE_WIDTH);
+                    const contentLeft = pos.x + (pos.offsetLeft || 0);
+                    const redX = contentLeft - (LINK_LENGTH + SIDE_NODE_WIDTH);
                     nodes.push({ id: redId, type: 'red', data: { label: txt }, position: { x: redX, y: ry } });
                     const redArrow = (txt === '自化權')
                       ? { markerStart: { type: MarkerType.ArrowClosed, color: '#ef4444', width: 20, height: 20 } }
@@ -654,7 +912,8 @@ export default function Astrolabe() {
                 greens.forEach((txt, k) => {
                     const greenId = `${mainId}-G-${k}`;
                     const gy = pos.y + (k - greenCenterOffset) * subItemGap - 32; // offset upward by 8px
-                    const greenX = pos.x + NODE_WIDTH + LINK_LENGTH;
+                    const contentRight = pos.x + (pos.offsetLeft || 0) + NODE_WIDTH;
+                    const greenX = contentRight + LINK_LENGTH;
                     nodes.push({ id: greenId, type: 'green', data: { label: txt }, position: { x: greenX, y: gy } });
                     const greenArrow = (txt === '自化祿')
                       ? { markerEnd: { type: MarkerType.ArrowClosed, color: '#16a34a', width: 20, height: 20 } }
@@ -663,14 +922,65 @@ export default function Astrolabe() {
                 });
             });
 
-            return { comp, nodes, edges, layerCount: sortedLayers.length };
+            // Compute width/height bounds to ensure ReactFlow area can contain loop bends
+            const getNodeWidth = (n) => {
+                if (n.type === 'star') {
+                    // star container width includes reserve on both sides
+                    const reserve = LINK_LENGTH + SIDE_NODE_WIDTH;
+                    return NODE_WIDTH + reserve * 2;
+                }
+                if (n.type === 'eclipse') return ELLIPSE_WIDTH;
+                if (n.type === 'last') return NODE_WIDTH;
+                // red/green/blue nodes
+                return SIDE_NODE_WIDTH;
+            };
+            const getNodeHeight = (n) => {
+                if (n.type === 'star' || n.type === 'last') return MAIN_NODE_HEIGHT;
+                if (n.type === 'eclipse') return ELLIPSE_HEIGHT;
+                return SIDE_NODE_HEIGHT;
+            };
+            let minXBound = Infinity;
+            let maxXBound = -Infinity;
+            let minYBound = Infinity;
+            let maxYBound = -Infinity;
+            nodes.forEach((n) => {
+                const w = getNodeWidth(n);
+                const h = getNodeHeight(n);
+                minXBound = Math.min(minXBound, n.position.x);
+                maxXBound = Math.max(maxXBound, n.position.x + w);
+                minYBound = Math.min(minYBound, n.position.y);
+                maxYBound = Math.max(maxYBound, n.position.y + h);
+            });
+            edges.forEach((e) => {
+                const d = e.data || {};
+                if (typeof d.bendX === 'number') {
+                    minXBound = Math.min(minXBound, d.bendX - 20);
+                    maxXBound = Math.max(maxXBound, d.bendX + 20);
+                }
+                if (typeof d.bendY1 === 'number') {
+                    minYBound = Math.min(minYBound, d.bendY1 - 20);
+                    maxYBound = Math.max(maxYBound, d.bendY1 + 20);
+                }
+                if (typeof d.bendY2 === 'number') {
+                    minYBound = Math.min(minYBound, d.bendY2 - 20);
+                    maxYBound = Math.max(maxYBound, d.bendY2 + 20);
+                }
+                if (typeof d.fixedMidY === 'number') {
+                    minYBound = Math.min(minYBound, d.fixedMidY - 20);
+                    maxYBound = Math.max(maxYBound, d.fixedMidY + 20);
+                }
+            });
+            const boundsWidth = Math.max(0, (isFinite(minXBound) && isFinite(maxXBound)) ? (maxXBound - minXBound + 40) : 0);
+            const boundsHeight = Math.max(0, (isFinite(minYBound) && isFinite(maxYBound)) ? (maxYBound - minYBound + 40) : 0);
+
+            return { comp, nodes, edges, layerCount: sortedLayers.length, boundsWidth, boundsHeight };
         });
     }, [graph]);
 
     return (
         <>
             <Head>
-                <title>排盤 - 飛星紫微斗數</title>
+                <title>吉化串連 (Beta)</title>
                 <meta
                     name="description"
                     content="發掘您的人生地圖！我們提供專業命理分析，助您預見未來趨勢與機遇，規劃事業與人生策略。立即探索，打造成功的人生藍圖。"
@@ -681,7 +991,7 @@ export default function Astrolabe() {
                     <Link href="/">
                         <div className="logo">
                             <img src={"logo.png"} alt="logo" />
-                            <div className="name">曜靈星軌理數</div>
+                            <div className="name">星軌堂</div>
                         </div>
                     </Link>
                     <Link href="/chart">
@@ -702,14 +1012,27 @@ export default function Astrolabe() {
                 </div>
             </div> */}
 
-            <div className="container-flow">
+            <div className="container-flow" style={{ display: 'flex', gap: 16, overflowX: 'auto', alignItems: 'flex-start', height: '100vh', padding: 16, boxSizing: 'border-box' }}>
                 {mounted && flows.map((flow, idx) => {
-                    const height = Math.max(440, (flow.layerCount || 1) * 420); // adjusted height calculation to match new layerHeight (280px)
+                    const isSingle = (flows.length === 1);
+                    const extraBuffer = 80; // give a bit more space for bends and margins
+                    const minSingle = window.innerWidth - 48; // slightly wider than before
+                    const minMulti = Math.floor(window.innerWidth * 0.36); // a bit wider than 30%
+                    const boundsPlus = (typeof flow.boundsWidth === 'number' && flow.boundsWidth > 0) ? (flow.boundsWidth + extraBuffer) : 0;
+                    const computedWidth = Math.max(boundsPlus || 0, isSingle ? minSingle : minMulti);
+                    const chartWidth = `${computedWidth}px`;
+                    const viewportH = (typeof window !== 'undefined') ? window.innerHeight : 800;
+                    const minFitH = Math.max(440, viewportH - 96); // fit window height minus外層間距
+                    const needH = (typeof flow.boundsHeight === 'number' && flow.boundsHeight > 0) ? (flow.boundsHeight + 80) : 440;
+                    // Clamp to不超過視窗高度，避免出現多餘白區；不足時留出轉折緩衝
+                    const computedHeight = Math.min(Math.max(needH, minFitH), viewportH - 32);
+                    const cardFlex = isSingle ? '1 1 auto' : '0 0 auto';
+                    const cardWidth = isSingle ? '100%' : undefined;
                     return (
-                    <div key={idx} style={{ border: "1px solid #eee", borderRadius: 8, padding: 12, margin: "16px 0" }}>
+                    <div key={idx} style={{ border: "1px solid #eee", borderRadius: 8, padding: 12, margin: 0, flex: cardFlex, width: cardWidth, height: '100%' }}>
                         {/* <div style={{ fontSize: 14, marginBottom: 8 }}>圖 {idx + 1} ・ 節點 {flow.comp.length}</div> */}
-                        <div style={{ width: "100%", height: height }}>
-                            <ReactFlow key={`rf-${idx}-${flow.nodes.length}-${flow.edges.length}`} nodes={flow.nodes} edges={flow.edges} nodeTypes={nodeTypes} edgeTypes={edgeTypes} defaultEdgeOptions={{ type: 'straight' }} fitView fitViewOptions={{ padding: 0.2 }} proOptions={{ hideAttribution: true }}>
+                        <div style={{ width: chartWidth, minWidth: chartWidth, height: computedHeight }}>
+                            <ReactFlow key={`rf-${idx}-${flow.nodes.length}-${flow.edges.length}`} nodes={flow.nodes} edges={flow.edges} nodeTypes={nodeTypes} edgeTypes={edgeTypes} defaultEdgeOptions={{ type: 'straight' }} fitView fitViewOptions={{ padding: 0.5, includeHiddenNodes: true }} minZoom={0.2} maxZoom={1.5} proOptions={{ hideAttribution: true }}>
                                 <Controls showInteractive={false} position="top-right" />
                             </ReactFlow>
                         </div>
