@@ -1014,7 +1014,7 @@ export default function Astrolabe() {
                 </div>
             </div> */}
 
-            <div className="container-flow" style={{ display: 'flex', gap: 16, overflowX: 'auto', alignItems: 'flex-start', height: '100vh', padding: 16, boxSizing: 'border-box' }}>
+            <div className="container-flow" style={{ display: 'flex', gap: 16, overflowX: 'auto', alignItems: 'flex-start', height: '100vh', padding: `32px 16px`, boxSizing: 'border-box' }}>
                 {mounted && flows.map((flow, idx) => {
                     const isSingle = (flows.length === 1);
                     const extraBuffer = 80; // give a bit more space for bends and margins
