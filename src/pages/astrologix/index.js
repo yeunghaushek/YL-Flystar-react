@@ -903,8 +903,8 @@ export default function Astrolabe() {
   const { n, g, c, y, m, d, bt, lm } = router.query;
   useEffect(() => {
     console.log(n, g, c, y, m, d, bt, lm);
-    console.log(router.pathname);
-    console.log(router.query);
+    //console.log(router.pathname);
+    //console.log(router.query);
     if (g && c && y && m && d && bt && lm) {
       // c == 0 ? "陽曆" : "農曆"
       // g == 0 ? "男" : "女"
@@ -922,6 +922,10 @@ export default function Astrolabe() {
       setUpdateCounter(updateCounter + 1);
     }
   }, [n, g, c, y, m, d, bt, lm]);
+
+  const getFlowPath = () => {
+    return `/flow?n=${name}&g=${gender}&c=${calendar}&y=${year}&m=${month}&d=${day}&bt=${birthTime}&lm=${isLeapMonth ? "1" : "0"}`
+  }
 
   const updateUrlParams = () => {
     router.push(
@@ -2076,6 +2080,14 @@ export default function Astrolabe() {
                       <AssignmentIcon />
                     </button>
                   </div>
+                </div>
+                <div className={centerPalaceStyle.flow}>
+                 
+                  <button className={centerPalaceStyle.flow1}>
+                  <Link href={getFlowPath()} target="_blank">
+                    吉化串連 (Beta)
+                    </Link>
+                  </button>
                 </div>
               </div>
             </div>

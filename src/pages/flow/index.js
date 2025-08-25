@@ -72,13 +72,13 @@ export default function Astrolabe() {
     }, []);
 
     // Shared sizing for nodes and side edge lengths
-    const NODE_WIDTH = 140; // star node (main rectangle) width
-    const MAIN_NODE_HEIGHT = 60; // star node height
-    const SIDE_NODE_WIDTH = 100; // red/green node width (shorter)
+    const NODE_WIDTH = 60; // star node (main rectangle) width
+    const MAIN_NODE_HEIGHT = 40; // star node height
+    const SIDE_NODE_WIDTH = 80; // red/green node width (shorter)
     const SIDE_NODE_HEIGHT = 32; // fixed height to align handles vertically
     const TARGET_SIDE_LINE = 40; // (legacy) remained for readability
-    const ELLIPSE_WIDTH = 120; // palace ellipse node width
-    const ELLIPSE_HEIGHT = 32; // palace ellipse node height
+    const ELLIPSE_WIDTH = 80; // palace ellipse node width
+    const ELLIPSE_HEIGHT = 40; // palace ellipse node height
 
     // Star (rectangle) node: shows star name only; top receives blue, left/right for red/green
     const StarNode = ({ data }) => {
@@ -103,20 +103,22 @@ export default function Astrolabe() {
         const { handles = {} } = data;
         return (
             <div style={{ width: ELLIPSE_WIDTH, height: ELLIPSE_HEIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center', border: "1px solid #ddd", borderRadius: 9999, background: "#fff", boxShadow: "0 1px 2px rgba(0,0,0,0.05)", textAlign: 'center' }}>
-                {data.label}
+                <div style={{ fontWeight: 400, textAlign: 'center', fontSize: '16px', lineHeight: '1.5' }}>{data.label}</div>
                 {handles.B && <Handle type="source" position={Position.Bottom} id="B" />}
             </div>
         );
     };
 
     const RedNode = ({ data }) => (
-        <div style={{ width:  SIDE_NODE_WIDTH, height: SIDE_NODE_HEIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center', border: "1px solid #fca5a5", borderRadius: 6, background: "#fff4f4", textAlign: 'center' }}>{data.label}
+        <div style={{ width:  SIDE_NODE_WIDTH, height: SIDE_NODE_HEIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center', border: "1px solid #fca5a5", borderRadius: 6, background: "#fff4f4", textAlign: 'center' }}>
+            <div style={{ fontWeight: 400, textAlign: 'center', fontSize: '16px', lineHeight: '1.5' }}>{data.label}</div>
             <Handle type="source" position={Position.Right} id="R" />
         </div>
     );
 
     const GreenNode = ({ data }) => (
-        <div style={{ width: SIDE_NODE_WIDTH, height: SIDE_NODE_HEIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center', border: "1px solid #86efac", borderRadius: 6, background: "#f1fff6", textAlign: 'center' }}>{data.label}
+        <div style={{ width: SIDE_NODE_WIDTH, height: SIDE_NODE_HEIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center', border: "1px solid #86efac", borderRadius: 6, background: "#f1fff6", textAlign: 'center' }}>
+            <div style={{ fontWeight: 400, textAlign: 'center', fontSize: '16px', lineHeight: '1.5' }}>{data.label}</div>
             <Handle type="target" position={Position.Left} id="L" />
         </div>
     );
@@ -125,7 +127,7 @@ export default function Astrolabe() {
         const { handles = { T: true, B: false } } = data;
         return (
             <div style={{ width: SIDE_NODE_WIDTH, height: SIDE_NODE_HEIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center', border: "1px solid #93c5fd", borderRadius: 6, background: "#eff6ff", textAlign: 'center' }}>
-                {data.label}
+                <div style={{ fontWeight: 400, textAlign: 'center', fontSize: '16px', lineHeight: '1.5' }}>{data.label}</div>
                 {handles.T && <Handle type="target" position={Position.Top} id="T" />}
                 {handles.B && <Handle type="source" position={Position.Bottom} id="B" />}
             </div>
@@ -568,7 +570,7 @@ export default function Astrolabe() {
             fallback.forEach((c) => comps.push(c));
         }
         return comps.map((comp) => {
-            const layerHeight = 200; // reduced vertical clearance: straight flows need less space between layers
+            const layerHeight = 160; // reduced vertical clearance: straight flows need less space between layers
             const LINK_LENGTH = 40; // fixed visual line length for red/green links
             const subItemGap = 32;
 
@@ -880,7 +882,7 @@ export default function Astrolabe() {
                     const lastPos = posByIdx.get(lastIdx) || { x: 0, y: 0 };
                     const firstPos = posByIdx.get(firstIdx) || { x: 0, y: 0 };
                     const bendY1 = lastPos.y + MAIN_NODE_HEIGHT + 80; // first horizontal below last (more downward offset)
-                    const bendY2 = Math.min(firstPos.y - 80, bendY1 + 140); // second horizontal near head (more top offset)
+                    const bendY2 = Math.min(firstPos.y - 40, bendY1 + 140); // second horizontal near head (more top offset)
                     // vertical return slightly left of nodes, but not too far
                     const bendX = Math.min(firstPos.x, lastPos.x) - 60;
                     const data = { avoidNodes: true, bendY1, bendY2, bendX };
