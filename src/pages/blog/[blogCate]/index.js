@@ -30,14 +30,13 @@ const BlogCate = () => {
         <meta
           name="description"
           content="發掘您的人生地圖！我們提供專業命理分析，助您預見未來趨勢與機遇，規劃事業與人生策略。立即探索，打造成功的人生藍圖。"
-          opengraph={{
-            title: "星軌堂 - 您的智能人生定位系統",
-            description: "發掘您的人生地圖！我們提供專業命理分析，助您預見未來趨勢與機遇，規劃事業與人生策略。立即探索，打造成功的人生藍圖。",
-            images: [
-              { url: "/og.png" },
-            ],
-          }}
         />
+                        <meta property="og:type" content="website" />
+                <meta property="og:url" content={`https://yl-flystar.pro/`} />
+                <meta property="og:title" content="星軌堂 - 您的智能人生定位系統" />
+                <meta property="og:description" content="發掘您的人生地圖！我們提供專業命理分析，助您預見未來趨勢與機遇，規劃事業與人生策略。立即探索，打造成功的人生藍圖。" />
+                <meta property="og:image" content={`https://yl-flystar.pro/og.png`} />
+                <meta property="og:site_name" content="星軌堂" />
         <meta name="robots" content="noindex" />
       </Head>
       <Header />
