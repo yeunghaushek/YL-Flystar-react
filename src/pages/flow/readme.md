@@ -4,6 +4,8 @@
 
 這個流程圖系統用於繪製紫微斗數的星曜關係圖，支援多層級節點佈局和複雜的箭頭連接。
 
+同時，當同一張圖頁面上需要顯示多個子圖（flows）時，系統會根據每張圖的「主節點（星體節點）數量」進行排序，並提供底部的快捷按鈕列，快速捲動至指定的子圖。
+
 ## 核心組件
 
 ### 節點類型
@@ -102,6 +104,10 @@
 -   連接：宮位節點底部(B) → 藍色節點頂部(T)
 -   路徑：直線（確保箭頭由上而下）
 -   文字：僅顯示「自化忌」
+
+### 圖集合（flows）排序規則
+
+-   依每張圖的主節點數量（`comp.length`）由多到少排序，確保較大的圖優先呈現。
 
 ### 連接點顯示邏輯
 
@@ -205,12 +211,21 @@
 ## 版面配置（ReactFlow 容器）
 
 -   水平排列：外層以 `display:flex` 水平排版，支援水平捲動
--   單圖寬度：至少為視窗寬度減去外邊距（約 `window.innerWidth - 48`），或內容所需寬度（含回返 `bendX`）
--   多圖寬度：每張至少約 `36vw`，或內容寬度擇大值
+-   圖高（固定比例）：每張圖高度為視窗高度的 85%（`height = floor(window.innerHeight * 0.85)`）
+-   圖寬（固定比例）：採用 16:9 視覺比例（寬:高 = 9:16），由高度反推寬度 `width = floor(height * 9 / 16)`
+-   寬度上限：`width <= floor(window.innerWidth * 0.9)`（最多為視窗寬度的 90%）
 
 ### 自動貼齊與縮放
 
--   依內容計算 `boundsWidth/boundsHeight`，動態設定每張圖的寬高
--   高度：`computedHeight = clamp(boundsHeight + 80, viewportH - 96, viewportH - 32)`，同時預留回折緩衝
+-   依固定比例（上節）設定圖寬與圖高
 -   啟用 `fitView`，`fitViewOptions: { padding: 0.5, includeHiddenNodes: true }`，初始略縮小以完整呈現
 -   `minZoom = 0.2`、`maxZoom = 1.5`，方便手動微調
+
+## 底部快捷按鈕列（Shortcuts）
+
+-   **顯示位置**：頁面底部固定列（`position: fixed`）
+-   **置中與換行**：使用 `display: flex`、`flex-wrap: wrap`、`justify-content: center`，按鈕可自動換行且置中
+-   **每列 5 顆**：按鈕寬度以 `calc((100% - 4*gap) / 5)` 設定，確保一列剛好 5 顆（`gap = 8px`）
+-   **按鈕標籤**：取該子圖的「標題星曜」（head 節點的星名）；若無法取得則回退為 `圖 N`
+-   **捲動行為**：點擊按鈕後，以 `container.scrollTo({ left, behavior: 'smooth' })` 平滑水平捲動到對應圖卡
+-   **避免遮蓋捲動條**：快捷按鈕列的 `bottom` 設為 `12px`，故意保留一點底部偏移，避免覆蓋視窗底部的水平捲動條

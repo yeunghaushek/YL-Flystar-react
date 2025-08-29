@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 
 import { astro } from "iztro";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import ReactFlow, { Controls, Handle, Position, MarkerType, BaseEdge } from "reactflow";
 
 Date.prototype.toLocalDate = function () {
@@ -110,14 +110,14 @@ export default function Astrolabe() {
     };
 
     const RedNode = ({ data }) => (
-        <div style={{ width:  SIDE_NODE_WIDTH, height: SIDE_NODE_HEIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center', border: "1px solid #fca5a5", borderRadius: 6, background: "#fff4f4", textAlign: 'center' }}>
+        <div style={{ width:  SIDE_NODE_WIDTH, height: SIDE_NODE_HEIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center', border: data.label.startsWith("自化") ? "1px dashed #fca5a5" : "2px solid #fca5a5", borderRadius: 6, background: data.label.startsWith("自化") ? "#fff4f4" : "#fff4f4", textAlign: 'center' }}>
             <div style={{ fontWeight: 400, textAlign: 'center', fontSize: '16px', lineHeight: '1.5' }}>{data.label}</div>
             <Handle type="source" position={Position.Right} id="R" />
         </div>
     );
 
     const GreenNode = ({ data }) => (
-        <div style={{ width: SIDE_NODE_WIDTH, height: SIDE_NODE_HEIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center', border: "1px solid #86efac", borderRadius: 6, background: "#f1fff6", textAlign: 'center' }}>
+        <div style={{ width: SIDE_NODE_WIDTH, height: SIDE_NODE_HEIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center', border: data.label.startsWith("自化") ? "1px dashed #86efac" : "2px solid #86efac", borderRadius: 6, background: data.label.startsWith("自化") ? "#f1fff6" : "#f1fff6", textAlign: 'center' }}>
             <div style={{ fontWeight: 400, textAlign: 'center', fontSize: '16px', lineHeight: '1.5' }}>{data.label}</div>
             <Handle type="target" position={Position.Left} id="L" />
         </div>
@@ -126,7 +126,7 @@ export default function Astrolabe() {
     const BlueNode = ({ data }) => {
         const { handles = { T: true, B: false } } = data;
         return (
-            <div style={{ width: SIDE_NODE_WIDTH, height: SIDE_NODE_HEIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center', border: "1px solid #93c5fd", borderRadius: 6, background: "#eff6ff", textAlign: 'center' }}>
+            <div style={{ width: SIDE_NODE_WIDTH, height: SIDE_NODE_HEIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center', border: data.label.startsWith("自化") ? "1px dashed #93c5fd" : "2px solid #93c5fd", borderRadius: 6, background: data.label.startsWith("自化") ? "#eff6ff" : "#eff6ff", textAlign: 'center' }}>
                 <div style={{ fontWeight: 400, textAlign: 'center', fontSize: '16px', lineHeight: '1.5' }}>{data.label}</div>
                 {handles.T && <Handle type="target" position={Position.Top} id="T" />}
                 {handles.B && <Handle type="source" position={Position.Bottom} id="B" />}
@@ -349,6 +349,10 @@ export default function Astrolabe() {
             let star = p.minorStars.find((s) => s.mutagen === "祿") || p.minorStars.find((s) => s.mutagen === "權");
             return [{name: p.name, star: star.name, mutagen: star.mutagen}];
         }
+        if (p.minorStars.find((s) => s.mutagen === "忌") || p.minorStars.find((s) => s.mutagen === "忌")) {
+            let star = p.minorStars.find((s) => s.mutagen === "忌") || p.minorStars.find((s) => s.mutagen === "忌");
+            return [{name: p.name, star: star.name, mutagen: star.mutagen}];
+        }
         return [];
       });
       console.log(mutagenStars);
@@ -395,6 +399,12 @@ export default function Astrolabe() {
           if (ob && ob.star && ob.name && ob.name === p.name && ob.star === starName) {
             ob = { name: "自化忌", star: "" };
           }
+
+          /* if (ob && ob.star && ob.name && mutagenStars.find((s) => s.star === starName && s.mutagen === "忌")) {
+            ob = { name: "自化忌", star: "" };
+          } */
+
+
           return {
             name: p.name,
             star: starName,
@@ -410,6 +420,13 @@ export default function Astrolabe() {
         ];
         })
         .filter((entry) => entry.innerGreen && entry.innerGreen.length > 0);
+
+
+        // handle the last blue node which is not found in myStarPalaceMap (文曲)
+        const blueMutagenStars = mutagenStars.find((s) => s.mutagen === "忌");
+        if (blueMutagenStars && !myStarPalaceMap.find((s) => s.name === blueMutagenStars.name && s.star === blueMutagenStars.star)) {
+          myStarPalaceMap.push({name: blueMutagenStars.name, star: blueMutagenStars.star, innerGreen: [], innerRed: [], outerBlue: { name: "自化忌", star: "" }});
+        }
       
       // Build an index map: "palaceName|starName" -> first index in myStarPalaceMap
       const indexByNameAndStar = new Map();
@@ -882,9 +899,9 @@ export default function Astrolabe() {
                     const lastPos = posByIdx.get(lastIdx) || { x: 0, y: 0 };
                     const firstPos = posByIdx.get(firstIdx) || { x: 0, y: 0 };
                     const bendY1 = lastPos.y + MAIN_NODE_HEIGHT + 80; // first horizontal below last (more downward offset)
-                    const bendY2 = Math.min(firstPos.y - 40, bendY1 + 140); // second horizontal near head (more top offset)
+                    const bendY2 = Math.min(firstPos.y - 50, bendY1 + 140); // second horizontal near head (more top offset)
                     // vertical return slightly left of nodes, but not too far
-                    const bendX = Math.min(firstPos.x, lastPos.x) - 60;
+                    const bendX = Math.min(firstPos.x, lastPos.x) - 20;
                     const data = { avoidNodes: true, bendY1, bendY2, bendX };
                     edges.push({ id: `c-${ci}-return`, source: `p-${lastIdx}`, target: `m-${firstIdx}`, sourceHandle: 'B', targetHandle: 'T', type: 'rightangle', data, style: { stroke: '#3b82f6' }, markerEnd: { type: MarkerType.ArrowClosed, color: '#3b82f6', width: 20, height: 20 } });
                 });
@@ -976,8 +993,26 @@ export default function Astrolabe() {
             const boundsHeight = Math.max(0, (isFinite(minYBound) && isFinite(maxYBound)) ? (maxYBound - minYBound + 40) : 0);
 
             return { comp, nodes, edges, layerCount: sortedLayers.length, boundsWidth, boundsHeight };
-        });
+        }).sort((a,b) => (b.comp?.length || 0) - (a.comp?.length || 0));
     }, [graph]);
+
+    // Refs for container and each flow card to support scrollIntoView shortcuts
+    const containerRef = useRef(null);
+    const flowRefs = useRef([]);
+
+    // Compute heading star name for a diagram (first node with no incoming in component; fallback to first)
+    const getHeadingStar = (flow) => {
+        if (!flow || !flow.comp || flow.comp.length === 0) return "";
+        const indices = flow.comp;
+        const targets = new Set();
+        indices.forEach((idx) => {
+            const t = graph[idx] ? graph[idx].tail : undefined;
+            if (typeof t === 'number' && indices.includes(t)) targets.add(t);
+        });
+        const heads = indices.filter((idx) => !targets.has(idx));
+        const headIdx = (heads.length > 0 ? heads[0] : indices[0]);
+        return graph[headIdx] && graph[headIdx].star ? graph[headIdx].star : "";
+    };
 
     return (
         <>
@@ -1014,24 +1049,21 @@ export default function Astrolabe() {
                 </div>
             </div> */}
 
-            <div className="container-flow" style={{ display: 'flex', gap: 16, overflowX: 'auto', alignItems: 'flex-start', height: '100vh', padding: `32px 16px`, boxSizing: 'border-box' }}>
+            <div ref={containerRef} className="container-flow" style={{ display: 'flex', gap: 16, overflowX: 'auto', alignItems: 'flex-start', height: '100vh', padding: `8px 8px 64px`, boxSizing: 'border-box' }}>
                 {mounted && flows.map((flow, idx) => {
                     const isSingle = (flows.length === 1);
-                    const extraBuffer = 80; // give a bit more space for bends and margins
-                    const minSingle = window.innerWidth - 48; // slightly wider than before
-                    const minMulti = Math.floor(window.innerWidth * 0.36); // a bit wider than 30%
-                    const boundsPlus = (typeof flow.boundsWidth === 'number' && flow.boundsWidth > 0) ? (flow.boundsWidth + extraBuffer) : 0;
-                    const computedWidth = Math.max(boundsPlus || 0, isSingle ? minSingle : minMulti);
-                    const chartWidth = `${computedWidth}px`;
                     const viewportH = (typeof window !== 'undefined') ? window.innerHeight : 800;
-                    const minFitH = Math.max(440, viewportH - 96); // fit window height minus外層間距
-                    const needH = (typeof flow.boundsHeight === 'number' && flow.boundsHeight > 0) ? (flow.boundsHeight + 80) : 440;
-                    // Clamp to不超過視窗高度，避免出現多餘白區；不足時留出轉折緩衝
-                    const computedHeight = Math.min(Math.max(needH, minFitH), viewportH - 32);
+                    const computedHeight = Math.floor(viewportH * 0.85); // 85% of window height
+                    const viewportW = (typeof window !== 'undefined') ? window.innerWidth : 1200;
+                    // Height:Width = 16:9 => width = height * 9 / 16, capped by 90% of window width
+                    const maxWidth = Math.floor(viewportW * 0.9);
+                    const ratioWidth = Math.floor(computedHeight * 9 / 16);
+                    const computedWidth = Math.min(maxWidth, ratioWidth);
+                    const chartWidth = `${computedWidth}px`;
                     const cardFlex = isSingle ? '1 1 auto' : '0 0 auto';
                     const cardWidth = isSingle ? '100%' : undefined;
                     return (
-                    <div key={idx} style={{ border: "1px solid #eee", borderRadius: 8, padding: 12, margin: 0, flex: cardFlex, width: cardWidth, height: '100%' }}>
+                    <div ref={(el) => { flowRefs.current[idx] = el; }} key={idx} style={{ border: "1px solid #eee", borderRadius: 8, padding: 12, margin: 0, flex: cardFlex, width: cardWidth, height: '100%' }}>
                         {/* <div style={{ fontSize: 14, marginBottom: 8 }}>圖 {idx + 1} ・ 節點 {flow.comp.length}</div> */}
                         <div style={{ width: chartWidth, minWidth: chartWidth, height: computedHeight }}>
                             <ReactFlow key={`rf-${idx}-${flow.nodes.length}-${flow.edges.length}`} nodes={flow.nodes} edges={flow.edges} nodeTypes={nodeTypes} edgeTypes={edgeTypes} defaultEdgeOptions={{ type: 'straight' }} fitView fitViewOptions={{ padding: 0.5, includeHiddenNodes: true }} minZoom={0.2} maxZoom={1.5} proOptions={{ hideAttribution: true }}>
@@ -1042,6 +1074,31 @@ export default function Astrolabe() {
                     );
                 })}
             </div>
+            {/* Bottom shortcut bar */}
+            {mounted && flows && flows.length > 0 && (
+                <div style={{ position: 'fixed', left: 0, right: 0, bottom: '12px', background: '#ffffff', borderTop: '1px solid #eee', padding: '8px 12px', display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', zIndex: 10 }}>
+                    {flows.map((flow, idx) => {
+                        const label = getHeadingStar(flow) || `圖 ${idx + 1}`;
+                        const gap = 8;
+                        const buttonWidth = `calc((100% - ${gap * 4}px) / 5)`; // 5 buttons per row
+                        const onClick = () => {
+                            const container = containerRef.current;
+                            const card = flowRefs.current[idx];
+                            if (container && card) {
+                                const left = card.offsetLeft - 12; // small left padding
+                                container.scrollTo({ left, behavior: 'smooth' });
+                            } else if (card && card.scrollIntoView) {
+                                card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                            }
+                        };
+                        return (
+                            <button key={`btn-${idx}`} onClick={onClick} style={{ padding: '6px 10px', border: '1px solid #ddd', borderRadius: 6, background: '#fafafa', cursor: 'pointer', whiteSpace: 'nowrap', textAlign: 'center', flex: `0 0 ${buttonWidth}`, maxWidth: buttonWidth }}>
+                                {label}
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
         </>
     );
 }
