@@ -216,6 +216,13 @@ export default function About() {
         <meta
           name="description"
           content="發掘您的人生地圖！我們提供專業命理分析，助您預見未來趨勢與機遇，規劃事業與人生策略。立即探索，打造成功的人生藍圖。"
+          opengraph={{
+            title: "星軌堂 - 您的智能人生定位系統",
+            description: "發掘您的人生地圖！我們提供專業命理分析，助您預見未來趨勢與機遇，規劃事業與人生策略。立即探索，打造成功的人生藍圖。",
+            images: [
+              { url: "/og.png" },
+            ],
+          }}
         />
         <meta name="google-site-verification" content="GgRiozFx3jLZsdTn2Tqpxhao0v52utKt4__I2Je4csY" />
       </Head>

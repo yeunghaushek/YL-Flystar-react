@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 
 import { astro } from "iztro";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ReactFlow, { Controls, Handle, Position, MarkerType, BaseEdge } from "reactflow";
 
 Date.prototype.toLocalDate = function () {
@@ -79,6 +79,11 @@ export default function Astrolabe() {
     const TARGET_SIDE_LINE = 40; // (legacy) remained for readability
     const ELLIPSE_WIDTH = 80; // palace ellipse node width
     const ELLIPSE_HEIGHT = 40; // palace ellipse node height
+
+    // Reserve for bottom fixed shortcut bar to avoid overlaying the canvas when panning
+    const SHORTCUT_BAR_OFFSET = 12; // bottom: 12px
+    const SHORTCUT_BAR_HEIGHT = 44; // approximate bar height including padding
+    const CHART_BOTTOM_SPACER = SHORTCUT_BAR_OFFSET + SHORTCUT_BAR_HEIGHT + 8;
 
     // Star (rectangle) node: shows star name only; top receives blue, left/right for red/green
     const StarNode = ({ data }) => {
@@ -999,6 +1004,7 @@ export default function Astrolabe() {
     // Refs for container and each flow card to support scrollIntoView shortcuts
     const containerRef = useRef(null);
     const flowRefs = useRef([]);
+    const rfInstancesRef = useRef([]);
 
     // Compute heading star name for a diagram (first node with no incoming in component; fallback to first)
     const getHeadingStar = (flow) => {
@@ -1021,6 +1027,13 @@ export default function Astrolabe() {
                 <meta
                     name="description"
                     content="發掘您的人生地圖！我們提供專業命理分析，助您預見未來趨勢與機遇，規劃事業與人生策略。立即探索，打造成功的人生藍圖。"
+                    opengraph={{
+                        title: "星軌堂 - 您的智能人生定位系統",
+                        description: "發掘您的人生地圖！我們提供專業命理分析，助您預見未來趨勢與機遇，規劃事業與人生策略。立即探索，打造成功的人生藍圖。",
+                        images: [
+                          { url: "/og.png" },
+                        ],
+                      }}
                 />
             </Head>
             {/* <div className={`header show`}>
@@ -1063,11 +1076,11 @@ export default function Astrolabe() {
                     const cardFlex = isSingle ? '1 1 auto' : '0 0 auto';
                     const cardWidth = isSingle ? '100%' : undefined;
                     return (
-                    <div ref={(el) => { flowRefs.current[idx] = el; }} key={idx} style={{ border: "1px solid #eee", borderRadius: 8, padding: 12, margin: 0, flex: cardFlex, width: cardWidth, height: '100%' }}>
+                    <div ref={(el) => { flowRefs.current[idx] = el; }} key={idx} style={{ border: "1px solid #eee", borderRadius: 8, padding: 12, margin: 0, flex: cardFlex, width: cardWidth, height: `${computedHeight}px` }}>
                         {/* <div style={{ fontSize: 14, marginBottom: 8 }}>圖 {idx + 1} ・ 節點 {flow.comp.length}</div> */}
-                        <div style={{ width: chartWidth, minWidth: chartWidth, height: computedHeight }}>
-                            <ReactFlow key={`rf-${idx}-${flow.nodes.length}-${flow.edges.length}`} nodes={flow.nodes} edges={flow.edges} nodeTypes={nodeTypes} edgeTypes={edgeTypes} defaultEdgeOptions={{ type: 'straight' }} fitView fitViewOptions={{ padding: 0.5, includeHiddenNodes: true }} minZoom={0.2} maxZoom={1.5} proOptions={{ hideAttribution: true }}>
-                                <Controls showInteractive={false} position="top-right" />
+                        <div style={{ width: chartWidth, minWidth: chartWidth, height: computedHeight * 0.95 }}>
+                            <ReactFlow key={`rf-${idx}-${flow.nodes.length}-${flow.edges.length}`} nodes={flow.nodes} edges={flow.edges} nodeTypes={nodeTypes} edgeTypes={edgeTypes} defaultEdgeOptions={{ type: 'straight' }} fitView fitViewOptions={{ padding: 0.1, includeHiddenNodes: true }} minZoom={0.2} maxZoom={1.5} proOptions={{ hideAttribution: true }} onInit={(instance) => { rfInstancesRef.current[idx] = instance; try { instance.fitView({ padding: 0.1, includeHiddenNodes: true }); } catch (e) {} }}>
+                                <Controls showInteractive={false} position="bottom-right" style={{ display: 'flex', flexDirection: 'column', gap: 4 }} />
                             </ReactFlow>
                         </div>
                     </div>
