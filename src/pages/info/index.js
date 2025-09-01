@@ -685,7 +685,7 @@ export default function About() {
           </a>
         </div>
       </div>
-      <div className="footer">{`${new Date().getFullYear()} © 曜靈紫微飛星 版權所有`}</div>
+      <div className="footer">{`${new Date().getFullYear()} © 星軌堂 版權所有`}</div>
     </>
   );
 }

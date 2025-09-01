@@ -2283,7 +2283,7 @@ export default function Astrolabe() {
         <div className={astrolabeStyle.left}>
           <div className={astrolabeStyle.logo}>
             <img src={"logo.png"} alt="logo" />
-            <div className={astrolabeStyle.name}>曜靈紫微飛星</div>
+            <div className={astrolabeStyle.name}>星軌堂</div>
           </div>
           <button>線上排盤</button>
         </div>
