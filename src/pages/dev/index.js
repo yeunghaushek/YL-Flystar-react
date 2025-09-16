@@ -690,51 +690,60 @@ export default function Astrolabe() {
     } */
     };
 
-    /* useEffect(() => {
+    useEffect(() => {
         if (!astrolabe) return;
-        let myStarPalaceMap = [];
-        let myPalaceMutagenStarsMap = astrolabe.palaces.map((palace) => {
-            return { name: palace.name, mutagenStars: palace.mutagenStars, majorStars: palace.majorStars, minorStars: palace.minorStars };
-        });
+        const palaces = astrolabe.palaces.map((p) => ({
+            name: p.name,
+            mutagenStars: p.mutagenStars,
+            majorStarNames: (p.majorStars || []).map((s) => s.name),
+            minorStarNames: (p.minorStars || []).map((s) => s.name),
+        }));
 
-        for (let i = 0; i < myPalaceMutagenStarsMap.length; i++) {
-            for (let j = 0; j < myPalaceMutagenStarsMap[i].majorStars.length; j++) {
-              myStarPalaceMap.push({
-                    name: myPalaceMutagenStarsMap[i].name,
-                    star: myPalaceMutagenStarsMap[i].majorStars[j].name,
-                    innerGreen: myPalaceMutagenStarsMap
-                        .filter((p) => p.mutagenStars[0] === myPalaceMutagenStarsMap[i].majorStars[j].name)
-                        .map((p) => p.name),
-                    innerRed: myPalaceMutagenStarsMap
-                        .filter((p) => p.mutagenStars[1] === myPalaceMutagenStarsMap[i].majorStars[j].name)
-                        .map((p) => p.name),
-                    outerBlue: myPalaceMutagenStarsMap
-                        .find((p) => p.majorStars.map((s) => s.name).includes(myPalaceMutagenStarsMap[i].mutagenStars[3])) ? {star: myPalaceMutagenStarsMap[i].mutagenStars[3], name: myPalaceMutagenStarsMap.find((p) => p.majorStars.map((s) => s.name).includes(myPalaceMutagenStarsMap[i].mutagenStars[3])).name} : myPalaceMutagenStarsMap
-                        .find((p) => p.minorStars.map((s) => s.name).includes(myPalaceMutagenStarsMap[i].mutagenStars[3])) ? {star: myPalaceMutagenStarsMap[i].mutagenStars[3], name: myPalaceMutagenStarsMap.find((p) => p.minorStars.map((s) => s.name).includes(myPalaceMutagenStarsMap[i].mutagenStars[3])).name} : ""
-                });
-            }
-            for (let k = 0; k < myPalaceMutagenStarsMap[i].minorStars.length; k++) {
-              myStarPalaceMap.push({
-                    name: myPalaceMutagenStarsMap[i].name,
-                    star: myPalaceMutagenStarsMap[i].minorStars[k].name,
-                    innerGreen: myPalaceMutagenStarsMap
-                        .filter((p) => p.mutagenStars[0] === myPalaceMutagenStarsMap[i].minorStars[k].name)
-                        .map((p) => p.name),
-                    innerRed: myPalaceMutagenStarsMap
-                        .filter((p) => p.mutagenStars[1] === myPalaceMutagenStarsMap[i].minorStars[k].name)
-                        .map((p) => p.name),
-                    outerBlue: myPalaceMutagenStarsMap
-                        .find((p) => p.majorStars.map((s) => s.name).includes(myPalaceMutagenStarsMap[i].mutagenStars[3])) ? {star: myPalaceMutagenStarsMap[i].mutagenStars[3], name: myPalaceMutagenStarsMap.find((p) => p.majorStars.map((s) => s.name).includes(myPalaceMutagenStarsMap[i].mutagenStars[3])).name} : myPalaceMutagenStarsMap
-                        .find((p) => p.minorStars.map((s) => s.name).includes(myPalaceMutagenStarsMap[i].mutagenStars[3])) ? {star: myPalaceMutagenStarsMap[i].mutagenStars[3], name: myPalaceMutagenStarsMap.find((p) => p.minorStars.map((s) => s.name).includes(myPalaceMutagenStarsMap[i].mutagenStars[3])).name} : ""
-                });
-            }
+        // star name -> palace name (owner)
+        const starToPalaceName = new Map();
+        for (const p of palaces) {
+            for (const s of p.majorStarNames) starToPalaceName.set(s, p.name);
+            for (const s of p.minorStarNames) if (!starToPalaceName.has(s)) starToPalaceName.set(s, p.name);
         }
 
-        console.log(myPalaceMutagenStarsMap);
-        console.log(myStarPalaceMap);
-    }, [astrolabe]); */
+        const myStarPalaceMap = palaces.map((p) => {
+            const star = p.mutagenStars && p.mutagenStars.length >= 4 ? p.mutagenStars[3] : undefined;
+            const owner = star ? starToPalaceName.get(star) : undefined;
+            return {
+                name: p.name,
+                outerBlue: owner ? { star, name: owner } : "",
+            };
+        });
 
-    useEffect(() => {
+        console.log(palaces);
+        console.log(myStarPalaceMap);
+
+        // Build 12 routes following outerBlue links; stop on self-loop/seen loop; cap length at 13
+        const nameToEntry = new Map(myStarPalaceMap.map((e) => [e.name, e]));
+        const routes = myStarPalaceMap.map((startEntry) => {
+            const route = [];
+            const seenNames = new Set();
+            let current = startEntry;
+            let steps = 0;
+            while (current && current.outerBlue && current.outerBlue.name) {
+                route.push(current);
+                steps += 1;
+                if (steps >= 13) break;
+                const nextName = current.outerBlue.name;
+                if (nextName === current.name) break; // keep first when self-loop, then stop
+                if (seenNames.has(nextName)) break; // avoid longer cycles
+                seenNames.add(current.name);
+                const next = nameToEntry.get(nextName);
+                if (!next) break;
+                current = next;
+            }
+            return route;
+        });
+
+        console.log("outerBlue routes (2D, max 13 per route)", routes);
+    }, [astrolabe]);
+
+    /* useEffect(() => {
       if (!astrolabe) return;
     
       const palaces = astrolabe.palaces.map((p) => ({
@@ -818,7 +827,7 @@ export default function Astrolabe() {
 
       console.log(palaces);
       console.log(myStarPalaceMapWithLinks);
-    }, [astrolabe]);
+    }, [astrolabe]); */
 
     useEffect(() => {
         let isValid = true;

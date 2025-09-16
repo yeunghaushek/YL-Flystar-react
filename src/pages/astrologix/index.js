@@ -924,7 +924,7 @@ export default function Astrolabe() {
   }, [n, g, c, y, m, d, bt, lm]);
 
   const getFlowPath = () => {
-    return `/flow?n=${name}&g=${gender}&c=${calendar}&y=${year}&m=${month}&d=${day}&bt=${birthTime}&lm=${isLeapMonth ? "1" : "0"}`
+    return `/chain/auspicious?n=${name}&g=${gender}&c=${calendar}&y=${year}&m=${month}&d=${day}&bt=${birthTime}&lm=${isLeapMonth ? "1" : "0"}`
   }
 
   const updateUrlParams = () => {
