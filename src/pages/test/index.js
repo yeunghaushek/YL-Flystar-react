@@ -159,7 +159,7 @@ function generateRoutes(routes) {
     });
   });
 
-console.log(nodes);
+//console.log(nodes);
 
   return { nodes, edges };
 }

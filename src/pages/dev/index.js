@@ -1118,11 +1118,11 @@ export default function Astrolabe() {
                         <button>網誌</button>
                     </Link>
                 </div>
-                <div className="right">
+                {/* <div className="right">
                     <a target="_blank" href="https://buy.stripe.com/cN2cPsa6XaLMauQ001">
                         支持我們
                     </a>
-                </div>
+                </div> */}
             </div>
 
             <div className="container">
