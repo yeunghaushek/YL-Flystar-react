@@ -80,8 +80,6 @@ const SAMPLE_ROUTES = [
       "自化忌"
   ],
   [
-      "生年忌",
-      "太陰",
       "田宅宮",
       "巨門",
       "交友宮",
@@ -101,7 +99,14 @@ const SAMPLE_ROUTES = [
       "財帛宮",
       "天同",
       "交友宮"
-  ]
+  ],
+  [
+    "生年忌",
+    "太陰",
+    "田宅宮",
+    "巨門",
+    "交友宮"
+]
 ]
 
 /* function mergeRoutes(routes) {
@@ -115,6 +120,7 @@ const PALACE_STAR_OFFSET = 40;
 const STAR_PALACE_OFFSET = 10;
 
 function generateRoutes(routes) {
+  console.log(routes)
   const nodes = [];
   const edges = [];
   routes.forEach((route, routeIndex) => {
@@ -308,7 +314,10 @@ const StarPalaceRoute =  () =>
   }
 
 
-const { nodes: initialNodes, edges: initialEdges } = generateRoutes(SAMPLE_ROUTES);
+const graph1 = [SAMPLE_ROUTES[0],SAMPLE_ROUTES[3],SAMPLE_ROUTES[4],SAMPLE_ROUTES[5],SAMPLE_ROUTES[6],SAMPLE_ROUTES[8],SAMPLE_ROUTES[10],SAMPLE_ROUTES[12]]
+const graph2 = [SAMPLE_ROUTES[0],SAMPLE_ROUTES[6],SAMPLE_ROUTES[8],SAMPLE_ROUTES[1],SAMPLE_ROUTES[2],SAMPLE_ROUTES[7],SAMPLE_ROUTES[9],SAMPLE_ROUTES[11],SAMPLE_ROUTES[12]]
+
+const { nodes: initialNodes, edges: initialEdges } = generateRoutes(graph1);
 
 export default function ReactFlowPlayground() {
   const [mounted, setMounted] = useState(false);

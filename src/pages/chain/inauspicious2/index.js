@@ -393,7 +393,7 @@ export default function Astrolabe() {
               return [];
             });
             
-        console.log(mutagenStars);
+        //console.log(mutagenStars);
 
         const palaces = astrolabe.palaces.map((p) => ({
             name: p.name,
@@ -460,6 +460,23 @@ export default function Astrolabe() {
 
             return route;
         });
+
+
+        
+        let rIndex = routes.findIndex((route) => route.length > 0 && route[0].name === "生年忌");
+        //console.log(routes[rIndex])
+        
+        if (rIndex > -1) {
+            if (routes[rIndex][routes[rIndex].length - 1].outerBlue.name === "自化忌") {
+                // 生年忌 + 自化忌
+                routes.push(routes[rIndex]);
+                routes[rIndex] = routes[rIndex].slice(1);
+            } else {
+                // 生年忌
+                routes.push(routes[rIndex].slice(0,2));
+                routes[rIndex] = routes[rIndex].slice(1);
+            }
+        }
 
         setRoutes(routes);
 
