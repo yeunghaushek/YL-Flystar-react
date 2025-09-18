@@ -224,25 +224,24 @@ function removeContainedRoutes(routes) {
     return out;
 }
 
-// ========== Second-merge (extend by star-palace tail) ==========
+// ========== Second-merge (extend by palace tail) ==========
 
-// 星曜清單（判定『星→宮』尾端對）
+// 星曜清單（保留：若後續需用到星曜判定可沿用）
 const STARS_SET = new Set(["太陽","太陰","巨門","貪狼","天機","天同","文昌","文曲","武曲","廉貞"]);
 function isStar(name) { return typeof name === 'string' && STARS_SET.has(name); }
 function isPalace(name) { return typeof name === 'string' && name.endsWith('宮'); }
 
-// 建立索引：在其他路徑中，凡出現『星, 宮』且該 pair 之後還有元素的地方，收集後綴作為可延伸參考
-function buildStarPalaceSuffixIndex(routes) {
-    const map = new Map(); // key: star\x1fpalace -> Array<suffix[]>
+// 建立索引：在其他路徑中，凡出現『宮』且其後仍有元素，收集該『宮』後的後綴作為可延伸參考
+function buildPalaceSuffixIndex(routes) {
+    const map = new Map(); // key: palace -> Array<suffix[]>
     for (const r of routes) {
-        if (!Array.isArray(r) || r.length < 3) continue;
-        for (let i = 0; i < r.length - 2; i += 1) {
-            const a = r[i];
-            const b = r[i + 1];
-            if (isStar(a) && isPalace(b)) {
-                const suffix = r.slice(i + 2);
+        if (!Array.isArray(r) || r.length < 2) continue;
+        for (let i = 0; i < r.length - 1; i += 1) {
+            const token = r[i];
+            if (isPalace(token)) {
+                const suffix = r.slice(i + 1);
                 if (suffix.length === 0) continue;
-                const key = `${a}\x1f${b}`;
+                const key = token;
                 if (!map.has(key)) map.set(key, []);
                 map.get(key).push(suffix);
             }
@@ -251,37 +250,34 @@ function buildStarPalaceSuffixIndex(routes) {
     return map;
 }
 
-// 進一步延伸：若某路徑以『星, 宮』結尾，且該 pair 在其他路徑中間出現過，則將其後綴接在尾端（遵守『宮』數量限制）
-function extendRoutesByStarPalaceTail(routes, palaceLimit = 5) {
-    const index = buildStarPalaceSuffixIndex(routes);
+// 進一步延伸：若某路徑以『宮』結尾，且該『宮』在其他路徑中段出現過，則把其後綴接在尾端（遵守『宮』數量限制）
+function extendRoutesByPalaceTail(routes, palaceLimit = 5) {
+    const index = buildPalaceSuffixIndex(routes);
 
     const joinKey = (r) => r.join("\x1f");
     const out = [];
     const seen = new Set();
 
-    // 計算『宮』數量
     const palaceCount = (arr) => arr.reduce((c, v) => c + (isPalace(v) ? 1 : 0), 0);
 
     for (const r of routes) {
-        if (!Array.isArray(r) || r.length < 2) {
+        if (!Array.isArray(r) || r.length < 1) {
             const k = joinKey(r);
             if (!seen.has(k)) { seen.add(k); out.push(r); }
             continue;
         }
-        const tailStar = r[r.length - 2];
-        const tailPalace = r[r.length - 1];
-        const key = `${tailStar}\x1f${tailPalace}`;
+        const tail = r[r.length - 1];
+        const key = tail;
 
         let extendedAny = false;
-        if (isStar(tailStar) && isPalace(tailPalace) && index.has(key)) {
+        if (isPalace(tail) && index.has(key)) {
             for (const suffix of index.get(key)) {
                 const merged = [...r, ...suffix];
-                if (palaceCount(merged) >= palaceLimit) continue; // 遵守限制
+                if (palaceCount(merged) >= palaceLimit) continue;
                 const mk = joinKey(merged);
                 if (!seen.has(mk)) { seen.add(mk); out.push(merged); extendedAny = true; }
             }
         }
-        // 保留原路徑（若沒成功擴展或所有擴展被限制）
         const rk = joinKey(r);
         if (!extendedAny && !seen.has(rk)) { seen.add(rk); out.push(r); }
     }
@@ -436,8 +432,8 @@ function trimThenMergeWithMostFrequentTailThenFilterThenSort(routes, opts) {
     // Post-filter
     let filteredRoutes = removeContainedRoutes(merged.allRoutes);
 
-    // Second-merge: extend by star-palace tail
-    filteredRoutes = extendRoutesByStarPalaceTail(filteredRoutes, 5);
+    // Second-merge: extend by palace tail (only)
+    filteredRoutes = extendRoutesByPalaceTail(filteredRoutes, 5);
 
     // Run filter again to drop any now-contained routes
     filteredRoutes = removeContainedRoutes(filteredRoutes);
@@ -697,7 +693,7 @@ const graph5 = [
     SAMPLE_ROUTES_3[12],
 ];
  
-const { allRoutes, longestRoutes, longestLength } = trimThenMergeWithMostFrequentTailThenFilterThenSort(graph2, { logProgress: false });
+const { allRoutes, longestRoutes, longestLength } = trimThenMergeWithMostFrequentTailThenFilterThenSort(graph1, { logProgress: false });
 console.log(allRoutes);
  
 /*
@@ -720,8 +716,8 @@ Flow:
 3) Post-filter:
    - 新規則：移除任何是其他更長路徑「連續子序列」的路徑（例如 ['疾厄宮','文曲','財帛宮'] 被包含於較長路徑時剔除）。
 
-2.5) Second-merge:
-   - 若某條路徑以『星, 宮』結尾，且該 pair 在另一條路徑的中段出現過，則可把該參考路徑中 pair 之後的後綴接在此路徑尾端（同樣遵守『宮』數量限制）。
+2.5) Second-merge (simplified):
+   - 若某條路徑以『宮』結尾，且該『宮』在另一條路徑的中段出現過，則可把該路徑中該『宮』之後的後綴接在此路徑尾端（遵守『宮』數量限制）。
    - 之後再執行一次 Post-filter 以移除新產生的子路徑。
  
 4) Sorting (final output order):
