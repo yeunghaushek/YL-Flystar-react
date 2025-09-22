@@ -393,7 +393,7 @@ export default function Astrolabe() {
               return [];
             });
             
-        //console.log(mutagenStars);
+        console.log(mutagenStars);
 
         const palaces = astrolabe.palaces.map((p) => ({
             name: p.name,

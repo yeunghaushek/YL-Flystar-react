@@ -425,7 +425,7 @@ function sortRoutesByTailPopularityThenLength(allRoutes, routesPool, opts = {}) 
  
 // ========== Pipeline (Trim → Merge → Filter → Second-merge → Sort) ==========
  
-function trimThenMergeWithMostFrequentTailThenFilterThenSort(routes, opts) {
+export function trimThenMergeWithMostFrequentTailThenFilterThenSort(routes, opts = {logProgress: false}) {
     const trimmed = trimRoutesByChosenTailPair(routes);
     const merged = mergeAllRoutesEnhancedSafe(trimmed, opts);
 
@@ -458,7 +458,7 @@ function trimThenMergeWithMostFrequentTailThenFilterThenSort(routes, opts) {
 // otherwise the first palace token after head). If that palace equals the head of its opposite route
 // (and the opposite route's head is not '生年忌'), collect this route (slice to first 3) as extendRoutes.
 // Also return distinct opposite palace pairs (head_i, head_opp) with palace names only, skipping heads '生年忌'.
-function findOppositePalaceRoutes(originalRoutes) {
+export function findOppositePalaceRoutes(originalRoutes) {
     if (!Array.isArray(originalRoutes)) return { pairs: [], extendRoutes: [] };
     const total = originalRoutes.length;
     if (total < 12) return { pairs: [], extendRoutes: [] };
@@ -758,9 +758,9 @@ const graph5 = [
  
 //const { allRoutes, longestRoutes, longestLength } = trimThenMergeWithMostFrequentTailThenFilterThenSort(graph4, { logProgress: false });
 //console.log(allRoutes);
-console.log(findOppositePalaceRoutes(SAMPLE_ROUTES_1));
-console.log(findOppositePalaceRoutes(SAMPLE_ROUTES_2));
-console.log(findOppositePalaceRoutes(SAMPLE_ROUTES_3));
+// console.log(findOppositePalaceRoutes(SAMPLE_ROUTES_1));
+// console.log(findOppositePalaceRoutes(SAMPLE_ROUTES_2));
+// console.log(findOppositePalaceRoutes(SAMPLE_ROUTES_3));
  
 /*
 Rules & Flow
