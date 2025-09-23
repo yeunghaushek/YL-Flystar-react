@@ -532,13 +532,14 @@ const PALACE_B = ["兄弟宮", "夫妻宮", "子女宮", "財帛宮", "疾厄宮
 const STARS = ["太陽", "太陰", "巨門", "貪狼", "天機", "天同", "文昌", "文曲", "武曲", "廉貞"];
 const PALACE_STAR_OFFSET = 40;
 const STAR_PALACE_OFFSET = 2;
+const ROW_OFFSET = 80;
 function generateRoutes(routes, rawRoutes) {
     console.log(routes);
     if (routes.length === 0) return [];
     const nodes = [];
     const edges = [];
     routes.forEach((route, routeIndex) => {
-        const y = 80 * routeIndex;
+        const y = ROW_OFFSET * routeIndex;
         route.some((item, itemIndex) => {
             const id = `r${routeIndex}-${itemIndex}-${item}`;
             const type = item.startsWith("自化") ? "dashedBlue" : STARS.includes(item) ? "star" : "palace";
@@ -632,12 +633,9 @@ function generateRoutes(routes, rawRoutes) {
         });
     });
 
-    console.log(nodes);
-    console.log(edges);
-
     const { pairs, extendRoutes } = findOppositePalaceRoutes(rawRoutes);
-    console.log(pairs)
 
+    // handle pairs
     for (let i = 0; i < pairs.length; i++) {
         let firstNodes = nodes.filter((node) => node.data.label === pairs[i][0]);
         let secondNodes = nodes.filter((node) => node.data.label === pairs[i][1]);
@@ -648,6 +646,11 @@ function generateRoutes(routes, rawRoutes) {
         }
         if (secondNodes.length > 1) {
             secondNodes = secondNodes.filter((node) => node.id.split("-")[1] !== "0");
+        }
+
+        // if same row, skip
+        if (firstNodes[0].id.split("-")[0] === secondNodes[0].id.split("-")[0]) {
+            continue;
         }
 
         let firstNodeIndex = nodes.findIndex((node)=> node === firstNodes[0]);
@@ -690,32 +693,54 @@ function generateRoutes(routes, rawRoutes) {
 
     }
 
-    /* let node1Index = nodes.findIndex((node) => node.data.label === "財帛宮");
-    let node2Index = nodes.findIndex((node) => node.data.label === "福德宮");
-    nodes[node1Index].data.handles.bottom = "source";
-    nodes[node2Index].data.handles.top = "target";
-    edges.push({
-        id: `r1-e${node1Index}-${node2Index}`,
-        source: nodes[node1Index].id,
-        target: nodes[node2Index].id,
-        sourceHandle: "bottom",
-        targetHandle: "top",
-        type: "dashedArrowBoth",
-    });
+    // handle extendRoutes
+    const tailItems = routes.map((route) => route[route.length - 1]);
+    const distinctTails = [...new Set(tailItems)];
 
-    let node3Index = nodes.findIndex((node) => node.data.label === "田宅宮");
-    let node4Index = nodes.findIndex((node) => node.data.label === "子女宮");
-    nodes[node3Index].data.handles.bottom = "source";
-    nodes[node4Index].data.handles.top = "target";
-    edges.push({
-        id: `r1-e${node3Index}-${node4Index}`,
-        source: nodes[node3Index].id,
-        target: nodes[node4Index].id,
-        sourceHandle: "bottom",
-        targetHandle: "top",
-        type: "dashedArrowBoth",
-    }); */
+    for (let i = 0; i < distinctTails.length; i++) {
+        const toExtend = extendRoutes.find((exRoute) => exRoute[0] === distinctTails[i])
+        if (toExtend) {
+            let targetOrignalNodes = nodes.filter((item) => item.data.label === distinctTails[i]);
+            console.log(targetOrignalNodes)
+            if (targetOrignalNodes.length === 0) continue;
+            if (targetOrignalNodes.length > 1) {
+                targetOrignalNodes = targetOrignalNodes.filter((item) => item.id.startsWith("r") && item.id.split("-")[1] !== "0");
+            }
+            const targetOriginalNodesIndex = nodes.findIndex((node)=> node === targetOrignalNodes[0]);
+            nodes[targetOriginalNodesIndex].data.handles.right = "source";
 
+            const finalToExtend = toExtend.flatMap((extend, exIndex) => {
+                if (exIndex === 0) return [];
+                else {
+                    let type = STARS.includes(extend) ? "star" : "palace";
+                    let x = type === "star" ? targetOrignalNodes[0].position.x + PALACE_WIDTH + PALACE_STAR_OFFSET : targetOrignalNodes[0].position.x + PALACE_WIDTH + PALACE_STAR_OFFSET + STAR_WIDTH + STAR_PALACE_OFFSET
+                    let y = targetOrignalNodes[0].position.y + Math.floor(ROW_OFFSET/4);
+                    return [
+                        {
+                            id: `ex-${i}-${extend}`,
+                            type: type,
+                            position: { x: x, y: y},
+                            data: {
+                                label: extend,
+                                handles: {
+                                    left: type === "star" ? "target" : null,
+                                    right: null,
+                                    top: null,
+                                    bottom: null,
+                                },
+                            },
+                        }
+                    ]
+                }
+            })
+
+            edges.push({ id: `ex${i}-e${nodes[targetOriginalNodesIndex].data.label}-${finalToExtend[0].data.label}`, source: nodes[targetOriginalNodesIndex].id, target: finalToExtend[0].id, targetHandle: "left" });
+            nodes.push(...finalToExtend);
+        }
+    }
+
+    console.log(nodes)
+    console.log(edges)
     return { nodes, edges };
 }
 
