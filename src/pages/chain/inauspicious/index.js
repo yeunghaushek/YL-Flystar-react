@@ -409,34 +409,48 @@ export default function Astrolabe() {
     }, []);
 
     // ===== Bottom shortcut bar helpers =====
-    const prioritizedPalaces = useMemo(() => ["命宮", "福德宮", "遷移宮"], []);
     const routeKey = useCallback((r) => (Array.isArray(r) ? r.join("\x1f") : String(r)), []);
-    const getRouteLabel = useCallback((r) => {
-        if (!Array.isArray(r) || r.length === 0) return "(空)";
-        const palace = r.find((t) => typeof t === "string" && t.endsWith("宮"));
-        return palace || r[0];
-    }, []);
+    const fixedGroupA = useMemo(() => ["命宮", "福德宮", "遷移宮", "生年忌"], []);
+    const fixedGroupB = useMemo(
+        () => ["兄弟宮", "夫妻宮", "子女宮", "財帛宮", "疾厄宮", "交友宮", "事業宮", "田宅宮", "父母宮"],
+        []
+    );
     const splitRoutes = useMemo(() => {
-        const taken = new Set();
         const groupA = [];
         const groupB = [];
         if (!Array.isArray(simpleRoutes)) return { groupA, groupB };
-        // pick first match per prioritized palace
-        prioritizedPalaces.forEach((pal) => {
-            const idx = simpleRoutes.findIndex((rt, i) => !taken.has(i) && Array.isArray(rt) && rt.includes(pal));
+
+        const findRouteForLabel = (label) => {
+            if (!Array.isArray(simpleRoutes)) return { index: -1, route: undefined };
+            let idx = -1;
+            if (label === "生年忌") {
+                idx = simpleRoutes.findIndex((rt) => Array.isArray(rt) && rt.includes("生年忌"));
+            } else {
+                idx = simpleRoutes.findIndex((rt) => Array.isArray(rt) && rt.includes(label));
+            }
             if (idx > -1) {
-                taken.add(idx);
-                groupA.push({ index: idx, route: simpleRoutes[idx], label: pal });
+                return { index: idx, route: simpleRoutes[idx] };
             }
+            return { index: -1, route: undefined };
+        };
+
+        // Build groupA strictly in the fixed order
+        fixedGroupA.forEach((label) => {
+            const { index, route } = findRouteForLabel(label);
+            groupA.push({ index, route, label, available: !!route });
         });
-        // rest keep original order
-        simpleRoutes.forEach((rt, i) => {
-            if (!taken.has(i)) {
-                groupB.push({ index: i, route: rt, label: getRouteLabel(rt) });
-            }
+
+        // For groupB, ensure unique labels and no duplicates across groups
+        const seenLabels = new Set(fixedGroupA);
+        fixedGroupB.forEach((label) => {
+            if (seenLabels.has(label)) return;
+            const { index, route } = findRouteForLabel(label);
+            groupB.push({ index, route, label, available: !!route });
+            seenLabels.add(label);
         });
+
         return { groupA, groupB };
-    }, [simpleRoutes, prioritizedPalaces, getRouteLabel]);
+    }, [simpleRoutes, fixedGroupA, fixedGroupB]);
 
     const isSelected = useCallback((rt) => {
         const k = routeKey(rt);
@@ -493,20 +507,21 @@ export default function Astrolabe() {
             {/* Bottom shortcut bar */}
             <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, background: '#fff', borderTop: '1px solid #e5e7eb', padding: 8, boxShadow: '0 -4px 12px rgba(0,0,0,0.04)' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8, marginBottom: 8 }}>
-                    {splitRoutes.groupA.map(({ index, route, label }) => {
-                        const active = isSelected(route);
+                    {splitRoutes.groupA.map(({ index, route, label, available }) => {
+                        const active = route && isSelected(route);
                         return (
                             <button
-                                key={`sr-a-${index}`}
-                                onClick={() => toggleSelect(route)}
+                                key={`sr-a-${label}`}
+                                onClick={() => available && toggleSelect(route)}
                                 style={{
                                     width: '100%',
                                     padding: '10px 8px',
                                     borderRadius: 6,
-                                    border: '1px solid ' + (active ? '#3b82f6' : '#e5e7eb'),
-                                    background: active ? '#3b82f6' : '#f9fafb',
-                                    color: active ? '#fff' : '#111827',
+                                    border: '1px solid ' + (available ? (active ? '#3b82f6' : '#e5e7eb') : '#e5e7eb'),
+                                    background: available ? (active ? '#3b82f6' : '#f9fafb') : '#f3f4f6',
+                                    color: available ? (active ? '#fff' : '#111827') : '#9ca3af',
                                     fontWeight: 500,
+                                    cursor: available ? 'pointer' : 'not-allowed'
                                 }}
                             >
                                 {label}
@@ -515,20 +530,21 @@ export default function Astrolabe() {
                     })}
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
-                    {splitRoutes.groupB.map(({ index, route, label }) => {
-                        const active = isSelected(route);
+                    {splitRoutes.groupB.map(({ index, route, label, available }) => {
+                        const active = route && isSelected(route);
                         return (
                             <button
-                                key={`sr-b-${index}`}
-                                onClick={() => toggleSelect(route)}
+                                key={`sr-b-${label}`}
+                                onClick={() => available && toggleSelect(route)}
                                 style={{
                                     width: '100%',
                                     padding: '10px 8px',
                                     borderRadius: 6,
-                                    border: '1px solid ' + (active ? '#3b82f6' : '#e5e7eb'),
-                                    background: active ? '#3b82f6' : '#f9fafb',
-                                    color: active ? '#fff' : '#111827',
+                                    border: '1px solid ' + (available ? (active ? '#3b82f6' : '#e5e7eb') : '#e5e7eb'),
+                                    background: available ? (active ? '#3b82f6' : '#f9fafb') : '#f3f4f6',
+                                    color: available ? (active ? '#fff' : '#111827') : '#9ca3af',
                                     fontWeight: 500,
+                                    cursor: available ? 'pointer' : 'not-allowed'
                                 }}
                             >
                                 {label}
