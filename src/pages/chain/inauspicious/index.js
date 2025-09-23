@@ -8,6 +8,8 @@ import { astro } from "iztro";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ReactFlow, { Controls, Handle, Position, MarkerType, BaseEdge, useNodesState, useEdgesState, addEdge, Background } from "reactflow";
 
+import { trimThenMergeWithMostFrequentTailThenFilterThenSort, findOppositePalaceRoutes } from "../../../../inauspicious-utils";
+
 Date.prototype.toLocalDate = function () {
     let tzoffset = this.getTimezoneOffset() * 60000; //offset in milliseconds
     let formattedDateStr = new Date(this.getTime() - tzoffset).toISOString();
@@ -344,6 +346,13 @@ export default function Astrolabe() {
         setSimpleRoutes(simplifiedRoutes);
     }, [astrolabe]);
 
+    /* const [palacePairs, setPalacePairs] = useState([]);
+    const [extendRoutes, setExtendRoutes] = useState([]);
+    useEffect(() => {
+        const {pairs, extendRoutes} = findOppositePalaceRoutes(simpleRoutes);
+        setPalacePairs(pairs);
+        setExtendRoutes(extendRoutes)
+    },[simpleRoutes]) */
 
     const [updateCounter, setUpdateCounter] = useState(0);
     useEffect(() => {
@@ -393,14 +402,15 @@ export default function Astrolabe() {
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
     useEffect(() => {
-        const routesForFlow = selectedRoutes;
-        if (!routesForFlow || routesForFlow.length === 0) {
+        const {allRoutes} = trimThenMergeWithMostFrequentTailThenFilterThenSort(selectedRoutes);
+        if (!allRoutes || allRoutes.length === 0) {
             setNodes([]);
             setEdges([]);
             return;
         }
-        const { nodes: genNodes, edges: genEdges } = generateRoutes(routesForFlow);
-        setNodes(genNodes);
+        const { nodes: genNodes, edges: genEdges } = generateRoutes(allRoutes, simpleRoutes);
+        const genNodes_ = genNodes.map((nodes) => {return {...nodes, data: {...nodes.data, isSelected: selectedHeads.includes(nodes.data.label)}}})
+        setNodes(genNodes_);
         setEdges(genEdges);
     }, [selectedRoutes]);
 
@@ -409,66 +419,23 @@ export default function Astrolabe() {
     }, []);
 
     // ===== Bottom shortcut bar helpers =====
-    const routeKey = useCallback((r) => (Array.isArray(r) ? r.join("\x1f") : String(r)), []);
-    const fixedGroupA = useMemo(() => ["命宮", "福德宮", "遷移宮", "生年忌"], []);
-    const fixedGroupB = useMemo(
-        () => ["兄弟宮", "夫妻宮", "子女宮", "財帛宮", "疾厄宮", "交友宮", "事業宮", "田宅宮", "父母宮"],
-        []
-    );
-    const splitRoutes = useMemo(() => {
-        const groupA = [];
-        const groupB = [];
-        if (!Array.isArray(simpleRoutes)) return { groupA, groupB };
+    const [selectedHeads, setSelectedHeads] = useState([]);
+    const toggleRoute = (headingPalace) => {
+        let selectedHeadsClone = [...selectedHeads]
+        let sIndex = selectedHeadsClone.findIndex((item) => item === headingPalace)
+        if (sIndex > -1) {
+            selectedHeadsClone.splice(sIndex, 1)
+            setSelectedHeads(selectedHeadsClone)
+        } else {
+            selectedHeadsClone.push(headingPalace)
+            setSelectedHeads(selectedHeadsClone)
+        }
+    }
 
-        const findRouteForLabel = (label) => {
-            if (!Array.isArray(simpleRoutes)) return { index: -1, route: undefined };
-            let idx = -1;
-            if (label === "生年忌") {
-                idx = simpleRoutes.findIndex((rt) => Array.isArray(rt) && rt.includes("生年忌"));
-            } else {
-                idx = simpleRoutes.findIndex((rt) => Array.isArray(rt) && rt.includes(label));
-            }
-            if (idx > -1) {
-                return { index: idx, route: simpleRoutes[idx] };
-            }
-            return { index: -1, route: undefined };
-        };
-
-        // Build groupA strictly in the fixed order
-        fixedGroupA.forEach((label) => {
-            const { index, route } = findRouteForLabel(label);
-            groupA.push({ index, route, label, available: !!route });
-        });
-
-        // For groupB, ensure unique labels and no duplicates across groups
-        const seenLabels = new Set(fixedGroupA);
-        fixedGroupB.forEach((label) => {
-            if (seenLabels.has(label)) return;
-            const { index, route } = findRouteForLabel(label);
-            groupB.push({ index, route, label, available: !!route });
-            seenLabels.add(label);
-        });
-
-        return { groupA, groupB };
-    }, [simpleRoutes, fixedGroupA, fixedGroupB]);
-
-    const isSelected = useCallback((rt) => {
-        const k = routeKey(rt);
-        return selectedRoutes.findIndex((r) => routeKey(r) === k) > -1;
-    }, [selectedRoutes, routeKey]);
-
-    const toggleSelect = useCallback((rt) => {
-        const k = routeKey(rt);
-        setSelectedRoutes((prev) => {
-            const idx = prev.findIndex((r) => routeKey(r) === k);
-            if (idx > -1) {
-                const next = prev.slice();
-                next.splice(idx, 1);
-                return next;
-            }
-            return [...prev, rt];
-        });
-    }, [routeKey]);
+    useEffect(() => {
+        let targetRoutes = simpleRoutes.filter((route) => selectedHeads.includes((route[0])))
+        setSelectedRoutes(targetRoutes)
+    }, [selectedHeads])
 
     return (
         <>
@@ -507,47 +474,47 @@ export default function Astrolabe() {
             {/* Bottom shortcut bar */}
             <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, background: '#fff', borderTop: '1px solid #e5e7eb', padding: 8, boxShadow: '0 -4px 12px rgba(0,0,0,0.04)' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8, marginBottom: 8 }}>
-                    {splitRoutes.groupA.map(({ index, route, label, available }) => {
-                        const active = route && isSelected(route);
+                    {PALACE_A.map(item => {
+                        let active = selectedHeads.includes(item);
                         return (
                             <button
-                                key={`sr-a-${label}`}
-                                onClick={() => available && toggleSelect(route)}
+                                key={`sr-a-${item}`}
+                                onClick={() => toggleRoute(item)}
                                 style={{
                                     width: '100%',
                                     padding: '10px 8px',
                                     borderRadius: 6,
-                                    border: '1px solid ' + (available ? (active ? '#3b82f6' : '#e5e7eb') : '#e5e7eb'),
-                                    background: available ? (active ? '#3b82f6' : '#f9fafb') : '#f3f4f6',
-                                    color: available ? (active ? '#fff' : '#111827') : '#9ca3af',
-                                    fontWeight: 500,
-                                    cursor: available ? 'pointer' : 'not-allowed'
+                                    border: `3px solid ${active ? '#93c5fd' : '#e5e7eb'}` ,
+                                    background:  active ? '#eff6ff' : '#f9fafb',
+                                    color: '#111827',
+                                    fontWeight: 400,
+                                    cursor: 'pointer'
                                 }}
                             >
-                                {label}
+                                {item}
                             </button>
                         );
                     })}
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
-                    {splitRoutes.groupB.map(({ index, route, label, available }) => {
-                        const active = route && isSelected(route);
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8, marginBottom: 8 }}>
+                    {PALACE_B.map(item => {
+                        let active = selectedHeads.includes(item);
                         return (
                             <button
-                                key={`sr-b-${label}`}
-                                onClick={() => available && toggleSelect(route)}
+                                key={`sr-a-${item}`}
+                                onClick={() => toggleRoute(item)}
                                 style={{
                                     width: '100%',
                                     padding: '10px 8px',
                                     borderRadius: 6,
-                                    border: '1px solid ' + (available ? (active ? '#3b82f6' : '#e5e7eb') : '#e5e7eb'),
-                                    background: available ? (active ? '#3b82f6' : '#f9fafb') : '#f3f4f6',
-                                    color: available ? (active ? '#fff' : '#111827') : '#9ca3af',
-                                    fontWeight: 500,
-                                    cursor: available ? 'pointer' : 'not-allowed'
+                                    border: `3px solid ${active ? '#fca5a5' : '#e5e7eb'}` ,
+                                    background:  active ? '#fff4f4' : '#f9fafb',
+                                    color: '#111827',
+                                    fontWeight: 400,
+                                    cursor: 'pointer'
                                 }}
                             >
-                                {label}
+                                {item}
                             </button>
                         );
                     })}
@@ -559,12 +526,15 @@ export default function Astrolabe() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+const PALACE_A = ["命宮", "福德宮", "遷移宮", "生年忌"]
+const PALACE_B = ["兄弟宮", "夫妻宮", "子女宮", "財帛宮", "疾厄宮", "交友宮", "事業宮", "田宅宮", "父母宮"]
 
 const STARS = ["太陽", "太陰", "巨門", "貪狼", "天機", "天同", "文昌", "文曲", "武曲", "廉貞"];
 const PALACE_STAR_OFFSET = 40;
 const STAR_PALACE_OFFSET = 2;
-function generateRoutes(routes) {
+function generateRoutes(routes, rawRoutes) {
     console.log(routes);
+    if (routes.length === 0) return [];
     const nodes = [];
     const edges = [];
     routes.forEach((route, routeIndex) => {
@@ -664,6 +634,61 @@ function generateRoutes(routes) {
 
     console.log(nodes);
     console.log(edges);
+
+    const { pairs, extendRoutes } = findOppositePalaceRoutes(rawRoutes);
+    console.log(pairs)
+
+    for (let i = 0; i < pairs.length; i++) {
+        let firstNodes = nodes.filter((node) => node.data.label === pairs[i][0]);
+        let secondNodes = nodes.filter((node) => node.data.label === pairs[i][1]);
+        if (firstNodes.length === 0 || secondNodes.length === 0) continue;
+        // Make sure the selected nodes not the head if there are multiple selections
+        if (firstNodes.length > 1) {
+            firstNodes = firstNodes.filter((node) => node.id.split("-")[1] !== "0");
+        }
+        if (secondNodes.length > 1) {
+            secondNodes = secondNodes.filter((node) => node.id.split("-")[1] !== "0");
+        }
+
+        let firstNodeIndex = nodes.findIndex((node)=> node === firstNodes[0]);
+        let secondNodeIndex = nodes.findIndex((node)=> node === secondNodes[0]);
+        // if is head, check is there any 自化忌 following
+        if (firstNodes[0].id.split("-")[1] === "0") {
+            let targetIndex = firstNodeIndex + 2;
+            if (!nodes[targetIndex] || nodes[targetIndex].data.label !== "自化忌") continue;
+        }
+        if (secondNodes[0].id.split("-")[1] === "0") {
+            let targetIndex = secondNodeIndex + 2;
+            if (!nodes[targetIndex] || nodes[targetIndex].data.label !== "自化忌") continue;
+        }
+        // all checked, add the edge.
+        if (firstNodeIndex < secondNodeIndex) {
+            // firstNode at top. secondNode at bottom
+            nodes[firstNodeIndex].data.handles.bottom = "source";
+            nodes[secondNodeIndex].data.handles.top = "target";
+            edges.push({
+                id: `r1-e${firstNodes[0].data.label}-${secondNodes[0].data.label}`,
+                source: nodes[firstNodeIndex].id,
+                target: nodes[secondNodeIndex].id,
+                sourceHandle: "bottom",
+                targetHandle: "top",
+                type: "dashedArrowBoth",
+            });
+        } else {
+             // firstNode at bottom. secondNode at top
+             nodes[secondNodeIndex].data.handles.bottom = "source";
+             nodes[firstNodeIndex].data.handles.top = "target";
+             edges.push({
+                 id: `r1-e${secondNodes[0].data.label}-${firstNodes[0].data.label}`,
+                 source: nodes[secondNodeIndex].id,
+                 target: nodes[firstNodeIndex].id,
+                 sourceHandle: "bottom",
+                 targetHandle: "top",
+                 type: "dashedArrowBoth",
+             });
+        }
+
+    }
 
     /* let node1Index = nodes.findIndex((node) => node.data.label === "財帛宮");
     let node2Index = nodes.findIndex((node) => node.data.label === "福德宮");
@@ -881,8 +906,8 @@ function PalaceNode({ data }) {
                 width: PALACE_WIDTH,
                 height: PALACE_HEIGHT,
                 borderRadius: 9999,
-                border: "1px solid #e5e7eb",
-                background: "#fff",
+                border: data.isSelected ? PALACE_A.includes(data.label) ? "3px solid #93c5fd" : PALACE_B.includes(data.label) ? "3px solid #fca5a5" : "1px solid #e5e7eb": "1px solid #e5e7eb",
+                background: data.isSelected ? PALACE_A.includes(data.label) ? "#eff6ff" : PALACE_B.includes(data.label) ? "#fff4f4" : "#fff": "#fff",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
