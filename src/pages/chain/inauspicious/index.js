@@ -402,14 +402,14 @@ export default function Astrolabe() {
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
     useEffect(() => {
-        const {allRoutes} = trimThenMergeWithMostFrequentTailThenFilterThenSort(selectedRoutes);
+        const {allRoutes} = trimThenMergeWithMostFrequentTailThenFilterThenSort(selectedRoutes, simpleRoutes);
         if (!allRoutes || allRoutes.length === 0) {
             setNodes([]);
             setEdges([]);
             return;
         }
         const { nodes: genNodes, edges: genEdges } = generateRoutes(allRoutes, simpleRoutes);
-        const genNodes_ = genNodes.map((nodes) => {return {...nodes, data: {...nodes.data, isSelected: selectedHeads.includes(nodes.data.label)}}})
+        const genNodes_ = genNodes.map((nodes) => {return {...nodes, data: {...nodes.data, isSelected: selectedHeads.includes(nodes.data.label) ? 1: selectedHeads2.includes(nodes.data.label) ? 2 : 0}}})
         setNodes(genNodes_);
         setEdges(genEdges);
     }, [selectedRoutes]);
@@ -420,12 +420,26 @@ export default function Astrolabe() {
 
     // ===== Bottom shortcut bar helpers =====
     const [selectedHeads, setSelectedHeads] = useState([]);
+    const [selectedHeads2, setSelectedHeads2] = useState([]);
     const toggleRoute = (headingPalace) => {
         let selectedHeadsClone = [...selectedHeads]
         let sIndex = selectedHeadsClone.findIndex((item) => item === headingPalace)
-        if (sIndex > -1) {
+        let selectedHeadsClone2 = [...selectedHeads2]
+        let sIndex2 = selectedHeadsClone2.findIndex((item) => item === headingPalace)
+
+        if (sIndex === -1 && sIndex2 > -1) {
+            selectedHeadsClone2.splice(sIndex2, 1)
+            setSelectedHeads2(selectedHeadsClone2)
+        } else if (sIndex > -1 && sIndex2 === -1) {
             selectedHeadsClone.splice(sIndex, 1)
             setSelectedHeads(selectedHeadsClone)
+            selectedHeadsClone2.push(headingPalace)
+            setSelectedHeads2(selectedHeadsClone2)
+        } else if (sIndex > -1 && sIndex2 > -1) {
+            selectedHeadsClone.splice(sIndex, 1)
+            setSelectedHeads(selectedHeadsClone)
+            selectedHeadsClone2.splice(sIndex2, 1)
+            setSelectedHeads2(selectedHeadsClone2)
         } else {
             selectedHeadsClone.push(headingPalace)
             setSelectedHeads(selectedHeadsClone)
@@ -433,9 +447,10 @@ export default function Astrolabe() {
     }
 
     useEffect(() => {
-        let targetRoutes = simpleRoutes.filter((route) => selectedHeads.includes((route[0])))
+        console.log(selectedHeads,selectedHeads2)
+        let targetRoutes = simpleRoutes.filter((route) => selectedHeads.includes((route[0])) || selectedHeads2.includes((route[0])) || route[0] === "生年忌")
         setSelectedRoutes(targetRoutes)
-    }, [selectedHeads])
+    }, [selectedHeads,selectedHeads2])
 
     return (
         <>
@@ -452,7 +467,7 @@ export default function Astrolabe() {
                 <meta property="og:image" content={`https://yl-flystar.pro/og.png`} />
                 <meta property="og:site_name" content="星軌堂" />
             </Head>
-            <div className="container-flow" style={{ display: 'flex', flexDirection: 'column', gap: 16, overflowY: 'auto', alignItems: 'stretch', height: '100vh', padding: `8px 8px 164px`, boxSizing: 'border-box' }}>
+            <div className="container-flow" style={{ display: 'flex', flexDirection: 'column', gap: 16, overflowY: 'auto', alignItems: 'stretch', height: '100vh', padding: `8px 8px 100px`, boxSizing: 'border-box' }}>
                 <div style={{ flex: 1, minHeight: 520, border: '1px solid #e5e7eb', borderRadius: 8, overflow: 'hidden' }}>
                     <ReactFlow
                         nodes={nodes}
@@ -467,36 +482,37 @@ export default function Astrolabe() {
                         proOptions={{ hideAttribution: true }}
                     >
                         <Background gap={16} color="#f3f4f6" />
-                        <Controls showInteractive={false} />
+                        <Controls showInteractive={false} position="bottom-right" style={{ display: 'flex', flexDirection: 'column', gap: 4 }} />
                     </ReactFlow>
                 </div>
             </div>
             {/* Bottom shortcut bar */}
-            <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, background: '#fff', borderTop: '1px solid #e5e7eb', padding: 8, boxShadow: '0 -4px 12px rgba(0,0,0,0.04)' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8, marginBottom: 8 }}>
-                    {PALACE_A.map(item => {
-                        let active = selectedHeads.includes(item);
+            <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, background: '#fff', borderTop: '1px solid #e5e7eb', padding: 4, boxShadow: '0 -4px 12px rgba(0,0,0,0.04)' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 2, marginBottom: 2 }}>
+                    {PALACE_BUTTONS.map(item => {
+                        let active = selectedHeads.includes(item) || selectedHeads2.includes(item);
                         return (
                             <button
                                 key={`sr-a-${item}`}
                                 onClick={() => toggleRoute(item)}
                                 style={{
                                     width: '100%',
-                                    padding: '10px 8px',
+                                    padding: '2px 4px 6px 4px',
                                     borderRadius: 6,
-                                    border: `3px solid ${active ? '#93c5fd' : '#e5e7eb'}` ,
-                                    background:  active ? '#eff6ff' : '#f9fafb',
+                                    border: `3px solid ${active ? selectedHeads.includes(item) ? '#93c5fd' : selectedHeads2.includes(item) ? '#fca5a5' : '#e5e7eb': '#e5e7eb'}` ,
+                                    background:  active ? selectedHeads.includes(item) ? '#eff6ff' : selectedHeads2.includes(item) ? '#fff4f4' : '#f9fafb': '#f9fafb',
                                     color: '#111827',
                                     fontWeight: 400,
+                                    fontSize: 20,
                                     cursor: 'pointer'
                                 }}
                             >
-                                {item}
+                                {item[0] === "交" ? "友" : item[0]}
                             </button>
                         );
                     })}
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8, marginBottom: 8 }}>
+                {/* <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8, marginBottom: 8 }}>
                     {PALACE_B.map(item => {
                         let active = selectedHeads.includes(item);
                         return (
@@ -518,7 +534,7 @@ export default function Astrolabe() {
                             </button>
                         );
                     })}
-                </div>
+                </div> */}
             </div>
             
         </>
@@ -526,6 +542,7 @@ export default function Astrolabe() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+const PALACE_BUTTONS = ["命宮", "兄弟宮", "夫妻宮", "子女宮", "財帛宮", "疾厄宮","遷移宮",  "交友宮", "事業宮", "田宅宮", "福德宮", "父母宮"]
 const PALACE_A = ["命宮", "福德宮", "遷移宮", "生年忌"]
 const PALACE_B = ["兄弟宮", "夫妻宮", "子女宮", "財帛宮", "疾厄宮", "交友宮", "事業宮", "田宅宮", "父母宮"]
 
@@ -536,7 +553,7 @@ const ROW_OFFSET = 80;
 function generateRoutes(routes, rawRoutes) {
     console.log(routes);
     if (routes.length === 0) return [];
-    const nodes = [];
+    let nodes = [];
     const edges = [];
     routes.forEach((route, routeIndex) => {
         const y = ROW_OFFSET * routeIndex;
@@ -552,7 +569,7 @@ function generateRoutes(routes, rawRoutes) {
                 type === "star"
                     ? Math.floor(itemIndex / 2) * cycle + Lps
                     : type === "dashedBlue"
-                    ? Math.floor(itemIndex / 2) * cycle + Lps - PALACE_WIDTH
+                    ? nodes[nodes.length - 1].position.x + (nodes[nodes.length - 1].type === "star" ? STAR_WIDTH + STAR_PALACE_OFFSET : PALACE_WIDTH + PALACE_STAR_OFFSET )
                     : Math.floor(itemIndex / 2) * cycle;
 
             // Skip duplicate nodes
@@ -608,11 +625,12 @@ function generateRoutes(routes, rawRoutes) {
                 data: {
                     label: item,
                     handles: {
-                        left: type === "star" || type === "dashedBlue" ? "target" : null,
+                        left: type === "star" ? "target" : type === "dashedBlue" && nodes[nodes.length - 1].type === "palace" ? "target" : null,
                         right: type === "palace" && itemIndex !== route.length - 1 ? "source" : null,
                         top: null,
                         bottom: null,
                     },
+                    isSpeciallyDashed: type === "palace" && itemIndex === 0 && route.length <= 3 && route[route.length - 1] === "自化忌" ? true : false,
                 },
             });
 
@@ -622,7 +640,7 @@ function generateRoutes(routes, rawRoutes) {
             }
 
             // Edge Handle for 自化忌
-            if (type === "dashedBlue") {
+            if (type === "dashedBlue" && nodes[nodes.length - 2].type === "palace") {
                 // Node Previous of 自化忌
                 nodes[nodes.length - 2].data.handles.right = "source";
                 const prevId = `r${routeIndex}-${itemIndex - 1}-${route[itemIndex - 1]}`;
@@ -635,17 +653,41 @@ function generateRoutes(routes, rawRoutes) {
 
     const { pairs, extendRoutes } = findOppositePalaceRoutes(rawRoutes);
 
+    // shift x-position to the left if there is failure of rightUp Edge
+    for (let i = 0; i < edges.length; i++) {
+        if (edges[i].type === "rightUp" && edges[i].source.split("-")[1] > edges[i].target.split("-")[1]) {
+            const offsetCycle = Math.floor((edges[i].source.split("-")[1] - edges[i].target.split("-")[1]));
+            nodes = nodes.flatMap((node) => {
+                if (node.id.startsWith(edges[i].source.split("-")[0])) {
+                    node.position.x -= (offsetCycle * (PALACE_WIDTH + PALACE_STAR_OFFSET + STAR_PALACE_OFFSET) - STAR_PALACE_OFFSET);
+                    return node;
+                } else {
+                    return node;
+                }
+            });
+        }
+    }
+
+
+
+
+
+
+
     // handle pairs
     for (let i = 0; i < pairs.length; i++) {
         let firstNodes = nodes.filter((node) => node.data.label === pairs[i][0]);
         let secondNodes = nodes.filter((node) => node.data.label === pairs[i][1]);
+        
         if (firstNodes.length === 0 || secondNodes.length === 0) continue;
         // Make sure the selected nodes not the head if there are multiple selections
         if (firstNodes.length > 1) {
-            firstNodes = firstNodes.filter((node) => node.id.split("-")[1] !== "0");
+            const firstNodes_ = firstNodes.filter((node) => node.id.split("-")[1] !== "0");
+            if (firstNodes_.length === 0) firstNodes = firstNodes[0]; else firstNodes = firstNodes_;
         }
         if (secondNodes.length > 1) {
-            secondNodes = secondNodes.filter((node) => node.id.split("-")[1] !== "0");
+            const secondNodes_ = secondNodes.filter((node) => node.id.split("-")[1] !== "0");
+            if (secondNodes_.length === 0) secondNodes = secondNodes[0]; else secondNodes = secondNodes_;
         }
 
         // if same row, skip
@@ -700,6 +742,9 @@ function generateRoutes(routes, rawRoutes) {
     for (let i = 0; i < distinctTails.length; i++) {
         const toExtend = extendRoutes.find((exRoute) => exRoute[0] === distinctTails[i])
         if (toExtend) {
+            // if the extend route is already in the routes, skip
+            if (isOrderedContiguousInAny(routes, toExtend)) continue;
+
             let targetOrignalNodes = nodes.filter((item) => item.data.label === distinctTails[i]);
             console.log(targetOrignalNodes)
             if (targetOrignalNodes.length === 0) continue;
@@ -906,7 +951,7 @@ function DashedBlueNode({ data }) {
             {handlesConfig.right && <Handle id="right" type={handlesConfig.right} position={Position.Right} style={handleStyle} />}
             {handlesConfig.bottom && <Handle id="bottom" type={handlesConfig.bottom} position={Position.Bottom} style={handleStyle} />}
             {handlesConfig.left && <Handle id="left" type={handlesConfig.left} position={Position.Left} style={handleStyle} />}
-            <div style={{ fontWeight: 400, textAlign: "center", fontSize: "16px", lineHeight: "1.5" }}>{data.label}</div>
+            <div style={{ fontWeight: 400, textAlign: "center", fontSize: "16px", lineHeight: "1.5" }}>{`自化忌出`}</div>
         </div>
     );
 }
@@ -925,14 +970,22 @@ function PalaceNode({ data }) {
     const color = "#3b82f6";
     const handleStyle = { width: 6, height: 6, borderRadius: 6, background: color, border: "1px solid #fff" };
 
+    const border = data.label === "生年忌" ? "3px solid #93c5fd" :
+                 data.isSelected !== 0 ? 
+                    data.isSelected === 1 ? data.isSpeciallyDashed ? "2px dashed #93c5fd" : "3px solid #93c5fd" : 
+                    data.isSelected === 2 ? data.isSpeciallyDashed ? "2px dashed #fca5a5" : "3px solid #fca5a5" : 
+                "1px solid #e5e7eb" :
+                "1px solid #e5e7eb";
+
+
     return (
         <div
             style={{
                 width: PALACE_WIDTH,
                 height: PALACE_HEIGHT,
                 borderRadius: 9999,
-                border: data.isSelected ? PALACE_A.includes(data.label) ? "3px solid #93c5fd" : PALACE_B.includes(data.label) ? "3px solid #fca5a5" : "1px solid #e5e7eb": "1px solid #e5e7eb",
-                background: data.isSelected ? PALACE_A.includes(data.label) ? "#eff6ff" : PALACE_B.includes(data.label) ? "#fff4f4" : "#fff": "#fff",
+                border:border,
+                background: data.label === "生年忌" ? "#eff6ff" : data.isSelected !== 0 ? data.isSelected === 1 ? "#eff6ff" : data.isSelected === 2 ? "#fff4f4" : "#fff": "#fff",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -984,3 +1037,17 @@ function StarNode({ data }) {
         </div>
     );
 }
+
+// Subarray check helper function
+const isOrderedContiguousInAny = (list, target) =>
+    list.some(sub => {
+      if (target.length === 0) return true;
+      for (let i = 0; i <= sub.length - target.length; i++) {
+        let ok = true;
+        for (let j = 0; j < target.length; j++) {
+          if (sub[i + j] !== target[j]) { ok = false; break; }
+        }
+        if (ok) return true;
+      }
+      return false;
+    });

@@ -75,6 +75,8 @@ function mergeAllRoutesEnhancedSafe(inputRoutes, opts = {}) {
     const originals = inputRoutes.map((r) => r.slice());
     const originalKeySet = new Set(originals.map(joinKey));
     const cyclicHeads = new Set(originals.filter(isCyclic).map((r) => r[0]));
+    // 單一強尾（若外部已決議強尾，則使用；否則無強尾約束）
+    const strongTailToken = opts && typeof opts.strongTail === 'string' ? opts.strongTail : null;
  
     // 規則1 + 規則4：尾首完整重疊；若合併結果中出現循環 head 且不在尾端，截斷於該 head
     function suffixPrefixMergesWithTrunc(a, b) {
@@ -91,7 +93,8 @@ function mergeAllRoutesEnhancedSafe(inputRoutes, opts = {}) {
             if (!ok) continue;
  
             let merged = [...a, ...b.slice(k)];
-            const cutIdx = merged.findIndex((node, idx) => cyclicHeads.has(node) && idx !== merged.length - 1);
+            // 依單一強尾截斷：一旦遇到強尾且其後仍有元素，立即截斷於該強尾
+            const cutIdx = strongTailToken ? merged.findIndex((node, idx) => node === strongTailToken && idx !== merged.length - 1) : -1;
             if (cutIdx !== -1) merged = merged.slice(0, cutIdx + 1);
 
             // 追加限制：合併後若以「宮」結尾的項目數量 >= 5，則不允許該合併
@@ -180,7 +183,9 @@ function mergeAllRoutesEnhancedSafe(inputRoutes, opts = {}) {
     const filteredAll = all.filter((r) => {
         const k = joinKey(r);
         const isOriginal = originalKeySet.has(k);
-        return !(isOriginal && originalMerged.has(k));
+        const isCyclicOriginal = isOriginal && r.length > 0 && r[0] === r[r.length - 1];
+        // 保留循環原始路徑，就算參與過合併也不剔除
+        return !(isOriginal && originalMerged.has(k) && !isCyclicOriginal);
     });
  
     let longestLength = 0;
@@ -208,8 +213,11 @@ function isContiguousSubarray(small, big) {
 // 將被其它較長路徑完整包含的路徑移除
 function removeContainedRoutes(routes) {
     const out = [];
+    const isCyclicRoute = (r) => Array.isArray(r) && r.length > 0 && r[0] === r[r.length - 1];
     for (let i = 0; i < routes.length; i += 1) {
         const r = routes[i];
+        // 保留循環路徑（head === tail），不視為可移除的「被包含子路徑」
+        if (isCyclicRoute(r)) { out.push(r); continue; }
         let contained = false;
         for (let j = 0; j < routes.length; j += 1) {
             if (i === j) continue;
@@ -251,7 +259,7 @@ function buildPalaceSuffixIndex(routes) {
 }
 
 // 進一步延伸：若某路徑以『宮』結尾，且該『宮』在其他路徑中段出現過，則把其後綴接在尾端（遵守『宮』數量限制）
-function extendRoutesByPalaceTail(routes, palaceLimit = 5) {
+function extendRoutesByPalaceTail(routes, palaceLimit = 5, strongTailToken = null) {
     const index = buildPalaceSuffixIndex(routes);
 
     const joinKey = (r) => r.join("\x1f");
@@ -270,9 +278,17 @@ function extendRoutesByPalaceTail(routes, palaceLimit = 5) {
         const key = tail;
 
         let extendedAny = false;
-        if (isPalace(tail) && index.has(key)) {
+        // 若尾端為強尾，禁止任何延伸
+        if (strongTailToken && tail === strongTailToken) {
+            // do nothing
+        } else if (isPalace(tail) && index.has(key)) {
             for (const suffix of index.get(key)) {
-                const merged = [...r, ...suffix];
+                let merged = [...r, ...suffix];
+                // 在延伸結果中，若遇到強尾且不在最後，立即在強尾處截斷
+                if (strongTailToken) {
+                    const cutIdx = merged.findIndex((token, idx) => token === strongTailToken && idx !== merged.length - 1);
+                    if (cutIdx !== -1) merged = merged.slice(0, cutIdx + 1);
+                }
                 if (palaceCount(merged) >= palaceLimit) continue;
                 const mk = joinKey(merged);
                 if (!seen.has(mk)) { seen.add(mk); out.push(merged); extendedAny = true; }
@@ -337,6 +353,17 @@ function commonTailLen(a, b) {
     while (i <= max && a[a.length - i] === b[b.length - i]) i += 1;
     return i - 1;
 }
+
+function stripTailIfPresent(arr, tail) {
+    if (tail.length === 0) return arr;           // 移除空尾端 => 無變化
+    if (tail.length > arr.length) return arr;    // 尾端比主陣列長 => 不可能匹配
+  
+    const offset = arr.length - tail.length;
+    for (let i = 0; i < tail.length; i++) {
+      if (arr[offset + i] !== tail[i]) return arr; // 不匹配 => 回傳原陣列
+    }
+    return arr.slice(0, offset+1); // 匹配 => 回傳去除尾端後的陣列
+  }
  
 // 依：1) 與錨點共同尾段長度(套用閾值) 2) 尾端 pair 熱度 3) 長度 4) 尾端 n-gram 熱度 5) 生年忌 6) 字典序
 function sortRoutesByTailPopularityThenLength(allRoutes, routesPool, opts = {}) {
@@ -425,21 +452,57 @@ function sortRoutesByTailPopularityThenLength(allRoutes, routesPool, opts = {}) 
  
 // ========== Pipeline (Trim → Merge → Filter → Second-merge → Sort) ==========
  
-export function trimThenMergeWithMostFrequentTailThenFilterThenSort(routes, opts = {logProgress: false}) {
+export function trimThenMergeWithMostFrequentTailThenFilterThenSort(routes, originalRoutes, opts) {
     const trimmed = trimRoutesByChosenTailPair(routes);
-    const merged = mergeAllRoutesEnhancedSafe(trimmed, opts);
+
+    // 強尾挑選：
+    // 1) 找出所有 head===tail 的候選尾（只取尾部宮名）
+    // 2) 若候選數量 >= 2，計算每個候選 pre-star + tail 的相鄰 bigram 次數，選最大者為唯一強尾
+    //    若某循環路徑長度 < 2，則該候選無前星，視為 0 分
+    const candidateTails = [];
+    for (const r of routes) {
+        if (Array.isArray(r) && r.length > 0 && r[0] === r[r.length - 1]) {
+            const tail = r[r.length - 1];
+            const prevStar = r.length >= 2 ? r[r.length - 2] : null;
+            candidateTails.push([prevStar, tail]);
+        }
+    }
+
+    let strongTail = null;
+    if (candidateTails.length === 1) {
+        strongTail = candidateTails[0][1];
+    } else if (candidateTails.length >= 2) {
+        let bestTail = null;
+        let bestScore = -1;
+        for (const [prev, tail] of candidateTails) {
+            let score = 0;
+            if (prev != null) score = countPairOccurrences(routes, [prev, tail]);
+            if (score > bestScore) { bestScore = score; bestTail = tail; }
+        }
+        strongTail = bestTail;
+    }
+
+    const merged = mergeAllRoutesEnhancedSafe(trimmed, { ...opts, strongTail });
 
     // Post-filter
     let filteredRoutes = removeContainedRoutes(merged.allRoutes);
 
     // Second-merge: extend by palace tail (only)
-    filteredRoutes = extendRoutesByPalaceTail(filteredRoutes, 5);
+    filteredRoutes = extendRoutesByPalaceTail(filteredRoutes, 5, strongTail);
 
     // Run filter again to drop any now-contained routes
     filteredRoutes = removeContainedRoutes(filteredRoutes);
 
+    // Remove the already existed extendRoutes first. It will be added at the last.
+    const { pairs, extendRoutes } = findOppositePalaceRoutes(originalRoutes);
+    for (let i = 0; i < extendRoutes.length; i++) {
+        for (let j = 0; j < filteredRoutes.length; j++) {
+            filteredRoutes[j] = stripTailIfPresent(filteredRoutes[j], extendRoutes[i]);
+        }
+    }
+
     // Sort（優先：與錨點共同尾段長度(>=2) → 尾端 pair 熱度 → 長度 → 尾端 n-gram 熱度）
-    const sortedRoutes = sortRoutesByTailPopularityThenLength(filteredRoutes, filteredRoutes, { minCommonTailMatchLen: 2 });
+    const sortedRoutes = sortRoutesByTailPopularityThenLength(filteredRoutes, filteredRoutes, { minCommonTailMatchLen: 1 });
  
     let longestLength = 0;
     for (const r of sortedRoutes) longestLength = Math.max(longestLength, r.length);
@@ -524,10 +587,21 @@ Flow:
    - 掃描所有「首尾相同」的路徑，取其最後兩個元素作為候選尾端 pair（例如 ['文曲','財帛宮']）。
    - 若有多個候選尾端 pair，統計其在所有輸入路徑中的出現次數（相鄰 bigram），選出出現次數最多者。
    - 對所有路徑進行裁切：一旦遇到選定的尾端 pair，截斷到該 pair（含兩元素）。
- 
+
+1.5) Strong tail（單一強尾）的決策與約束：
+   - 候選蒐集：掃描所有 head===tail 的循環路徑，記錄每個候選尾部宮名 tail 及其前一顆星曜 prevStar（若長度 < 2 則 prevStar 視為 null）。
+   - 單一化決策：
+     - 若候選僅 1 個 → 直接採用其 tail 作為 strongTail。
+     - 若候選 ≥ 2 → 計算每個 [prevStar, tail] 在原始 routes 中的相鄰 bigram 出現次數，取分數最高者之 tail 為唯一 strongTail。
+   - 硬尾約束（在後續所有步驟生效）：
+     - 一旦在非末端遇到 strongTail，立即於該處截斷（確保 strongTail 為最終尾端）。
+     - 若當前路徑尾端本身為 strongTail，禁止再做任何延伸。
+
 2) Merge (Rules 1–4, safe):
-   - 規則1：僅在「a 的尾部」等於「b 的首部」的完整重疊下合併 → merged = a + b[overlapLen:].
-     追加限制：合併後若路徑中以「宮」結尾的項目數量 >= 5，則不允許該合併（避免產生過長的『宮』鏈）。
+   - 規則1：僅在「a 的尾部」等於「b 的首部」的完整重疊下合併 → merged = a + b[overlapLen:]。
+     追加限制：
+     - 合併後若路徑中以「宮」結尾的項目數量 >= 5，則不允許該合併（避免產生過長的『宮』鏈）。
+     - 依強尾約束：合併結果中若在非末端出現 strongTail，立即截斷於 strongTail（保持尾端穩定）。
    - 規則2：若某路徑為循環（head === tail），禁止把任何東西接到它的頭之前（不可當 b 的 target）。
    - 規則3：凡原始路徑只要參與過合併（成為某次合併的 a 或 b），則不輸出該原始路徑本體。
    - 規則4：若合併結果中出現「循環路徑的 head」且不在尾端，立即截斷於該 head，保證尾端穩定。
@@ -538,7 +612,12 @@ Flow:
 
 2.5) Second-merge (simplified):
    - 若某條路徑以『宮』結尾，且該『宮』在另一條路徑的中段出現過，則可把該路徑中該『宮』之後的後綴接在此路徑尾端（遵守『宮』數量限制）。
+   - 依強尾約束：
+     - 若尾端為 strongTail，禁止任何延伸（直接保留原路徑）。
+     - 延伸後結果若在非末端遇到 strongTail，立即於該處截斷。
    - 之後再執行一次 Post-filter 以移除新產生的子路徑。
+
+2.75) Remove the already existed extendRoutes first. It will be added at the last.
  
 4) Sorting (final output order):
    - 先選錨點（用尾端 pair 熱度→長度→n-gram→生年忌→字典序預排取第一條）。
