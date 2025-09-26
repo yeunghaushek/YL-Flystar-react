@@ -452,7 +452,7 @@ function sortRoutesByTailPopularityThenLength(allRoutes, routesPool, opts = {}) 
  
 // ========== Pipeline (Trim → Merge → Filter → Second-merge → Sort) ==========
  
-function trimThenMergeWithMostFrequentTailThenFilterThenSort(routes, opts) {
+function trimThenMergeWithMostFrequentTailThenFilterThenSort(routes, originalRoutes, opts) {
     const trimmed = trimRoutesByChosenTailPair(routes);
 
     // 強尾挑選：
@@ -780,6 +780,97 @@ const SAMPLE_ROUTES_3 = [
         "自化忌",
     ],
 ];
+
+const SAMPLE_ROUTES_4 = [
+    [
+        "遷移宮",
+        "天機",
+        "事業宮",
+        "自化忌"
+    ],
+    [
+        "疾厄宮",
+        "文曲",
+        "財帛宮",
+        "天同",
+        "命宮"
+    ],
+    [
+        "財帛宮",
+        "天同",
+        "命宮",
+        "太陽",
+        "福德宮"
+    ],
+    [
+        "子女宮",
+        "文昌",
+        "福德宮",
+        "廉貞",
+        "子女宮"
+    ],
+    [
+        "夫妻宮",
+        "武曲",
+        "父母宮",
+        "太陰",
+        "財帛宮"
+    ],
+    [
+        "兄弟宮",
+        "貪狼",
+        "子女宮",
+        "文昌",
+        "福德宮"
+    ],
+    [
+        "命宮",
+        "太陽",
+        "福德宮",
+        "廉貞",
+        "子女宮"
+    ],
+    [
+        "父母宮",
+        "太陰",
+        "財帛宮",
+        "天同",
+        "命宮"
+    ],
+    [
+        "福德宮",
+        "廉貞",
+        "子女宮",
+        "文昌",
+        "福德宮"
+    ],
+    [
+        "田宅宮",
+        "巨門",
+        "夫妻宮",
+        "武曲",
+        "父母宮"
+    ],
+    [
+        "事業宮",
+        "天機",
+        "自化忌"
+    ],
+    [
+        "交友宮",
+        "文曲",
+        "財帛宮",
+        "天同",
+        "命宮"
+    ],
+    [
+        "生年忌",
+        "太陰",
+        "財帛宮",
+        "天同",
+        "命宮"
+    ]
+]
  
 const graph1 = [
     SAMPLE_ROUTES_1[0],
@@ -835,9 +926,17 @@ const graph7 = [
     SAMPLE_ROUTES_1[2],
     SAMPLE_ROUTES_1[12],
 ]
+
+const graph8 = [
+    SAMPLE_ROUTES_4[0],
+    SAMPLE_ROUTES_4[6],
+    SAMPLE_ROUTES_4[8],
+    SAMPLE_ROUTES_4[7],
+    SAMPLE_ROUTES_4[12],
+];
  
-const r6 = trimThenMergeWithMostFrequentTailThenFilterThenSort(graph6, { logProgress: false });
-console.log("graph6 allRoutes:");
+const r6 = trimThenMergeWithMostFrequentTailThenFilterThenSort(graph8, SAMPLE_ROUTES_4, { logProgress: false });
+console.log("graph8 allRoutes:");
 console.log(r6.allRoutes);
 
 // console.log(findOppositePalaceRoutes(SAMPLE_ROUTES_1));
