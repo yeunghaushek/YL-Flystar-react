@@ -1,4 +1,4 @@
-// ========== Tail Pair Discovery & Trimming (Pre-merge) ==========
+/* // ========== Tail Pair Discovery & Trimming (Pre-merge) ==========
 
 // 取得所有「首尾相同」路徑之尾端 pair（例如 ['文曲','財帛宮']）
 function getCyclicTailPairs(routes) {
@@ -576,8 +576,7 @@ export function findOppositePalaceRoutes(originalRoutes) {
     }
 
     return { pairs, extendRoutes };
-} 
-
+} */
 
  
 /*

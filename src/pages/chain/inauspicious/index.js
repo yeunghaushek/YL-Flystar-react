@@ -603,15 +603,15 @@ function generateRoutes(routes, rawRoutes) {
 
                 if (type === "star") {
                     console.log("duplicate node", item);
-                    nodes[existedNodeIndex].data.handles.bottom = "target";
+                    //nodes[existedNodeIndex].data.handles.bottom = "target";
 
                     const prevId = `r${routeIndex}-${itemIndex - 1}-${route[itemIndex - 1]}`;
                     edges.push({
                         id: `r${routeIndex}-e${route[itemIndex - 1]}-${route[itemIndex]}`,
                         source: prevId,
                         target: nodes[existedNodeIndex].id,
-                        targetHandle: "bottom",
-                        type: "rightUp",
+                        targetHandle: "left",
+                        type: "rightUpRight",
                     });
 
                     return true;
@@ -653,9 +653,9 @@ function generateRoutes(routes, rawRoutes) {
 
     const { pairs, extendRoutes } = findOppositePalaceRoutes(rawRoutes);
 
-    // shift x-position to the left if there is failure of rightUp Edge
+    // shift x-position to the left if there is failure of rightUpRight Edge
     for (let i = 0; i < edges.length; i++) {
-        if (edges[i].type === "rightUp" && edges[i].source.split("-")[1] > edges[i].target.split("-")[1]) {
+        if (edges[i].type === "rightUpRight" && edges[i].source.split("-")[1] > edges[i].target.split("-")[1]) {
             const offsetCycle = Math.floor((edges[i].source.split("-")[1] - edges[i].target.split("-")[1]));
             nodes = nodes.flatMap((node) => {
                 if (node.id.startsWith(edges[i].source.split("-")[0])) {
@@ -819,7 +819,7 @@ function RightUpEdge({ id, sourceX, sourceY, targetX, targetY, markerEnd, style 
 
 // Right → Up → Right edge (three-segment orthogonal)
 function RightUpRightEdge({ id, sourceX, sourceY, targetX, targetY, markerEnd, style = {} }) {
-  const horizontalOffset = 40; // final right width
+  const horizontalOffset = 18; // final right width
   // Swap widths: first horizontal goes to (targetX - horizontalOffset), last horizontal = horizontalOffset
   const p1x = targetX - horizontalOffset;
   const p1y = sourceY;
