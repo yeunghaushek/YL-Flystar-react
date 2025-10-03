@@ -9,7 +9,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ReactFlow, { Controls, Handle, Position, MarkerType, BaseEdge, useNodesState, useEdgesState, addEdge, Background } from "reactflow";
 
 import { trimThenMergeWithMostFrequentTailThenFilterThenSort, findOppositePalaceRoutes } from "../../../../inauspicious-utils";
-import { mergeSample } from "../../../utils";
 
 Date.prototype.toLocalDate = function () {
     let tzoffset = this.getTimezoneOffset() * 60000; //offset in milliseconds
@@ -74,7 +73,7 @@ export default function Astrolabe() {
     const [selectedRoutes, setSelectedRoutes] = useState([]);
 
     useEffect(() => {
-        // console.log(selectedRoutes);
+        console.log(selectedRoutes);
     }, [selectedRoutes]);
 
     useEffect(() => {
@@ -198,7 +197,7 @@ export default function Astrolabe() {
             isLeapMonth: isLeapMonth,
         };
 
-        // console.log(myAstrolabe);
+        console.log(myAstrolabe);
         setAstrolabe(myAstrolabe);
 
     };
@@ -224,7 +223,7 @@ export default function Astrolabe() {
               return [];
             });
             
-        // console.log(mutagenStars);
+        console.log(mutagenStars);
 
         const palaces = astrolabe.palaces.map((p) => ({
             name: p.name,
@@ -295,7 +294,7 @@ export default function Astrolabe() {
 
         
         let rIndex = routes.findIndex((route) => route.length > 0 && route[0].name === "生年忌");
-        //// console.log(routes[rIndex])
+        //console.log(routes[rIndex])
         
         if (rIndex > -1) {
             if (routes[rIndex][routes[rIndex].length - 1].outerBlue.name === "自化忌") {
@@ -343,7 +342,7 @@ export default function Astrolabe() {
             return seq;
         });
 
-         console.log(simplifiedRoutes);
+        console.log(simplifiedRoutes);
         setSimpleRoutes(simplifiedRoutes);
     }, [astrolabe]);
 
@@ -362,9 +361,9 @@ export default function Astrolabe() {
 
     const { n, g, c, y, m, d, bt, lm } = router.query;
     useEffect(() => {
-        //// console.log(n, g, c, y, m, d, bt, lm);
-        //// console.log(router.pathname);
-        //// console.log(router.query);
+        //console.log(n, g, c, y, m, d, bt, lm);
+        //console.log(router.pathname);
+        //console.log(router.query);
         if (g && c && y && m && d && bt && lm) {
             // c == 0 ? "陽曆" : "農曆"
             // g == 0 ? "男" : "女"
@@ -403,9 +402,7 @@ export default function Astrolabe() {
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
     useEffect(() => {
-        //const {allRoutes} = trimThenMergeWithMostFrequentTailThenFilterThenSort(selectedRoutes, simpleRoutes);
-        const { pairs, extendRoutes } = findOppositePalaceRoutes(simpleRoutes);
-        const allRoutes = mergeSample(selectedRoutes, extendRoutes);
+        const {allRoutes} = trimThenMergeWithMostFrequentTailThenFilterThenSort(selectedRoutes, simpleRoutes);
         if (!allRoutes || allRoutes.length === 0) {
             setNodes([]);
             setEdges([]);
@@ -450,7 +447,7 @@ export default function Astrolabe() {
     }
 
     useEffect(() => {
-        // console.log(selectedHeads,selectedHeads2)
+        console.log(selectedHeads,selectedHeads2)
         let targetRoutes = simpleRoutes.filter((route) => selectedHeads.includes((route[0])) || selectedHeads2.includes((route[0])) || route[0] === "生年忌")
         setSelectedRoutes(targetRoutes)
     }, [selectedHeads,selectedHeads2])
@@ -553,217 +550,129 @@ const STARS = ["太陽", "太陰", "巨門", "貪狼", "天機", "天同", "文�
 const PALACE_STAR_OFFSET = 40;
 const STAR_PALACE_OFFSET = 2;
 const ROW_OFFSET = 80;
-function generateRoutes(allRoutes, rawRoutes) {
-    try {
-
-   
-     console.log(allRoutes);
-    if (allRoutes.length === 0) return [];
-    
-
-    // handle pairs
+function generateRoutes(routes, rawRoutes) {
+    console.log(routes);
+    if (routes.length === 0) return [];
     let nodes = [];
     const edges = [];
-    for (let i = 0; i < allRoutes.length; i++) {
-        const routes = allRoutes[i];
-        let startY = nodes.length > 0 ? Math.max(...nodes.map((node) => node.position.y)) + ROW_OFFSET * 2 : 0;
+    routes.forEach((route, routeIndex) => {
+        const y = ROW_OFFSET * routeIndex;
+        route.some((item, itemIndex) => {
+            const id = `r${routeIndex}-${itemIndex}-${item}`;
+            const type = item.startsWith("自化") ? "dashedBlue" : STARS.includes(item) ? "star" : "palace";
 
-        for (let j = 0; j < routes.length; j++) {
-            console.log(routes[j])
-            let x = 0;
-            let y = startY + (j * ROW_OFFSET);
-            for (let k = 0; k < routes[j].length; k++) {
-                const comingNodeId = `g${i}r${j}-${k}-${routes[j][k]}`;
-                const comingNodeType = routes[j][k].startsWith("自化") ? "dashedBlue" : STARS.includes(routes[j][k]) ? "star" : "palace";
-                let existedNodeIndex = nodes.findLastIndex((node) => node.data.label === routes[j][k] && node.id.split("-")[0] !== comingNodeId.split("-")[0] && node.id.split("-")[1] !== "0");
-                console.log(existedNodeIndex)
-                    console.log(comingNodeId)
+            // X - GAP Calculation
+            const Lps = PALACE_WIDTH + PALACE_STAR_OFFSET; // 80 + 40 = 120
+            const Lsp = STAR_WIDTH + STAR_PALACE_OFFSET; // 60 + 10 = 70
+            const cycle = Lps + Lsp; // 190
+            const x =
+                type === "star"
+                    ? Math.floor(itemIndex / 2) * cycle + Lps
+                    : type === "dashedBlue"
+                    ? nodes[nodes.length - 1].position.x + (nodes[nodes.length - 1].type === "star" ? STAR_WIDTH + STAR_PALACE_OFFSET : PALACE_WIDTH + PALACE_STAR_OFFSET )
+                    : Math.floor(itemIndex / 2) * cycle;
 
-                    if (existedNodeIndex > -1 && y === nodes[existedNodeIndex].position.y && x !== nodes[existedNodeIndex].position.x) {
-                        // they are in the same row.but not the same x-position. so it is a repeated node but not the actually same node
-                        existedNodeIndex = -1;
-                    }
-                
+            // Skip duplicate nodes
+            const existedNodeIndex = nodes.findIndex((node) => node.data.label === item);
+            if (existedNodeIndex > -1) {
+                if (type === "palace" && itemIndex > 0 && nodes[existedNodeIndex].id.split("-")[1] !== "0") {
+                    // Make sure both the duplicated palace and the existed palace are not the first node
+                    console.log("duplicate node", item);
 
-                if (existedNodeIndex > -1 && k !== 0 && comingNodeType !== "dashedBlue") {
-                    const existedNode = nodes[existedNodeIndex];
+                    // Move the new star to the bottom of the existed star, duplicated palace
+                    nodes[nodes.length - 1].position.x = nodes[existedNodeIndex - 1].position.x;
+                    nodes[nodes.length - 1].position.y = nodes[existedNodeIndex - 1].position.y + STAR_HEIGHT;
 
+                    // Change the edge type to rightUpRight
+                    edges[edges.length - 1].type = "rightUpRight";
 
-                    /* if (existedNode.type === "dashedBlue" && existedNode.id.split("-")[0] !== comingNodeId.split("-")[0]) {
-                        continue;
-                    } */
-                    if (existedNode.type === "palace" && k < routes[j].length - 1) {
-                        nodes[existedNodeIndex].data.handles.right = "source";
-                    }
-
-                    const previousExistedNode = nodes[existedNodeIndex - 1];
-                    const previousNode = nodes.findLast((node) => node.id.startsWith(comingNodeId.split("-")[0]));
-
-                    if (previousNode.type === "star" && previousExistedNode.type === "star" && previousNode.data.label !== previousExistedNode.data.label ) {
-                        // set the star to the bottom of the another star of the same palace.
-                        // adjust the y-position of other following nodes
-                        let partsOfPrevId = `${previousExistedNode.id.split("-")[0]}-${previousExistedNode.id.split("-")[1]}`
-                        let count = nodes.filter((node) => node.id.startsWith(partsOfPrevId)).length;
-
-                        nodes[nodes.length - 1].position.x = previousExistedNode.position.x;
-                        nodes[nodes.length - 1].position.y = previousExistedNode.position.y + (STAR_HEIGHT * count);
-                        nodes[nodes.length - 1].id = `${partsOfPrevId}-${nodes[nodes.length - 1].id.split("-")[2]}`
-
-                        let originalY = nodes.find((node) => node.id.split("-")[0] === previousExistedNode.id.split("-")[0]).position.y;
-
-                        let index = existedNodeIndex;
-                        while (nodes[index].id.startsWith(partsOfPrevId.split("-")[0])) {
-                            if (nodes[index].type === "dashedBlue") {
-                                nodes[index].position.y =  nodes[index-1].position.y + 4;
-                            }
-                            if (nodes[index].type === "palace") {
-                                nodes[index].position.y = originalY + (PALACE_HEIGHT * count) / (2);
-                            }
-                            if (nodes[index].type === "star") {
-                                nodes[index].position.y = originalY + (STAR_HEIGHT * count) / (2);
-                            }
-                            index++;
+                    // Move the following nodes to fit the new y-position of double star
+                    let count = existedNodeIndex;
+                    while (nodes[count].position.y === nodes[existedNodeIndex - 1].position.y) {
+                        if (nodes[count].type === "palace") {
+                            nodes[count].position.y += PALACE_HEIGHT / 2;
                         }
+                        if (nodes[count].type === "star") {
+                            nodes[count].position.y += STAR_HEIGHT / 2;
+                        }
+                        count++;
                     }
 
-                    x = existedNode.position.x;
-                    y = existedNode.position.y;
-                    x += comingNodeType === "star" ? STAR_WIDTH + STAR_PALACE_OFFSET : PALACE_WIDTH + PALACE_STAR_OFFSET;
-
-                    
-
-
-                    // console.log(edges)
-                    continue;
+                    return true;
                 }
 
-                if (comingNodeType === "dashedBlue") {
-                    y += 4;
-                }
+                if (type === "star") {
+                    console.log("duplicate node", item);
+                    //nodes[existedNodeIndex].data.handles.bottom = "target";
 
-                let node = {
-                    id: comingNodeId,
-                    type: comingNodeType,
-                    position: { x: x, y: y },
-                    data: {
-                        label: routes[j][k],
-                        handles: {
-                            left: comingNodeType === "star" ? "target" : comingNodeType === "dashedBlue" && nodes[nodes.length - 1].type === "palace" ? "target" : null,
-                            right: comingNodeType === "palace" && k !== routes[j].length - 1 ? "source" : null,
-                            top: null,
-                            bottom: null,
-                        },
-                        isSpeciallyDashed: comingNodeType === "palace" && k === 0 && routes[j].length <= 3 && routes[j][routes[j].length - 1] === "自化忌" ? true : false,
-                    }
-                }
-                nodes.push(node);
-
-                /* if (comingNodeType === "star") {
-                    let sourceId = nodes.findLast((node) => node.id.startsWith(comingNodeId.split("-")[0]) && node.type === "palace").id;
+                    const prevId = `r${routeIndex}-${itemIndex - 1}-${route[itemIndex - 1]}`;
                     edges.push({
-                        id: `g${i}r${j}-e${routes[j][k - 1]}-${routes[j][k]}`,
-                        source: sourceId,
-                        target: comingNodeId,
+                        id: `r${routeIndex}-e${route[itemIndex - 1]}-${route[itemIndex]}`,
+                        source: prevId,
+                        target: nodes[existedNodeIndex].id,
                         targetHandle: "left",
+                        type: "rightUpRight",
                     });
-                } */
 
-
-                x += comingNodeType === "star" ? STAR_WIDTH + STAR_PALACE_OFFSET : PALACE_WIDTH + PALACE_STAR_OFFSET;
-                
-            }
-        }
-
-        for (let j = 0; j < routes.length; j++) {
-            for (let k = 0; k < routes[j].length; k++) {
-                if (k === 0) {
-                    // must be the head
-                    let sourceNode = nodes.find((node) => node.data.label === routes[j][k] && node.id.split("-")[1] === "0" && node.data.handles.right === "source");
-                    let targetNode = nodes.find((node) => node.data.label === routes[j][k + 1] && node.id.split("-")[1] !== "0" && node.data.handles.left === "target");
-                    let edge = {
-                        id: `g${i}r${j}-e${sourceNode.data.label}-${targetNode.data.label}`,
-                        source: sourceNode.id,
-                        target: targetNode.id,
-                        //type: sourceNode.position.y !== targetNode.position.y ? "rightUpRight" : undefined,
-                    }
-                    if (sourceNode.position.y !== targetNode.position.y) {
-                        edge.type = "rightUpRight";
-                    }
-                    edges.push(edge);
-                }
-                if (k > 0 && k < routes[j].length - 1 && !STARS.includes(routes[j][k])) {
-                    // must not be the head
-                    let sourceNode = nodes.find((node) => node.data.label === routes[j][k] && node.id.split("-")[1] !== "0" && node.data.handles.right === "source");
-                    let targetNode = nodes.find((node) => node.data.label === routes[j][k + 1] && node.id.split("-")[1] !== "0" && node.data.handles.left === "target");
-
-                    if (sourceNode.id.split("-")[0] === targetNode.id.split("-")[0] && sourceNode.position.x > targetNode.position.x) {
-                        // should be have a repeated node in the same group following
-                        targetNode = nodes.findLast((node) => node.data.label === routes[j][k + 1] && node.id.split("-")[1] !== "0");
-                    }
-
-                    let edge = {
-                        id: `g${i}r${j}-e${sourceNode.data.label}-${targetNode.data.label}`,
-                        source: sourceNode.id,
-                        target: targetNode.id,
-                        //type: sourceNode.position.y !== targetNode.position.y ? "rightUpRight" : undefined,
-                    }
-                    if (sourceNode.position.y !== targetNode.position.y) {
-                        edge.type = "rightUpRight";
-                    }
-                    edges.push(edge);
+                    return true;
                 }
             }
-        }
-    }
-    
 
-    // handle extra dashedBlue
-    for (let i = 0; i < allRoutes.length; i++) {
-        let groupNodes = nodes.filter((node) => node.id.startsWith(`g${i}r`) && node.type === "dashedBlue");
-        if (groupNodes.length <= 1) continue;
+            nodes.push({
+                id,
+                type,
+                position: { x, y: y + (type === "dashedBlue" ? 4 : 0) },
+                data: {
+                    label: item,
+                    handles: {
+                        left: type === "star" ? "target" : type === "dashedBlue" && nodes[nodes.length - 1].type === "palace" ? "target" : null,
+                        right: type === "palace" && itemIndex !== route.length - 1 ? "source" : null,
+                        top: null,
+                        bottom: null,
+                    },
+                    isSpeciallyDashed: type === "palace" && itemIndex === 0 && route.length <= 3 && route[route.length - 1] === "自化忌" ? true : false,
+                },
+            });
 
-        let toHoldDashedBlueNode = groupNodes.sort((a, b) => b.position.x - a.position.y)[0];
-
-        nodes = nodes.flatMap((node) => {
-            if (node.id.split("r")[0] === toHoldDashedBlueNode.id.split("r")[0]) {
-                if (node.type === "dashedBlue" && node.id !== toHoldDashedBlueNode.id) {
-                    return []
-                } 
-                return [node];
-            } else {
-                return [node];
+            if (type === "star") {
+                const prevId = `r${routeIndex}-${itemIndex - 1}-${route[itemIndex - 1]}`;
+                edges.push({ id: `r${routeIndex}-e${route[itemIndex - 1]}-${route[itemIndex]}`, source: prevId, target: id, targetHandle: "left" });
             }
+
+            // Edge Handle for 自化忌
+            if (type === "dashedBlue" && nodes[nodes.length - 2].type === "palace") {
+                // Node Previous of 自化忌
+                nodes[nodes.length - 2].data.handles.right = "source";
+                const prevId = `r${routeIndex}-${itemIndex - 1}-${route[itemIndex - 1]}`;
+                edges.push({ id: `r${routeIndex}-e${route[itemIndex - 1]}-${route[itemIndex]}`, source: prevId, target: id, targetHandle: "left" });
+            }
+
+            return false;
         });
+    });
 
-    }
-
-
-
-    
+    const { pairs, extendRoutes } = findOppositePalaceRoutes(rawRoutes);
 
     // shift x-position to the left if there is failure of rightUpRight Edge
     for (let i = 0; i < edges.length; i++) {
         if (edges[i].type === "rightUpRight" && edges[i].source.split("-")[1] > edges[i].target.split("-")[1]) {
-
-            const sourceNodeIndex = nodes.findIndex((node) => node.id === edges[i].source);
-            const targetNodeIndex = nodes.findIndex((node) => node.id === edges[i].target);
-
-            while (nodes[targetNodeIndex].position.x < nodes[sourceNodeIndex].position.x) {
-                nodes = nodes.flatMap((node) => {
-                    if (node.id.startsWith(nodes[sourceNodeIndex].id.split("-")[0])) {
-                        node.position.x -= (PALACE_WIDTH + PALACE_STAR_OFFSET + STAR_PALACE_OFFSET + STAR_WIDTH);
-                        return node;
-                    } else {
-                        return node;
-                    }
-                });
-                //nodes[sourceNodeIndex].position.x -= (PALACE_WIDTH + PALACE_STAR_OFFSET + STAR_PALACE_OFFSET + STAR_WIDTH);
-            }
-
+            const offsetCycle = Math.floor((edges[i].source.split("-")[1] - edges[i].target.split("-")[1]));
+            nodes = nodes.flatMap((node) => {
+                if (node.id.startsWith(edges[i].source.split("-")[0])) {
+                    node.position.x -= (offsetCycle * (PALACE_WIDTH + PALACE_STAR_OFFSET + STAR_PALACE_OFFSET) - STAR_PALACE_OFFSET);
+                    return node;
+                } else {
+                    return node;
+                }
+            });
         }
     }
 
-    const { pairs, extendRoutes } = findOppositePalaceRoutes(rawRoutes);
+
+
+
+
+
 
     // handle pairs
     for (let i = 0; i < pairs.length; i++) {
@@ -781,8 +690,8 @@ function generateRoutes(allRoutes, rawRoutes) {
             if (secondNodes_.length === 0) secondNodes = secondNodes[0]; else secondNodes = secondNodes_;
         }
 
-        // if same group, skip
-        if (firstNodes[0].id.split("r")[0] === secondNodes[0].id.split("r")[0]) {
+        // if same row, skip
+        if (firstNodes[0].id.split("-")[0] === secondNodes[0].id.split("-")[0]) {
             continue;
         }
 
@@ -803,7 +712,7 @@ function generateRoutes(allRoutes, rawRoutes) {
             nodes[firstNodeIndex].data.handles.bottom = "source";
             nodes[secondNodeIndex].data.handles.top = "target";
             edges.push({
-                id: `g${i}r1-e${firstNodes[0].data.label}-${secondNodes[0].data.label}`,
+                id: `r1-e${firstNodes[0].data.label}-${secondNodes[0].data.label}`,
                 source: nodes[firstNodeIndex].id,
                 target: nodes[secondNodeIndex].id,
                 sourceHandle: "bottom",
@@ -815,7 +724,7 @@ function generateRoutes(allRoutes, rawRoutes) {
              nodes[secondNodeIndex].data.handles.bottom = "source";
              nodes[firstNodeIndex].data.handles.top = "target";
              edges.push({
-                 id: `g${i}r1-e${secondNodes[0].data.label}-${firstNodes[0].data.label}`,
+                 id: `r1-e${secondNodes[0].data.label}-${firstNodes[0].data.label}`,
                  source: nodes[secondNodeIndex].id,
                  target: nodes[firstNodeIndex].id,
                  sourceHandle: "bottom",
@@ -826,53 +735,9 @@ function generateRoutes(allRoutes, rawRoutes) {
 
     }
 
-    // handle extend
-    for (let i = 0; i < allRoutes.length; i++) {
-        let groupNodes = nodes.filter((node) => node.id.startsWith(`g${i}r`));
-        let clonedNodes = [...groupNodes];
-        clonedNodes.sort((a, b) => b.position.x - a.position.x);
-        const tailNode = clonedNodes[0];
-        const toExtend = extendRoutes.find((exRoute) => exRoute[0] === tailNode.data.label);
-        if (toExtend) {
-           // console.log(toExtend)
-           let targetOriginalNodeIndex = nodes.findIndex((node) => node.id === tailNode.id);
-           nodes[targetOriginalNodeIndex].data.handles.right = "source";
-           const finalToExtend = toExtend.flatMap((extend, exIndex) => {
-            if (exIndex === 0) return [];
-            else {
-                let type = STARS.includes(extend) ? "star" : "palace";
-                let x = type === "star" ? tailNode.position.x + PALACE_WIDTH + PALACE_STAR_OFFSET : tailNode.position.x + PALACE_WIDTH + PALACE_STAR_OFFSET + STAR_WIDTH + STAR_PALACE_OFFSET
-                let y = tailNode.position.y + Math.floor(ROW_OFFSET/4);
-                return [
-                    {
-                        id: `ex-g${i}-${extend}`,
-                        type: type,
-                        position: { x: x, y: y},
-                        data: {
-                            label: extend,
-                            handles: {
-                                left: type === "star" ? "target" : null,
-                                right: null,
-                                top: null,
-                                bottom: null,
-                            },
-                        },
-                    }
-                ]
-            }
-        })
-        edges.push({ id: `ex-g${i}-e${nodes[targetOriginalNodeIndex].data.label}-${finalToExtend[0].data.label}`, source: nodes[targetOriginalNodeIndex].id, target: finalToExtend[0].id, targetHandle: "left" });
-            nodes.push(...finalToExtend);
-        }
-    }
-
-
     // handle extendRoutes
-    /* const tailItems = routes.map((route) => route[route.length - 1]);
+    const tailItems = routes.map((route) => route[route.length - 1]);
     const distinctTails = [...new Set(tailItems)];
-
-
-
 
     for (let i = 0; i < distinctTails.length; i++) {
         const toExtend = extendRoutes.find((exRoute) => exRoute[0] === distinctTails[i])
@@ -881,7 +746,7 @@ function generateRoutes(allRoutes, rawRoutes) {
             if (isOrderedContiguousInAny(routes, toExtend)) continue;
 
             let targetOrignalNodes = nodes.filter((item) => item.data.label === distinctTails[i]);
-            // console.log(targetOrignalNodes)
+            console.log(targetOrignalNodes)
             if (targetOrignalNodes.length === 0) continue;
             if (targetOrignalNodes.length > 1) {
                 targetOrignalNodes = targetOrignalNodes.filter((item) => item.id.startsWith("r") && item.id.split("-")[1] !== "0");
@@ -917,15 +782,11 @@ function generateRoutes(allRoutes, rawRoutes) {
             edges.push({ id: `ex${i}-e${nodes[targetOriginalNodesIndex].data.label}-${finalToExtend[0].data.label}`, source: nodes[targetOriginalNodesIndex].id, target: finalToExtend[0].id, targetHandle: "left" });
             nodes.push(...finalToExtend);
         }
-    } */
+    }
 
-     console.log(nodes)
-     console.log(edges)
+    console.log(nodes)
+    console.log(edges)
     return { nodes, edges };
-} catch (error) {
-    console.log(error)
-    return { nodes: [], edges: [] };
-}
 }
 
 // Right → Up edge (two-segment orthogonal)
