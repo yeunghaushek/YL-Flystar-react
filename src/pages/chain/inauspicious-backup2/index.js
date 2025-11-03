@@ -394,9 +394,6 @@ export default function Astrolabe() {
         straightBlue: StraightBlueEdge,
         rightUp: RightUpEdge,
         rightUpRight: RightUpRightEdge,
-        rightUpRight2: RightUpRightEdge2,
-        rightUpRight3: RightUpRightEdge3,
-        rightUpRight4: RightUpRightEdge4,
         dashedArrowBoth: DashedArrowBothEdge,
     }), []);
 
@@ -408,6 +405,7 @@ export default function Astrolabe() {
     useEffect(() => {
         //const {allRoutes} = trimThenMergeWithMostFrequentTailThenFilterThenSort(selectedRoutes, simpleRoutes);
         const { pairs, extendRoutes } = findOppositePalaceRoutes(simpleRoutes);
+        //console.log(simpleRoutes)
         const allRoutes = mergeSample(selectedRoutes, extendRoutes);
         if (!allRoutes || allRoutes.length === 0) {
             setNodes([]);
@@ -572,23 +570,57 @@ function generateRoutes(allRoutes, rawRoutes) {
         let startY = nodes.length > 0 ? Math.max(...nodes.map((node) => node.position.y)) + ROW_OFFSET * 2 : 0;
 
         for (let j = 0; j < routes.length; j++) {
-            //console.log(routes[j])
-            console.log("test")
+            console.log(routes[j])
             let x = 0;
             let y = startY + (j * ROW_OFFSET);
-            
             for (let k = 0; k < routes[j].length; k++) {
-                
                 const comingNodeId = `g${i}r${j}-${k}-${routes[j][k]}`;
                 const comingNodeType = routes[j][k].startsWith("自化") ? "dashedBlue" : STARS.includes(routes[j][k]) ? "star" : "palace";
                 let existedNodeIndex = nodes.findLastIndex((node) => node.data.label === routes[j][k] && node.id.split("-")[0] !== comingNodeId.split("-")[0] && node.id.split("-")[1] !== "0");
-                //console.log(existedNodeIndex)
-                  //  console.log(comingNodeId)
+                
 
-                    if (existedNodeIndex > -1 && y === nodes[existedNodeIndex].position.y && x !== nodes[existedNodeIndex].position.x) {
+                    /* if (existedNodeIndex > -1 && y === nodes[existedNodeIndex].position.y && x !== nodes[existedNodeIndex].position.x) {
+                        console.log("ignore duplicate node case 1", routes[j][k])
                         // they are in the same row.but not the same x-position. so it is a repeated node but not the actually same node
                         existedNodeIndex = -1;
+                    } else {
+                        try {
+                            if (existedNodeIndex > -1  && x > nodes[existedNodeIndex].position.x) {
+                                console.log(comingNodeId)
+                                console.log(comingNodeType)
+    
+                                console.log("ignore duplicate node case 2", routes[j][k])
+                                
+                                // repeated node but shifting required to detect
+                                let sOffset = parseInt(parseInt(comingNodeId.split("-")[1]) - parseInt(nodes[existedNodeIndex].id.split("-")[1]))
+                                if (sOffset > 0) {
+                                    console.log("sOffset", sOffset)
+                                    let sc = Math.floor(sOffset / 2) * (PALACE_WIDTH + PALACE_STAR_OFFSET + STAR_WIDTH + STAR_PALACE_OFFSET)
+                                    console.log("sc", sc)
+                                    console.log("x", x)
+                                    console.log("nodes[existedNodeIndex].position.x", nodes[existedNodeIndex].position.x)
+                                    console.log("x - sc", x - sc)
+                                    if (x - sc > nodes[existedNodeIndex].position.x) {
+                                        existedNodeIndex = -1;
+                                    }
+                                } else {
+                                    existedNodeIndex = -1;
+                                }
+                            }
+                        } catch (error) {
+                            console.log("error", error)
+                        }
+                    } */
+
+                    
+                /* if (existedNodeIndex > -1 && comingNodeType === "palace") {
+                    let targetNodeC = nodes.find((node) => node.position.x === x + (PALACE_WIDTH + PALACE_STAR_OFFSET + STAR_WIDTH + STAR_PALACE_OFFSET)*2 && node.position.y === y);
+                    console.log(routes[j][k])
+                    console.log(targetNodeC)
+                    if (targetNodeC) {
+                        continue;
                     }
+                } */
                 
 
                 if (existedNodeIndex > -1 && k !== 0 && comingNodeType !== "dashedBlue") {
@@ -615,7 +647,7 @@ function generateRoutes(allRoutes, rawRoutes) {
                         nodes[nodes.length - 1].position.y = previousExistedNode.position.y + (STAR_HEIGHT * count);
                         nodes[nodes.length - 1].id = `${partsOfPrevId}-${nodes[nodes.length - 1].id.split("-")[2]}`
 
-                        let originalY = nodes.find((node) => node.id.split("-")[0] === previousExistedNode.id.split("-")[0]).position.y;
+                        /* let originalY = nodes.find((node) => node.id.split("-")[0] === previousExistedNode.id.split("-")[0]).position.y;
 
                         let index = existedNodeIndex;
                         while (nodes[index].id.startsWith(partsOfPrevId.split("-")[0])) {
@@ -627,15 +659,25 @@ function generateRoutes(allRoutes, rawRoutes) {
                             }
                             if (nodes[index].type === "star") {
                                 nodes[index].position.y = originalY + (STAR_HEIGHT * count) / (2);
+                                let starCount = 1;
+                                let otherTargetIndex = nodes.findIndex((node) => node.position.x === nodes[index].position.x && node.position.y === originalY + STAR_HEIGHT * starCount)
+                                while (otherTargetIndex > -1) {
+                                    nodes[otherTargetIndex].position.y = nodes[index].position.y + STAR_HEIGHT * starCount;
+                                    count++;
+                                    starCount++;
+                                    
+                                    otherTargetIndex = nodes.findIndex((node) => node.position.x === nodes[index].position.x && node.position.y === originalY + STAR_HEIGHT * starCount)
+                                }
                             }
                             index++;
-                        }
-                        
+                        } */
                     }
 
                     x = existedNode.position.x;
                     y = existedNode.position.y;
                     x += comingNodeType === "star" ? STAR_WIDTH + STAR_PALACE_OFFSET : PALACE_WIDTH + PALACE_STAR_OFFSET;
+
+                    
 
 
                     // console.log(edges)
@@ -646,6 +688,10 @@ function generateRoutes(allRoutes, rawRoutes) {
                     y += 4;
                 }
 
+                let isSpecialDashed = comingNodeType === "palace" && k === 0 && routes[j].length <= 3 && routes[j][routes[j].length - 1] === "自化忌" ? true : false;
+                if (isSpecialDashed) {
+                    x += STAR_WIDTH + STAR_PALACE_OFFSET + PALACE_WIDTH + PALACE_STAR_OFFSET;
+                }
 
                 let node = {
                     id: comingNodeId,
@@ -659,7 +705,7 @@ function generateRoutes(allRoutes, rawRoutes) {
                             top: null,
                             bottom: null,
                         },
-                        isSpeciallyDashed: comingNodeType === "palace" && k === 0 && routes[j].length <= 3 && routes[j][routes[j].length - 1] === "自化忌" ? true : false,
+                        isSpeciallyDashed: isSpecialDashed,
                     }
                 }
                 nodes.push(node);
@@ -684,8 +730,15 @@ function generateRoutes(allRoutes, rawRoutes) {
             for (let k = 0; k < routes[j].length; k++) {
                 if (k === 0) {
                     // must be the head
-                    let sourceNode = nodes.find((node) => node.data.label === routes[j][k] && node.id.split("-")[1] === "0" && node.data.handles.right === "source");
-                    let targetNode = nodes.find((node) => node.data.label === routes[j][k + 1] && node.id.split("-")[1] !== "0" && node.data.handles.left === "target");
+                    let usedIds = edges.map((edge) => edge.source);
+                    let sourceNode = nodes.find((node) => node.data.label === routes[j][k] && node.id.split("-")[1] === "0" && node.data.handles.right === "source" && !usedIds.includes(node.id));
+                    if (!sourceNode) {
+                        continue;
+                    }
+                    let targetNodeRight = nodes.find((node) => node.data.label === routes[j][k + 1] && node.id.split("-")[1] !== "0" && node.data.handles.left === "target" && node.position.x > sourceNode.position.x);
+                    let targetNodeLeft = nodes.find((node) => node.data.label === routes[j][k + 1] && node.id.split("-")[1] !== "0" && node.data.handles.left === "target" && node.position.x < sourceNode.position.x);
+                    let targetNode = targetNodeRight || targetNodeLeft;
+
                     let edge = {
                         id: `g${i}r${j}-e${sourceNode.data.label}-${targetNode.data.label}`,
                         source: sourceNode.id,
@@ -699,8 +752,15 @@ function generateRoutes(allRoutes, rawRoutes) {
                 }
                 if (k > 0 && k < routes[j].length - 1 && !STARS.includes(routes[j][k])) {
                     // must not be the head
-                    let sourceNode = nodes.find((node) => node.data.label === routes[j][k] && node.id.split("-")[1] !== "0" && node.data.handles.right === "source");
-                    let targetNode = nodes.find((node) => node.data.label === routes[j][k + 1] && node.id.split("-")[1] !== "0" && node.data.handles.left === "target");
+                    let usedIds = edges.map((edge) => edge.source);
+                    let sourceNode = nodes.find((node) => node.data.label === routes[j][k] && node.id.split("-")[1] !== "0" && node.data.handles.right === "source" && !usedIds.includes(node.id));
+                    if (!sourceNode) {
+                        continue;
+                    }
+                    //let targetNodes = nodes.filter((node) => node.data.label === routes[j][k + 1] && node.id.split("-")[1] !== "0" && node.data.handles.left === "target");
+                    let targetNodeRight = nodes.find((node) => node.data.label === routes[j][k + 1] && node.id.split("-")[1] !== "0" && node.data.handles.left === "target" && node.position.x > sourceNode.position.x);
+                    let targetNodeLeft = nodes.find((node) => node.data.label === routes[j][k + 1] && node.id.split("-")[1] !== "0" && node.data.handles.left === "target" && node.position.x < sourceNode.position.x);
+                    let targetNode = targetNodeRight || targetNodeLeft;
 
                     if (sourceNode.id.split("-")[0] === targetNode.id.split("-")[0] && sourceNode.position.x > targetNode.position.x) {
                         // should be have a repeated node in the same group following
@@ -743,30 +803,10 @@ function generateRoutes(allRoutes, rawRoutes) {
 
     }
 
-    
-    // Check the count of stars of the same palace
-        let starNodes = nodes.filter((node) => node.type === "star");
-        for (let i = 0; i < starNodes.length; i++) {
-            let starCountId = starNodes[i].id.split("-")[0] + "-" + starNodes[i].id.split("-")[1];
-            let starNodesWithSamePalace = starNodes.filter((node) => node.id.startsWith(starCountId));
 
-            let starIndexCount = 1;
-            if (starNodesWithSamePalace.length > 1) {
-                starIndexCount = starNodesWithSamePalace.findIndex((node) => node.id === starNodes[i].id) + 1;
-                if (starIndexCount > 1 && starIndexCount < 5) {
-                    // starIndex < 5 for some prevention, have not prepared many rightUpRight edges
-                    for (let j = 0; j < edges.length; j++) {
-                        if (edges[j].target === starNodes[i].id && edges[j].type === "rightUpRight") {
-                            edges[j].type = `rightUpRight${starIndexCount}`;
-                        }
-                    }
-                }
-            } 
 
-            let targetNodeIndex = nodes.findIndex((node) => node.id === starNodes[i].id);
-            nodes[targetNodeIndex].data.starCount = starIndexCount;
-        }
     
+
     // shift x-position to the left if there is failure of rightUpRight Edge
     for (let i = 0; i < edges.length; i++) {
         if (edges[i].type === "rightUpRight" && edges[i].source.split("-")[1] > edges[i].target.split("-")[1]) {
@@ -1012,96 +1052,6 @@ function RightUpRightEdge({ id, sourceX, sourceY, targetX, targetY, markerEnd, s
     </g>
   );
 }
-
-function RightUpRightEdge2({ id, sourceX, sourceY, targetX, targetY, markerEnd, style = {} }) {
-    const horizontalOffset = 21; // final right width
-    // Swap widths: first horizontal goes to (targetX - horizontalOffset), last horizontal = horizontalOffset
-    const p1x = targetX - horizontalOffset;
-    const p1y = sourceY;
-    const p2x = p1x;
-    const p2y = targetY; // vertical segment to align with target Y (up/down as needed)
-    const d = `M ${sourceX},${sourceY} L ${p1x},${p1y} L ${p2x},${p2y} L ${targetX},${targetY}`;
-    const blue = '#0950c3';
-    const endId = `${id}-rur-end`;
-  
-    return (
-      <g>
-        <defs>
-          <marker id={endId} markerWidth="4" markerHeight="4" viewBox="0 0 4 4" refX="3.2" refY="2" orient="auto">
-            <path d="M 0 0 L 4 2 L 0 4 z" fill={blue} />
-          </marker>
-        </defs>
-        <path
-          id={id}
-          d={d}
-          fill="none"
-          stroke={style?.stroke || blue}
-          strokeWidth={style?.strokeWidth || 2}
-          markerEnd={`url(#${endId})`}
-        />
-      </g>
-    );
-  }
-
-  function RightUpRightEdge3({ id, sourceX, sourceY, targetX, targetY, markerEnd, style = {} }) {
-    const horizontalOffset = 18; // final right width
-    // Swap widths: first horizontal goes to (targetX - horizontalOffset), last horizontal = horizontalOffset
-    const p1x = targetX - horizontalOffset;
-    const p1y = sourceY;
-    const p2x = p1x;
-    const p2y = targetY; // vertical segment to align with target Y (up/down as needed)
-    const d = `M ${sourceX},${sourceY} L ${p1x},${p1y} L ${p2x},${p2y} L ${targetX},${targetY}`;
-    const blue = '#0b64f4';
-    const endId = `${id}-rur-end`;
-  
-    return (
-      <g>
-        <defs>
-          <marker id={endId} markerWidth="4" markerHeight="4" viewBox="0 0 4 4" refX="3.2" refY="2" orient="auto">
-            <path d="M 0 0 L 4 2 L 0 4 z" fill={blue} />
-          </marker>
-        </defs>
-        <path
-          id={id}
-          d={d}
-          fill="none"
-          stroke={style?.stroke || blue}
-          strokeWidth={style?.strokeWidth || 2}
-          markerEnd={`url(#${endId})`}
-        />
-      </g>
-    );
-  }
-
-  function RightUpRightEdge4({ id, sourceX, sourceY, targetX, targetY, markerEnd, style = {} }) {
-    const horizontalOffset = 15; // final right width
-    // Swap widths: first horizontal goes to (targetX - horizontalOffset), last horizontal = horizontalOffset
-    const p1x = targetX - horizontalOffset;
-    const p1y = sourceY;
-    const p2x = p1x;
-    const p2y = targetY; // vertical segment to align with target Y (up/down as needed)
-    const d = `M ${sourceX},${sourceY} L ${p1x},${p1y} L ${p2x},${p2y} L ${targetX},${targetY}`;
-    const blue = '#073c92';
-    const endId = `${id}-rur-end`;
-  
-    return (
-      <g>
-        <defs>
-          <marker id={endId} markerWidth="4" markerHeight="4" viewBox="0 0 4 4" refX="3.2" refY="2" orient="auto">
-            <path d="M 0 0 L 4 2 L 0 4 z" fill={blue} />
-          </marker>
-        </defs>
-        <path
-          id={id}
-          d={d}
-          fill="none"
-          stroke={style?.stroke || blue}
-          strokeWidth={style?.strokeWidth || 2}
-          markerEnd={`url(#${endId})`}
-        />
-      </g>
-    );
-  }
 
 // Straight blue edge with arrow end (replaces previous default styling)
 function StraightBlueEdge({ id, sourceX, sourceY, targetX, targetY, markerEnd, style = {} }) {

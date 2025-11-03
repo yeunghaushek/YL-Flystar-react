@@ -927,6 +927,10 @@ export default function Astrolabe() {
     return `/chain/auspicious?n=${name}&g=${gender}&c=${calendar}&y=${year}&m=${month}&d=${day}&bt=${birthTime}&lm=${isLeapMonth ? "1" : "0"}`
   }
 
+  const getFlow2Path = () => {
+    return `/chain/inauspicious?n=${name}&g=${gender}&c=${calendar}&y=${year}&m=${month}&d=${day}&bt=${birthTime}&lm=${isLeapMonth ? "1" : "0"}`
+  }
+
   const updateUrlParams = () => {
     router.push(
       {
@@ -2091,7 +2095,20 @@ export default function Astrolabe() {
                  
                   <button className={centerPalaceStyle.flow1}>
                   <Link href={getFlowPath()} target="_blank">
-                    吉化串連 (Beta)
+                  {window.innerWidth > 767 ? (
+                    <span>吉化串連 (Beta)</span>
+                  ) : (
+                    <span>吉化</span>
+                  )}
+                    </Link>
+                  </button>
+                  <button className={centerPalaceStyle.flow2}>
+                  <Link href={getFlow2Path()} target="_blank">
+                  {window.innerWidth > 767 ? (
+                    <span>凶化串連 (Beta)</span>
+                  ) : (
+                    <span>凶化</span>
+                  )}
                     </Link>
                   </button>
                 </div>

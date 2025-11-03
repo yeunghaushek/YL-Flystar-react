@@ -173,11 +173,21 @@
 
       @media only screen and (max-width: 767px) {
         height: 32px;
+
+        font-size: 12px;
+      }
+
+      @media only screen and (max-width: 375px) {
+        font-size: 10px;
       }
     }
 
     .flow1 {
       background-color: #686;
+    }
+
+    .flow2 {
+      background-color: #668;
     }
   }
 }
