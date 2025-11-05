@@ -789,7 +789,7 @@ function generateRoutes(allRoutes, rawRoutes) {
             console.log(nodes[targetNodeIndex].id)
            
             while (nodes[targetNodeIndex].position.x < nodes[sourceNodeIndex].position.x && 
-                //nodes[targetNodeIndex].id.split("-")[0] !== nodes[sourceNodeIndex].id.split("-")[0] &&
+                nodes[targetNodeIndex].id.split("-")[0] !== nodes[sourceNodeIndex].id.split("-")[0] &&
                 
                 tryCount < maxtry) {
 
