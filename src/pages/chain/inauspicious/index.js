@@ -684,7 +684,10 @@ function generateRoutes(allRoutes, rawRoutes) {
             }
         }
 
-      
+        // debugging: remove all the nodes with the exactly the same position and label. keep the first one
+        nodes = nodes.filter((node, index, self) =>
+            index === self.findIndex((t) => t.position.x === node.position.x && t.position.y === node.position.y && t.data.label === node.data.label)
+        );
 
         for (let j = 0; j < routes.length; j++) {
             for (let k = 0; k < routes[j].length; k++) {
@@ -708,21 +711,25 @@ function generateRoutes(allRoutes, rawRoutes) {
                     let sourceNode = nodes.find((node) => node.data.label === routes[j][k] && node.id.split("-")[1] !== "0" && node.data.handles.right === "source");
                     let targetNode = nodes.find((node) => node.data.label === routes[j][k + 1] && node.id.split("-")[1] !== "0" && node.data.handles.left === "target");
 
-                    if (sourceNode.id.split("-")[0] === targetNode.id.split("-")[0] && sourceNode.position.x > targetNode.position.x) {
-                        // should be have a repeated node in the same group following
-                        targetNode = nodes.findLast((node) => node.data.label === routes[j][k + 1] && node.id.split("-")[1] !== "0");
-                    }
+                    if (sourceNode && targetNode) {
+                        if (sourceNode.id.split("-")[0] === targetNode.id.split("-")[0] && sourceNode.position.x > targetNode.position.x) {
+                            // should be have a repeated node in the same group following
+                            targetNode = nodes.findLast((node) => node.data.label === routes[j][k + 1] && node.id.split("-")[1] !== "0");
+                        }
 
-                    let edge = {
-                        id: `g${i}r${j}-e${sourceNode.data.label}-${targetNode.data.label}`,
-                        source: sourceNode.id,
-                        target: targetNode.id,
-                        //type: sourceNode.position.y !== targetNode.position.y ? "rightUpRight" : undefined,
+                        let edge = {
+                            id: `g${i}r${j}-e${sourceNode.data.label}-${targetNode.data.label}`,
+                            source: sourceNode.id,
+                            target: targetNode.id,
+                            //type: sourceNode.position.y !== targetNode.position.y ? "rightUpRight" : undefined,
+                        }
+                        if (sourceNode.position.y !== targetNode.position.y) {
+                            edge.type = "rightUpRight";
+                        }
+                        edges.push(edge);
+                    } else {
+                        
                     }
-                    if (sourceNode.position.y !== targetNode.position.y) {
-                        edge.type = "rightUpRight";
-                    }
-                    edges.push(edge);
                 }
             }
         }

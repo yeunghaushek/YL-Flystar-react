@@ -272,11 +272,40 @@ export function mergeSample(sample, extendRoutes) {
          finalRoutes.push([routesGroup[i][specialCaseIndex]]);
          continue;
      } */
-        let specialCaseIndex = routesGroup[i].findIndex((route) => route.length === 4);
+
+
+         routesGroup[i] = routesGroup[i].flatMap((route) => {
+            // the max special case length should be 8:  ["生年忌","太陰","命宮","巨門","福德宮","文曲","事業宮","自化忌"]
+            if (route.length === 4) {
+                return [[
+                    ...route.slice(0, 3),
+                    route[1],
+                    route[3],
+                ]];
+            }
+            if (route.length === 6) {
+                return [[
+                    ...route.slice(0, 5),
+                    route[3],
+                    route[5],
+                ]];
+            }
+            if (route.length === 8) {
+                return [[
+                    ...route.slice(0, 7),
+                    route[5],
+                    route[7],
+                ]];
+            }
+            return [route];
+
+        })
+
+        /* let specialCaseIndex = routesGroup[i].findIndex((route) => route.length === 4);
         if (specialCaseIndex !== -1) {
             routesGroup[i][specialCaseIndex] = [...routesGroup[i][specialCaseIndex].slice(0, 3), routesGroup[i][specialCaseIndex][1], routesGroup[i][specialCaseIndex][3]];
             console.log(routesGroup[i][specialCaseIndex]);
-        }
+        } */
         
 
         let sorted = sortRoutes(routesGroup[i]);
@@ -353,7 +382,7 @@ export function mergeSample(sample, extendRoutes) {
                 
             }
 
-            if (mergeNumber > 20) {
+            if (mergeNumber > 10) {
                 // prevention of infinite loop
                 mergeFinished = true;
             }
