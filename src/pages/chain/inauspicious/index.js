@@ -559,7 +559,7 @@ const ROW_OFFSET = 80;
 function generateRoutes(allRoutes, rawRoutes) {
     try {
 
-   
+    console.log("start generateRoutes")
      console.log(allRoutes);
     if (allRoutes.length === 0) return [];
     
@@ -570,6 +570,8 @@ function generateRoutes(allRoutes, rawRoutes) {
     for (let i = 0; i < allRoutes.length; i++) {
         const routes = allRoutes[i];
         let startY = nodes.length > 0 ? Math.max(...nodes.map((node) => node.position.y)) + ROW_OFFSET * 2 : 0;
+
+        console.log("checkpoint 1")
 
         for (let j = 0; j < routes.length; j++) {
             //console.log(routes[j])
@@ -623,7 +625,9 @@ function generateRoutes(allRoutes, rawRoutes) {
                                 nodes[index].position.y =  nodes[index-1].position.y + 4;
                             }
                             if (nodes[index].type === "palace") {
-                                nodes[index].position.y = originalY + (PALACE_HEIGHT * count) / (2);
+                               // console.log(count)
+                               // console.log(previousExistedNode.position.y)
+                                nodes[index].position.y = previousExistedNode.position.y + (PALACE_HEIGHT * count) / (2);
                             }
                             if (nodes[index].type === "star") {
                                 nodes[index].position.y = originalY + (STAR_HEIGHT * count) / (2);
@@ -680,6 +684,8 @@ function generateRoutes(allRoutes, rawRoutes) {
             }
         }
 
+      
+
         for (let j = 0; j < routes.length; j++) {
             for (let k = 0; k < routes[j].length; k++) {
                 if (k === 0) {
@@ -722,6 +728,8 @@ function generateRoutes(allRoutes, rawRoutes) {
         }
     }
     
+
+   
 
     // handle extra dashedBlue
     for (let i = 0; i < allRoutes.length; i++) {
@@ -766,15 +774,27 @@ function generateRoutes(allRoutes, rawRoutes) {
             let targetNodeIndex = nodes.findIndex((node) => node.id === starNodes[i].id);
             nodes[targetNodeIndex].data.starCount = starIndexCount;
         }
-    
+        console.log("checkpoint 2")
     // shift x-position to the left if there is failure of rightUpRight Edge
     for (let i = 0; i < edges.length; i++) {
-        if (edges[i].type === "rightUpRight" && edges[i].source.split("-")[1] > edges[i].target.split("-")[1]) {
+        if (edges[i].type && edges[i].type.startsWith("rightUpRight") && edges[i].source.split("-")[1] > edges[i].target.split("-")[1]) {
 
             const sourceNodeIndex = nodes.findIndex((node) => node.id === edges[i].source);
             const targetNodeIndex = nodes.findIndex((node) => node.id === edges[i].target);
+            console.log("checkpoint 3")
 
-            while (nodes[targetNodeIndex].position.x < nodes[sourceNodeIndex].position.x) {
+            let maxtry = 10;
+            let tryCount = 0;
+            console.log(nodes[sourceNodeIndex].id)
+            console.log(nodes[targetNodeIndex].id)
+           
+            while (nodes[targetNodeIndex].position.x < nodes[sourceNodeIndex].position.x && 
+                //nodes[targetNodeIndex].id.split("-")[0] !== nodes[sourceNodeIndex].id.split("-")[0] &&
+                
+                tryCount < maxtry) {
+
+                console.log("checkpoint 4")
+                console.log(nodes[targetNodeIndex].position.x, nodes[sourceNodeIndex].position.x)
                 nodes = nodes.flatMap((node) => {
                     if (node.id.startsWith(nodes[sourceNodeIndex].id.split("-")[0])) {
                         node.position.x -= (PALACE_WIDTH + PALACE_STAR_OFFSET + STAR_PALACE_OFFSET + STAR_WIDTH);
@@ -784,11 +804,13 @@ function generateRoutes(allRoutes, rawRoutes) {
                     }
                 });
                 //nodes[sourceNodeIndex].position.x -= (PALACE_WIDTH + PALACE_STAR_OFFSET + STAR_PALACE_OFFSET + STAR_WIDTH);
+                tryCount++;
             }
 
         }
     }
 
+    console.log("checkpoint 5")
     const { pairs, extendRoutes } = findOppositePalaceRoutes(rawRoutes);
 
     // handle pairs

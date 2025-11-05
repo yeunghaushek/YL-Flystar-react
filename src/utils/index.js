@@ -234,8 +234,8 @@ function mergeRoutes(routes, k, strongRoutes) {
 
 export function mergeSample(sample, extendRoutes) {
     //const palacesGroup = getPalaceGroup(chartNumber);
-
-    let sample_ = [...sample];
+    try {
+        let sample_ = [...sample];
     
     if (extendRoutes && extendRoutes.length > 0) {
         for (let j = 0; j < extendRoutes.length; j++) {
@@ -263,6 +263,7 @@ export function mergeSample(sample, extendRoutes) {
     });
     //console.log(routesGroup);
     let finalRoutes = [];
+
     for (let i = 0; i < routesGroup.length; i++) {
 
         // special case handling
@@ -308,6 +309,7 @@ export function mergeSample(sample, extendRoutes) {
                 console.log(mergeNumber);
                 console.log(mergedRoutes);
             } */
+               
            
             let mergedRoutes_ = mergeRoutes(mergedRoutes, mergeNumber, strongRoutes);
             
@@ -315,6 +317,7 @@ export function mergeSample(sample, extendRoutes) {
                 console.log(mergedRoutes_);
             } */
             if (mergedRoutes_.length === mergedRoutes.length) {
+                console.log("checkpoint, mergeNumber", mergeNumber)
                 // second Check Strong Routes
                 mergeFinished = true;
                 mergedRoutes = sortRoutes(mergedRoutes_);
@@ -323,6 +326,7 @@ export function mergeSample(sample, extendRoutes) {
                 let strongRoutes_ = mergedRoutes.filter((route) => route[0] === route[route.length - 1]);
                 if (strongRoutes_.length > 0) {
                     strongRoutes = strongRoutes_;
+                   
                     for (let j = 0; j < mergedRoutes.length; j++) {
                         let targetIndex = mergedRoutes[j].findIndex((item) => item === strongRoutes[0][0]);
                         if (targetIndex > 0 && targetIndex + 1 < mergedRoutes[j].length) {
@@ -334,9 +338,24 @@ export function mergeSample(sample, extendRoutes) {
                         } 
                     }
                 }
+
+                // if all routes have the same length > 5 after merged, try again
+                if (mergedRoutes.length > 1 && mergedRoutes.map((route) => route.length).every((length) => length === mergedRoutes[0].length && length > 5)) {
+                    mergeFinished = false;
+                    mergeNumber = mergeNumber + 2;
+                }
+
+                
             } else {
                 mergeNumber = mergeNumber + 2;
                 mergedRoutes = mergedRoutes_;
+
+                
+            }
+
+            if (mergeNumber > 20) {
+                // prevention of infinite loop
+                mergeFinished = true;
             }
         }
 
@@ -371,6 +390,12 @@ export function mergeSample(sample, extendRoutes) {
     finalRoutes = sortArraysByLengthDesc(finalRoutes);
 
     return finalRoutes;
+    } catch (error) {
+        console.error(error);
+        return [];
+    }
+
+    
 }
 
 
