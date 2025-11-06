@@ -630,7 +630,7 @@ function generateRoutes(allRoutes, rawRoutes) {
                                 nodes[index].position.y = previousExistedNode.position.y + (PALACE_HEIGHT * count) / (2);
                             }
                             if (nodes[index].type === "star") {
-                                nodes[index].position.y = originalY + (STAR_HEIGHT * count) / (2);
+                                nodes[index].position.y = previousExistedNode.position.y  + (STAR_HEIGHT * count) / (2);
                             }
                             index++;
                         }
