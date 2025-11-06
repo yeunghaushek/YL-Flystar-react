@@ -349,7 +349,14 @@ export function mergeSample(sample, extendRoutes) {
                 console.log("checkpoint, mergeNumber", mergeNumber)
                 // second Check Strong Routes
                 mergeFinished = true;
+
+                const specialStrongRoute = mergedRoutes_.find((route) => route[0] === "生年忌" && route[2] === route[route.length - 1] && route.length > 4)
+
                 mergedRoutes = sortRoutes(mergedRoutes_);
+                if (specialStrongRoute) {
+                    // consider the case that the strong route is hidden in the 生年忌 route.
+                    mergedRoutes.push(specialStrongRoute.slice(2));
+                }
                 //console.log(mergedRoutes);
 
                 let strongRoutes_ = mergedRoutes.filter((route) => route[0] === route[route.length - 1]);
