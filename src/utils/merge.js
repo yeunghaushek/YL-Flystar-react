@@ -214,6 +214,42 @@ export function sortArraysByTailSimilarity(listOfArrays) {
 }
 
 
+export function sortArraysByHeadSimilarityIgnoringFirst(listOfArrays) {
+  if (!Array.isArray(listOfArrays)) return [];
+  const n = listOfArrays.length;
+  if (n <= 1) return listOfArrays.slice();
+
+  function commonPrefixLengthFromIndex1(a, b) {
+    if (!Array.isArray(a) || !Array.isArray(b)) return 0;
+    let i = 1;
+    let j = 1;
+    let count = 0;
+    while (i < a.length && j < b.length && a[i] === b[j]) {
+      count++;
+      i++;
+      j++;
+    }
+    return count;
+  }
+
+  const scored = listOfArrays.map((arr, idx) => {
+    let maxPrefix = 0;
+    for (let j = 0; j < n; j++) {
+      if (j === idx) continue;
+      const score = commonPrefixLengthFromIndex1(arr, listOfArrays[j]);
+      if (score > maxPrefix) maxPrefix = score;
+    }
+    return { index: idx, score: maxPrefix, arr };
+  });
+
+  scored.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return a.index - b.index; // 穩定排序：同分保留原始順序
+  });
+
+  return scored.map(s => s.arr);
+}
+
 export function sortArraysByHeadThenTail(listOfArrays) {
   if (!Array.isArray(listOfArrays)) return [];
   const n = listOfArrays.length;
@@ -278,5 +314,141 @@ export function sortArraysByHeadThenTail(listOfArrays) {
     return a.index - b.index; // 穩定排序
   });
 
-  return scored.map(s => s.arr);
+  // 以初步排序選出前兩個作為種子，之後使用「對已選集合的最大尾端/頭部相似度」作為次序
+  if (scored.length <= 2) {
+    return scored.map(s => s.arr);
+  }
+
+  function bestCommonSuffixWithSelected(candidateArr, selectedItems) {
+    let best = 0;
+    for (const sel of selectedItems) {
+      const v = commonSuffixLength(candidateArr, sel.arr);
+      if (v > best) best = v;
+    }
+    return best;
+  }
+
+  function bestCommonHeadWithSelected(candidateArr, selectedItems) {
+    let best = 0;
+    for (const sel of selectedItems) {
+      const v = commonPrefixLengthFromIndex1(candidateArr, sel.arr);
+      if (v > best) best = v;
+    }
+    return best;
+  }
+
+  const base = scored; // 已按 superPriority > head > tail > index 排好
+  const selected = [base[0], base[1]];
+  const remaining = base.slice(2);
+
+  while (remaining.length > 0) {
+    let bestIdx = 0;
+    let bestCandidate = remaining[0];
+    let bestKey = null;
+
+    for (let i = 0; i < remaining.length; i++) {
+      const c = remaining[i];
+      const key = [
+        Number(c.superPriority),
+        bestCommonSuffixWithSelected(c.arr, selected),
+        bestCommonHeadWithSelected(c.arr, selected),
+        c.tail,
+        c.head,
+        -c.index // 最後以原始索引升冪，這裡用負號使較小索引更優先
+      ];
+
+      if (bestKey === null) {
+        bestKey = key;
+        bestIdx = i;
+        bestCandidate = c;
+        continue;
+      }
+
+      // 字典序比較 key（較大者優先）
+      let better = false;
+      for (let k = 0; k < key.length; k++) {
+        if (key[k] !== bestKey[k]) {
+          better = key[k] > bestKey[k];
+          break;
+        }
+      }
+      if (better) {
+        bestKey = key;
+        bestIdx = i;
+        bestCandidate = c;
+      }
+    }
+
+    selected.push(bestCandidate);
+    remaining.splice(bestIdx, 1);
+  }
+
+  return selected.map(s => s.arr);
 }
+
+/* export function sortArraysByHeadThenTail(listOfArrays) {
+  if (!Array.isArray(listOfArrays)) return [];
+  const n = listOfArrays.length;
+  if (n <= 1) return listOfArrays.slice();
+
+  function commonPrefixLengthFromIndex1(a, b) {
+    if (!Array.isArray(a) || !Array.isArray(b)) return 0;
+    let i = 1;
+    let j = 1;
+    let count = 0;
+    while (i < a.length && j < b.length && a[i] === b[j]) {
+      count++;
+      i++;
+      j++;
+    }
+    return count;
+  }
+
+  function hasDuplicateOnOddIndices(a) {
+    if (!Array.isArray(a) || a.length < 5) return false;
+    const seen = new Set();
+    for (let i = 1; i < a.length; i += 2) {
+      const v = a[i];
+      if (seen.has(v)) return true;
+      seen.add(v);
+    }
+    return false;
+  }
+
+  function commonSuffixLength(a, b) {
+    if (!Array.isArray(a) || !Array.isArray(b)) return 0;
+    let i = a.length - 1;
+    let j = b.length - 1;
+    let count = 0;
+    while (i >= 0 && j >= 0 && a[i] === b[j]) {
+      count++;
+      i--;
+      j--;
+    }
+    return count;
+  }
+
+  const scored = listOfArrays.map((arr, idx) => {
+    let head = 0;
+    let tail = 0;
+    const superPriority = hasDuplicateOnOddIndices(arr);
+    for (let j = 0; j < n; j++) {
+      if (j === idx) continue;
+      const other = listOfArrays[j];
+      const h = commonPrefixLengthFromIndex1(arr, other);
+      if (h > head) head = h;
+      const t = commonSuffixLength(arr, other);
+      if (t > tail) tail = t;
+    }
+    return { index: idx, head, tail, superPriority, arr };
+  });
+
+  scored.sort((a, b) => {
+    if (Number(b.superPriority) !== Number(a.superPriority)) return Number(b.superPriority) - Number(a.superPriority);
+    if (b.head !== a.head) return b.head - a.head;
+    if (b.tail !== a.tail) return b.tail - a.tail;
+    return a.index - b.index; // 穩定排序
+  });
+
+  return scored.map(s => s.arr);
+} */

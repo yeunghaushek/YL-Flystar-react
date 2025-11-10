@@ -458,6 +458,7 @@ export default function Astrolabe() {
         setSelectedRoutes(targetRoutes)
     }, [selectedHeads,selectedHeads2])
 
+
     return (
         <>
             <Head>
@@ -571,14 +572,15 @@ function generateRoutes(allRoutes, rawRoutes) {
         const routes = allRoutes[i];
         let startY = nodes.length > 0 ? Math.max(...nodes.map((node) => node.position.y)) + ROW_OFFSET * 2 : 0;
 
-        console.log("checkpoint 1")
 
         for (let j = 0; j < routes.length; j++) {
             //console.log(routes[j])
-            console.log("test")
             let x = 0;
             let y = startY + (j * ROW_OFFSET);
-            
+
+            let nextMaskGR = '';
+            let nextMaskK = '';
+
             for (let k = 0; k < routes[j].length; k++) {
                 
                 const comingNodeId = `g${i}r${j}-${k}-${routes[j][k]}`;
@@ -591,11 +593,20 @@ function generateRoutes(allRoutes, rawRoutes) {
                         // they are in the same row.but not the same x-position. so it is a repeated node but not the actually same node
                         existedNodeIndex = -1;
                     }
+
+
+                    if (existedNodeIndex > -1 && nextMaskGR && nodes[existedNodeIndex].id.split("-")[0] === nextMaskGR) {
+                        // they are in the same row.but not the same x-position. so it is a repeated node but not the actually same node
+                        if (nodes[existedNodeIndex].type === "palace" && k < routes[j].length - 1) {
+                            // seems we are going to extend the palace, so make sure set the handle to source
+                            nodes[existedNodeIndex].data.handles.right = "source";
+                        }
+                        existedNodeIndex = -1;
+                    }
                 
 
                 if (existedNodeIndex > -1 && k !== 0 && comingNodeType !== "dashedBlue") {
                     const existedNode = nodes[existedNodeIndex];
-
 
                     /* if (existedNode.type === "dashedBlue" && existedNode.id.split("-")[0] !== comingNodeId.split("-")[0]) {
                         continue;
@@ -611,25 +622,29 @@ function generateRoutes(allRoutes, rawRoutes) {
                         // set the star to the bottom of the another star of the same palace.
                         // adjust the y-position of other following nodes
                         let partsOfPrevId = `${previousExistedNode.id.split("-")[0]}-${previousExistedNode.id.split("-")[1]}`
-                        let count = nodes.filter((node) => node.id.startsWith(partsOfPrevId)).length;
+                        
+                        nodes[nodes.length - 1].id = `${partsOfPrevId}-${nodes[nodes.length - 1].id.split("-")[2]}`
+                        let count = nodes.map((node) => node.id).filter((nodeId) => nodeId.startsWith(partsOfPrevId)).length - 1;
 
                         nodes[nodes.length - 1].position.x = previousExistedNode.position.x;
-                        nodes[nodes.length - 1].position.y = previousExistedNode.position.y + (STAR_HEIGHT * count);
-                        nodes[nodes.length - 1].id = `${partsOfPrevId}-${nodes[nodes.length - 1].id.split("-")[2]}`
+                        nodes[nodes.length - 1].position.y = previousExistedNode.position.y + (STAR_HEIGHT * (count));
+                        //nodes[nodes.length - 1].id = `${partsOfPrevId}-${nodes[nodes.length - 1].id.split("-")[2]}`
 
-                        let originalY = nodes.find((node) => node.id.split("-")[0] === previousExistedNode.id.split("-")[0]).position.y;
+                        //let originalY = nodes.find((node) => node.id.split("-")[0] === previousExistedNode.id.split("-")[0]).position.y;
 
                         let index = existedNodeIndex;
                         while (nodes[index].id.startsWith(partsOfPrevId.split("-")[0])) {
+
                             if (nodes[index].type === "dashedBlue") {
                                 nodes[index].position.y =  nodes[index-1].position.y + 4;
                             }
                             if (nodes[index].type === "palace") {
-                               // console.log(count)
+                               //console.log(nodes[index].id)
                                // console.log(previousExistedNode.position.y)
                                 nodes[index].position.y = previousExistedNode.position.y + (PALACE_HEIGHT * count) / (2);
                             }
                             if (nodes[index].type === "star") {
+                                //console.log(nodes[index].id)
                                 nodes[index].position.y = previousExistedNode.position.y  + (STAR_HEIGHT * count) / (2);
                             }
                             index++;
@@ -641,6 +656,8 @@ function generateRoutes(allRoutes, rawRoutes) {
                     y = existedNode.position.y;
                     x += comingNodeType === "star" ? STAR_WIDTH + STAR_PALACE_OFFSET : PALACE_WIDTH + PALACE_STAR_OFFSET;
 
+                    nextMaskGR = existedNode.id.split("-")[0];
+                    nextMaskK = `${parseInt(existedNode.id.split("-")[1]) + 1}`;
 
                     // console.log(edges)
                     continue;
@@ -651,8 +668,10 @@ function generateRoutes(allRoutes, rawRoutes) {
                 }
 
 
+                let finalNodeId = nextMaskGR ? `${nextMaskGR}-${nextMaskK}-${routes[j][k]}` : comingNodeId;
+
                 let node = {
-                    id: comingNodeId,
+                    id: finalNodeId,
                     type: comingNodeType,
                     position: { x: x, y: y },
                     data: {
@@ -666,7 +685,10 @@ function generateRoutes(allRoutes, rawRoutes) {
                         isSpeciallyDashed: comingNodeType === "palace" && k === 0 && routes[j].length <= 3 && routes[j][routes[j].length - 1] === "自化忌" ? true : false,
                     }
                 }
-                nodes.push(node);
+
+                if (!nodes.find((node) => node.id === finalNodeId)) {
+                    nodes.push(node);
+                }
 
                 /* if (comingNodeType === "star") {
                     let sourceId = nodes.findLast((node) => node.id.startsWith(comingNodeId.split("-")[0]) && node.type === "palace").id;
@@ -681,6 +703,9 @@ function generateRoutes(allRoutes, rawRoutes) {
 
                 x += comingNodeType === "star" ? STAR_WIDTH + STAR_PALACE_OFFSET : PALACE_WIDTH + PALACE_STAR_OFFSET;
                 
+                if (nextMaskK) {
+                    nextMaskK = `${parseInt(nextMaskK) + 1}`;
+                }
             }
         }
 
@@ -688,6 +713,8 @@ function generateRoutes(allRoutes, rawRoutes) {
         nodes = nodes.filter((node, index, self) =>
             index === self.findIndex((t) => t.position.x === node.position.x && t.position.y === node.position.y && t.data.label === node.data.label)
         );
+
+        //console.log(nodes);
 
         for (let j = 0; j < routes.length; j++) {
             for (let k = 0; k < routes[j].length; k++) {
@@ -781,30 +808,34 @@ function generateRoutes(allRoutes, rawRoutes) {
             let targetNodeIndex = nodes.findIndex((node) => node.id === starNodes[i].id);
             nodes[targetNodeIndex].data.starCount = starIndexCount;
         }
-        console.log("checkpoint 2")
     // shift x-position to the left if there is failure of rightUpRight Edge
+    const shiftedNodes = [];
     for (let i = 0; i < edges.length; i++) {
         if (edges[i].type && edges[i].type.startsWith("rightUpRight") && edges[i].source.split("-")[1] > edges[i].target.split("-")[1]) {
 
             const sourceNodeIndex = nodes.findIndex((node) => node.id === edges[i].source);
             const targetNodeIndex = nodes.findIndex((node) => node.id === edges[i].target);
-            console.log("checkpoint 3")
 
             let maxtry = 10;
             let tryCount = 0;
-            console.log(nodes[sourceNodeIndex].id)
-            console.log(nodes[targetNodeIndex].id)
+            //console.log(nodes[sourceNodeIndex].id)
+            //console.log(nodes[targetNodeIndex].id)
            
             while (nodes[targetNodeIndex].position.x < nodes[sourceNodeIndex].position.x && 
                 nodes[targetNodeIndex].id.split("-")[0] !== nodes[sourceNodeIndex].id.split("-")[0] &&
                 
                 tryCount < maxtry) {
 
-                console.log("checkpoint 4")
-                console.log(nodes[targetNodeIndex].position.x, nodes[sourceNodeIndex].position.x)
+                //console.log(nodes[targetNodeIndex].position.x, nodes[sourceNodeIndex].position.x)
                 nodes = nodes.flatMap((node) => {
                     if (node.id.startsWith(nodes[sourceNodeIndex].id.split("-")[0])) {
-                        node.position.x -= (PALACE_WIDTH + PALACE_STAR_OFFSET + STAR_PALACE_OFFSET + STAR_WIDTH);
+                        const newXPosition = node.position.x - (PALACE_WIDTH + PALACE_STAR_OFFSET + STAR_PALACE_OFFSET + STAR_WIDTH);
+                        node.position.x = newXPosition;
+                        shiftedNodes.push({
+                            id: node.id,
+                            newXPosition: newXPosition,
+                            xPositionOffset: (PALACE_WIDTH + PALACE_STAR_OFFSET + STAR_PALACE_OFFSET + STAR_WIDTH),
+                        });
                         return node;
                     } else {
                         return node;
@@ -817,7 +848,51 @@ function generateRoutes(allRoutes, rawRoutes) {
         }
     }
 
-    console.log("checkpoint 5")
+    // final tune x position for the nodes that are not affected directly (not the same row)
+    /* for (let i = 0; i < shiftedNodes.length; i++) {
+        const nodeIds = edges.filter((edge) => edge.target === shiftedNodes[i].id).map((edge) => edge.source);
+        for (let j = 0; j < nodeIds.length; j++) {
+            const node = nodes.find((node) => node.id === nodeIds[j]);
+            if (node && node.position.x > shiftedNodes[i].newXPosition) {
+                node.position.x -= shiftedNodes[i].xPositionOffset;
+            }
+        }
+    } */
+        for (let i = 0; i < shiftedNodes.length; i++) {
+            const nodeIds = edges.filter((edge) => edge.target === shiftedNodes[i].id).map((edge) => edge.source);
+            for (let j = 0; j < nodeIds.length; j++) {
+                const node = nodes.filter((node) => node.id.startsWith(nodeIds[j].split("-")[0]) && parseInt(node.id.split("-")[1]) <= parseInt(nodeIds[j].split("-")[1]));
+                console.log(node)
+                // all the nodes in the same group should be shifted
+                for (let k = 0; k < node.length; k++) {
+                    if (node[node.length - 1].position.x > shiftedNodes[i].newXPosition) {
+                        node[k].position.x -= shiftedNodes[i].xPositionOffset;
+                    }
+                }
+            }
+        }
+
+    for (let i = 0; i < nodes.length; i++) {
+        if (nodes[i].data.isSpeciallyDashed && !nodes.find((node) => node.position.x < nodes[i].position.x)) {
+            nodes = nodes.flatMap((node) => {
+                if (node.id.startsWith(nodes[i].id.split("-")[0])) {
+                    node.position.x += STAR_PALACE_OFFSET + PALACE_WIDTH + PALACE_STAR_OFFSET;
+                    return [node];
+                } else {
+                    return [node];
+                }
+            });
+        }
+    }
+
+    // find the smallest x, and make sure the smallest x is 0
+    let smallestX = nodes.reduce((min, node) => Math.min(min, node.position.x), Infinity);
+    for (let i = 0; i < nodes.length; i++) {
+        nodes[i].position.x -= smallestX;
+    }
+
+
+
     const { pairs, extendRoutes } = findOppositePalaceRoutes(rawRoutes);
 
     // handle pairs
@@ -974,7 +1049,7 @@ function generateRoutes(allRoutes, rawRoutes) {
         }
     } */
 
-     console.log(nodes)
+     console.log(nodes.sort((a, b) => a.id.localeCompare(b.id)))
      console.log(edges)
     return { nodes, edges };
 } catch (error) {
