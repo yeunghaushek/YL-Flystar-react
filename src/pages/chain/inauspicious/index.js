@@ -407,6 +407,8 @@ export default function Astrolabe() {
 
     useEffect(() => {
         //const {allRoutes} = trimThenMergeWithMostFrequentTailThenFilterThenSort(selectedRoutes, simpleRoutes);
+        setEdges([]);
+        setNodes([]);
         const { pairs, extendRoutes } = findOppositePalaceRoutes(simpleRoutes);
         const allRoutes = mergeSample(selectedRoutes, extendRoutes);
         if (!allRoutes || allRoutes.length === 0) {
@@ -556,7 +558,7 @@ const PALACE_B = ["兄弟宮", "夫妻宮", "子女宮", "財帛宮", "疾厄宮
 const STARS = ["太陽", "太陰", "巨門", "貪狼", "天機", "天同", "文昌", "文曲", "武曲", "廉貞"];
 const PALACE_STAR_OFFSET = 40;
 const STAR_PALACE_OFFSET = 2;
-const ROW_OFFSET = 80;
+const ROW_OFFSET = 100;
 function generateRoutes(allRoutes, rawRoutes) {
     try {
 
@@ -567,7 +569,7 @@ function generateRoutes(allRoutes, rawRoutes) {
 
     // handle pairs
     let nodes = [];
-    const edges = [];
+    let edges = [];
     for (let i = 0; i < allRoutes.length; i++) {
         const routes = allRoutes[i];
         let startY = nodes.length > 0 ? Math.max(...nodes.map((node) => node.position.y)) + ROW_OFFSET * 2 : 0;
@@ -583,7 +585,7 @@ function generateRoutes(allRoutes, rawRoutes) {
 
             for (let k = 0; k < routes[j].length; k++) {
                 
-                const comingNodeId = `g${i}r${j}-${k}-${routes[j][k]}`;
+                const comingNodeId = `g${i}r${j}-${k < 10 ? `0${k}` : k}-${routes[j][k]}`;
                 const comingNodeType = routes[j][k].startsWith("自化") ? "dashedBlue" : STARS.includes(routes[j][k]) ? "star" : "palace";
                 let existedNodeIndex = nodes.findLastIndex((node) => node.data.label === routes[j][k] && node.id.split("-")[0] !== comingNodeId.split("-")[0] && node.id.split("-")[1] !== "0");
                 //console.log(existedNodeIndex)
@@ -618,7 +620,10 @@ function generateRoutes(allRoutes, rawRoutes) {
                     const previousExistedNode = nodes[existedNodeIndex - 1];
                     const previousNode = nodes.findLast((node) => node.id.startsWith(comingNodeId.split("-")[0]));
 
-                    if (previousNode.type === "star" && previousExistedNode.type === "star" && previousNode.data.label !== previousExistedNode.data.label ) {
+                    // existedNodeIndex may be 0? so previousExistedNode may be undefined
+                    
+                    if (previousNode.type === "star" && previousExistedNode && previousExistedNode.type === "star" && previousNode.data.label !== previousExistedNode.data.label ) {
+
                         // set the star to the bottom of the another star of the same palace.
                         // adjust the y-position of other following nodes
                         let partsOfPrevId = `${previousExistedNode.id.split("-")[0]}-${previousExistedNode.id.split("-")[1]}`
@@ -632,7 +637,7 @@ function generateRoutes(allRoutes, rawRoutes) {
 
                         //let originalY = nodes.find((node) => node.id.split("-")[0] === previousExistedNode.id.split("-")[0]).position.y;
 
-                        let index = existedNodeIndex;
+                        /* let index = existedNodeIndex;
                         while (nodes[index].id.startsWith(partsOfPrevId.split("-")[0])) {
 
                             if (nodes[index].type === "dashedBlue") {
@@ -648,7 +653,7 @@ function generateRoutes(allRoutes, rawRoutes) {
                                 nodes[index].position.y = previousExistedNode.position.y  + (STAR_HEIGHT * count) / (2);
                             }
                             index++;
-                        }
+                        } */
                         
                     }
 
@@ -668,7 +673,7 @@ function generateRoutes(allRoutes, rawRoutes) {
                 }
 
 
-                let finalNodeId = nextMaskGR ? `${nextMaskGR}-${nextMaskK}-${routes[j][k]}` : comingNodeId;
+                let finalNodeId = nextMaskGR ? `${nextMaskGR}-${nextMaskK < 10 ? `0${nextMaskK}` : nextMaskK}-${routes[j][k]}` : comingNodeId;
 
                 let node = {
                     id: finalNodeId,
@@ -720,8 +725,8 @@ function generateRoutes(allRoutes, rawRoutes) {
             for (let k = 0; k < routes[j].length; k++) {
                 if (k === 0) {
                     // must be the head
-                    let sourceNode = nodes.find((node) => node.data.label === routes[j][k] && node.id.split("-")[1] === "0" && node.data.handles.right === "source");
-                    let targetNode = nodes.find((node) => node.data.label === routes[j][k + 1] && node.id.split("-")[1] !== "0" && node.data.handles.left === "target");
+                    let sourceNode = nodes.find((node) => node.data.label === routes[j][k] && node.id.split("-")[1] === "00" && node.data.handles.right === "source");
+                    let targetNode = nodes.find((node) => node.data.label === routes[j][k + 1] && node.id.split("-")[1] !== "00" && node.data.handles.left === "target");
                     let edge = {
                         id: `g${i}r${j}-e${sourceNode.data.label}-${targetNode.data.label}`,
                         source: sourceNode.id,
@@ -735,13 +740,13 @@ function generateRoutes(allRoutes, rawRoutes) {
                 }
                 if (k > 0 && k < routes[j].length - 1 && !STARS.includes(routes[j][k])) {
                     // must not be the head
-                    let sourceNode = nodes.find((node) => node.data.label === routes[j][k] && node.id.split("-")[1] !== "0" && node.data.handles.right === "source");
-                    let targetNode = nodes.find((node) => node.data.label === routes[j][k + 1] && node.id.split("-")[1] !== "0" && node.data.handles.left === "target");
+                    let sourceNode = nodes.find((node) => node.data.label === routes[j][k] && node.id.split("-")[1] !== "00" && node.data.handles.right === "source");
+                    let targetNode = nodes.find((node) => node.data.label === routes[j][k + 1] && node.id.split("-")[1] !== "00" && node.data.handles.left === "target");
 
                     if (sourceNode && targetNode) {
                         if (sourceNode.id.split("-")[0] === targetNode.id.split("-")[0] && sourceNode.position.x > targetNode.position.x) {
                             // should be have a repeated node in the same group following
-                            targetNode = nodes.findLast((node) => node.data.label === routes[j][k + 1] && node.id.split("-")[1] !== "0");
+                            targetNode = nodes.findLast((node) => node.data.label === routes[j][k + 1] && node.id.split("-")[1] !== "00");
                         }
 
                         let edge = {
@@ -762,7 +767,20 @@ function generateRoutes(allRoutes, rawRoutes) {
         }
     }
     
+        // debugging: remove all the edges with the exactly the same source and target. keep the first one
+        edges = edges.filter((edge, index, self) =>
+            index === self.findIndex((t) => t.source === edge.source && t.target === edge.target)
+        );
 
+        // if any source or target handle does not exist in any edge, set that handle to null
+        for (let i = 0; i < nodes.length; i++) {
+            if (nodes[i].data.handles.left && !edges.find((edge) => edge.target === nodes[i].id)) {
+                nodes[i].data.handles.left = null;
+            }
+            if (nodes[i].data.handles.right && !edges.find((edge) => edge.source === nodes[i].id)) {
+                nodes[i].data.handles.right = null;
+            }
+        }
    
 
     // handle extra dashedBlue
@@ -790,19 +808,21 @@ function generateRoutes(allRoutes, rawRoutes) {
         let starNodes = nodes.filter((node) => node.type === "star");
         for (let i = 0; i < starNodes.length; i++) {
             let starCountId = starNodes[i].id.split("-")[0] + "-" + starNodes[i].id.split("-")[1];
-            let starNodesWithSamePalace = starNodes.filter((node) => node.id.startsWith(starCountId));
+            // we need to look for position x. if just look for a specific palace, it will also overlap if multiple stars in the multiple palaces with same x position.
+            //let starNodesWithSamePalace = starNodes.filter((node) => node.id.startsWith(starCountId));
+            let starNodesWithSamePalace = starNodes.filter((node) => node.position.x === starNodes[i].position.x);
 
             let starIndexCount = 1;
             if (starNodesWithSamePalace.length > 1) {
                 starIndexCount = starNodesWithSamePalace.findIndex((node) => node.id === starNodes[i].id) + 1;
-                if (starIndexCount > 1 && starIndexCount < 5) {
+                //if (starIndexCount > 1 && starIndexCount < 5) {
                     // starIndex < 5 for some prevention, have not prepared many rightUpRight edges
                     for (let j = 0; j < edges.length; j++) {
-                        if (edges[j].target === starNodes[i].id && edges[j].type === "rightUpRight") {
-                            edges[j].type = `rightUpRight${starIndexCount}`;
+                        if (edges[j].target === starNodes[i].id && (!edges[j].type || edges[j].type === "rightUpRight")) {
+                            edges[j].type = starIndexCount % 4 === 0 ? "rightUpRight4" : starIndexCount % 4 === 1 ? `rightUpRight`:`rightUpRight${starIndexCount % 4}`;
                         }
                     }
-                }
+                //}
             } 
 
             let targetNodeIndex = nodes.findIndex((node) => node.id === starNodes[i].id);
@@ -919,11 +939,11 @@ function generateRoutes(allRoutes, rawRoutes) {
         let firstNodeIndex = nodes.findIndex((node)=> node === firstNodes[0]);
         let secondNodeIndex = nodes.findIndex((node)=> node === secondNodes[0]);
         // if is head, check is there any 自化忌 following
-        if (firstNodes[0].id.split("-")[1] === "0") {
+        if (firstNodes[0].id.split("-")[1] === "00") {
             let targetIndex = firstNodeIndex + 2;
             if (!nodes[targetIndex] || nodes[targetIndex].data.label !== "自化忌") continue;
         }
-        if (secondNodes[0].id.split("-")[1] === "0") {
+        if (secondNodes[0].id.split("-")[1] === "00") {
             let targetIndex = secondNodeIndex + 2;
             if (!nodes[targetIndex] || nodes[targetIndex].data.label !== "自化忌") continue;
         }
@@ -1049,7 +1069,48 @@ function generateRoutes(allRoutes, rawRoutes) {
         }
     } */
 
-     console.log(nodes.sort((a, b) => a.id.localeCompare(b.id)))
+
+    // i want to sort by `${id.split("-")[0]}-${id.split("-")[1]}`, if the id part is the same, then by position.y from small to large, keep all the nodes
+     nodes = nodes.sort((a, b) => {
+        if (`${a.id.split("-")[0]}-${a.id.split("-")[1]}` === `${b.id.split("-")[0]}-${b.id.split("-")[1]}`) {
+            return a.position.y - b.position.y;
+        } else {
+            return `${a.id.split("-")[0]}-${a.id.split("-")[1]}`.localeCompare(`${b.id.split("-")[0]}-${b.id.split("-")[1]}`);
+        }
+     });
+
+     let count = 0;
+     for (let i = 1; i < nodes.length; i++) {
+        let idPart1 = nodes[i].id.split("-")[0];
+        let idPart2 = nodes[i].id.split("-")[1];
+        let previousIdPart1 = nodes[i-1].id.split("-")[0];
+        let previousIdPart2 = nodes[i-1].id.split("-")[1];
+
+        if (idPart2 === "00") {
+            count = 0;
+        }
+
+        if (count > 0 && idPart2 !== previousIdPart2) {
+            switch (nodes[i].type) {
+                case "star":
+                    nodes[i].position.y += (STAR_HEIGHT * count) / 2;
+                    break;
+                case "palace":
+                    nodes[i].position.y += (PALACE_HEIGHT * count) / 2;
+                    break;
+                case "dashedBlue":
+                    nodes[i].position.y += (PALACE_HEIGHT * count) / 2;
+                    break;
+            }
+        }
+
+        if (idPart1 === previousIdPart1 && idPart2 === previousIdPart2) {
+            nodes[i].position.y = nodes[i-1].position.y + STAR_HEIGHT;
+            count++;
+        } 
+     }
+
+     console.log(nodes)
      console.log(edges)
     return { nodes, edges };
 } catch (error) {
@@ -1088,7 +1149,7 @@ function RightUpEdge({ id, sourceX, sourceY, targetX, targetY, markerEnd, style 
 
 // Right → Up → Right edge (three-segment orthogonal)
 function RightUpRightEdge({ id, sourceX, sourceY, targetX, targetY, markerEnd, style = {} }) {
-  const horizontalOffset = 18; // final right width
+  const horizontalOffset = 24; // final right width
   // Swap widths: first horizontal goes to (targetX - horizontalOffset), last horizontal = horizontalOffset
   const p1x = targetX - horizontalOffset;
   const p1y = sourceY;
@@ -1118,7 +1179,7 @@ function RightUpRightEdge({ id, sourceX, sourceY, targetX, targetY, markerEnd, s
 }
 
 function RightUpRightEdge2({ id, sourceX, sourceY, targetX, targetY, markerEnd, style = {} }) {
-    const horizontalOffset = 21; // final right width
+    const horizontalOffset = 12; // final right width
     // Swap widths: first horizontal goes to (targetX - horizontalOffset), last horizontal = horizontalOffset
     const p1x = targetX - horizontalOffset;
     const p1y = sourceY;
@@ -1148,7 +1209,7 @@ function RightUpRightEdge2({ id, sourceX, sourceY, targetX, targetY, markerEnd, 
   }
 
   function RightUpRightEdge3({ id, sourceX, sourceY, targetX, targetY, markerEnd, style = {} }) {
-    const horizontalOffset = 18; // final right width
+    const horizontalOffset = 15; // final right width
     // Swap widths: first horizontal goes to (targetX - horizontalOffset), last horizontal = horizontalOffset
     const p1x = targetX - horizontalOffset;
     const p1y = sourceY;
@@ -1178,7 +1239,7 @@ function RightUpRightEdge2({ id, sourceX, sourceY, targetX, targetY, markerEnd, 
   }
 
   function RightUpRightEdge4({ id, sourceX, sourceY, targetX, targetY, markerEnd, style = {} }) {
-    const horizontalOffset = 15; // final right width
+    const horizontalOffset = 21; // final right width
     // Swap widths: first horizontal goes to (targetX - horizontalOffset), last horizontal = horizontalOffset
     const p1x = targetX - horizontalOffset;
     const p1y = sourceY;
