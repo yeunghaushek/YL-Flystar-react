@@ -587,7 +587,7 @@ function generateRoutes(allRoutes, rawRoutes) {
                 
                 const comingNodeId = `g${i}r${j}-${k < 10 ? `0${k}` : k}-${routes[j][k]}`;
                 const comingNodeType = routes[j][k].startsWith("自化") ? "dashedBlue" : STARS.includes(routes[j][k]) ? "star" : "palace";
-                let existedNodeIndex = nodes.findLastIndex((node) => node.data.label === routes[j][k] && node.id.split("-")[0] !== comingNodeId.split("-")[0] && node.id.split("-")[1] !== "0");
+                let existedNodeIndex = nodes.findLastIndex((node) => node.data.label === routes[j][k] && node.id.split("-")[0] !== comingNodeId.split("-")[0] && node.id.split("-")[1] !== "00");
                 //console.log(existedNodeIndex)
                   //  console.log(comingNodeId)
 
@@ -605,7 +605,7 @@ function generateRoutes(allRoutes, rawRoutes) {
                         }
                         existedNodeIndex = -1;
                     }
-                
+
 
                 if (existedNodeIndex > -1 && k !== 0 && comingNodeType !== "dashedBlue") {
                     const existedNode = nodes[existedNodeIndex];
@@ -622,7 +622,7 @@ function generateRoutes(allRoutes, rawRoutes) {
 
                     // existedNodeIndex may be 0? so previousExistedNode may be undefined
                     
-                    if (previousNode.type === "star" && previousExistedNode && previousExistedNode.type === "star" && previousNode.data.label !== previousExistedNode.data.label ) {
+                    if (previousNode.type === "star"  && previousExistedNode.type === "star" && previousNode.data.label !== previousExistedNode.data.label ) {
 
                         // set the star to the bottom of the another star of the same palace.
                         // adjust the y-position of other following nodes
@@ -923,11 +923,11 @@ function generateRoutes(allRoutes, rawRoutes) {
         if (firstNodes.length === 0 || secondNodes.length === 0) continue;
         // Make sure the selected nodes not the head if there are multiple selections
         if (firstNodes.length > 1) {
-            const firstNodes_ = firstNodes.filter((node) => node.id.split("-")[1] !== "0");
+            const firstNodes_ = firstNodes.filter((node) => node.id.split("-")[1] !== "00");
             if (firstNodes_.length === 0) firstNodes = firstNodes[0]; else firstNodes = firstNodes_;
         }
         if (secondNodes.length > 1) {
-            const secondNodes_ = secondNodes.filter((node) => node.id.split("-")[1] !== "0");
+            const secondNodes_ = secondNodes.filter((node) => node.id.split("-")[1] !== "00");
             if (secondNodes_.length === 0) secondNodes = secondNodes[0]; else secondNodes = secondNodes_;
         }
 
@@ -1034,7 +1034,7 @@ function generateRoutes(allRoutes, rawRoutes) {
             // console.log(targetOrignalNodes)
             if (targetOrignalNodes.length === 0) continue;
             if (targetOrignalNodes.length > 1) {
-                targetOrignalNodes = targetOrignalNodes.filter((item) => item.id.startsWith("r") && item.id.split("-")[1] !== "0");
+                targetOrignalNodes = targetOrignalNodes.filter((item) => item.id.startsWith("r") && item.id.split("-")[1] !== "00");
             }
             const targetOriginalNodesIndex = nodes.findIndex((node)=> node === targetOrignalNodes[0]);
             nodes[targetOriginalNodesIndex].data.handles.right = "source";
@@ -1081,11 +1081,16 @@ function generateRoutes(allRoutes, rawRoutes) {
 
      let count = 0;
      for (let i = 1; i < nodes.length; i++) {
+        
         let idPart1 = nodes[i].id.split("-")[0];
         let idPart2 = nodes[i].id.split("-")[1];
         let previousIdPart1 = nodes[i-1].id.split("-")[0];
         let previousIdPart2 = nodes[i-1].id.split("-")[1];
 
+        if (!idPart1.startsWith("g")) {
+            continue;
+        }
+        
         if (idPart2 === "00") {
             count = 0;
         }
