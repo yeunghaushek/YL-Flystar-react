@@ -78,13 +78,13 @@ export function getPalaceGroup(sample) {
             }
         }
     } */
-   let specialIndex = chart.findIndex((route) => route[route.length - 1] === "自化忌");
-   if (specialIndex !== -1) {
-     let targetRouteIndex = chart.findIndex((route) => route[route.length - 1] === chart[specialIndex][0]);
-     if (targetRouteIndex !== -1) {
-        chart[targetRouteIndex] = [...chart[targetRouteIndex], ...chart[specialIndex].slice(1)];
-     }
-   }
+        let specialIndex = chart.findIndex((route) => route[route.length - 1] === "自化忌" && route.length < 5);
+        if (specialIndex !== -1) {
+            let targetRouteIndex = chart.findIndex((route) => route[route.length - 1] === chart[specialIndex][0]);
+            if (targetRouteIndex !== -1) {
+                chart[targetRouteIndex] = [...chart[targetRouteIndex], ...chart[specialIndex].slice(1)];
+            }
+        }
 
     for (const route of chart) {
         let filteredRoute = route.flatMap((item, index) => {
@@ -360,6 +360,23 @@ export function mergeSample(sample, extendRoutes) {
                 //console.log(mergedRoutes);
 
                 let strongRoutes_ = mergedRoutes.filter((route) => route[0] === route[route.length - 1]);
+
+                
+                // if still do not have strong routes, try to look for the tail of 生年忌?
+                if (strongRoutes_.length === 0) {
+                    let targetRouteIndex1 = mergedRoutes.findIndex((route) => route[0] === "生年忌");
+                    if (targetRouteIndex1 !== -1) {
+                        let targetRouteIndex2 = mergedRoutes.findIndex((route) => route[0] === mergedRoutes[targetRouteIndex1][mergedRoutes[targetRouteIndex1].length - 1]);
+                        if (targetRouteIndex2 !== -1) {
+                            let repeatPalaceIndex = mergedRoutes[targetRouteIndex2].findIndex((item,index) => item === mergedRoutes[targetRouteIndex2][0] && index !== 0);
+                            if (repeatPalaceIndex !== -1) {
+                                mergedRoutes[targetRouteIndex2] = mergedRoutes[targetRouteIndex2].slice(0, repeatPalaceIndex + 1);
+                            }
+                            strongRoutes_.push(mergedRoutes[targetRouteIndex2]);
+                        }
+                    }
+                }
+
                 if (strongRoutes_.length > 0) {
                     strongRoutes = strongRoutes_;
                    
@@ -424,6 +441,9 @@ export function mergeSample(sample, extendRoutes) {
     }
 
     finalRoutes = sortArraysByLengthDesc(finalRoutes);
+
+    console.log(finalRoutes);
+
 
     return finalRoutes;
     } catch (error) {
