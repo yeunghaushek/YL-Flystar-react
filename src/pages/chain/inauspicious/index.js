@@ -411,6 +411,8 @@ export default function Astrolabe() {
         setNodes([]);
         const { pairs, extendRoutes } = findOppositePalaceRoutes(simpleRoutes);
         const allRoutes = mergeSample(selectedRoutes, extendRoutes);
+        console.log("allRoutes")
+        console.log(allRoutes);
         if (!allRoutes || allRoutes.length === 0) {
             setNodes([]);
             setEdges([]);
@@ -992,7 +994,7 @@ function generateRoutes(allRoutes, rawRoutes) {
             else {
                 let type = STARS.includes(extend) ? "star" : "palace";
                 let x = type === "star" ? tailNode.position.x + PALACE_WIDTH + PALACE_STAR_OFFSET : tailNode.position.x + PALACE_WIDTH + PALACE_STAR_OFFSET + STAR_WIDTH + STAR_PALACE_OFFSET
-                let y = tailNode.position.y + Math.floor(ROW_OFFSET/4);
+                let y = tailNode.position.y;
                 return [
                     {
                         id: `ex-g${i}-${extend}`,
@@ -1113,6 +1115,20 @@ function generateRoutes(allRoutes, rawRoutes) {
             nodes[i].position.y = nodes[i-1].position.y + STAR_HEIGHT;
             count++;
         } 
+     }
+
+     for (let i = 0; i < nodes.length; i++) {
+        if (nodes[i].id.startsWith("ex")) {
+            let targetGroupId = nodes[i].id.split("-")[0] + "-" + nodes[i].id.split("-")[1];
+            let targetEdge = edges.find((edge) => edge.target.startsWith(targetGroupId));
+            if (targetEdge) {
+                let targetNodeId = targetEdge.source;
+                let targetNode = nodes.find((node) => node.id === targetNodeId);
+                if (targetNode) {
+                    nodes[i].position.y = targetNode.position.y + Math.floor(PALACE_HEIGHT / 2);
+                }
+            }
+        }
      }
 
      console.log(nodes)

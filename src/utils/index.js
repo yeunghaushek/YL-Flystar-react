@@ -240,6 +240,10 @@ export function mergeSample(sample, extendRoutes) {
     if (extendRoutes && extendRoutes.length > 0) {
         for (let j = 0; j < extendRoutes.length; j++) {
             
+            /* if (sample_.map((route) => route[0]).find((head) => head === extendRoutes[j][0])) {
+                continue;
+            }
+ */
             for (let k = 0; k < sample_.length; k++) {
                 if (sample_[k].length > 2 &&sample_[k][sample_[k].length - 1] === extendRoutes[j][2] && sample_[k][sample_[k].length - 3] === extendRoutes[j][0]) {
                     sample_[k] = sample_[k].slice(0, sample_[k].length - 2);
@@ -267,11 +271,11 @@ export function mergeSample(sample, extendRoutes) {
     for (let i = 0; i < routesGroup.length; i++) {
 
         // special case handling
-     /* let specialCaseIndex = routesGroup[i].findIndex((route) => route[0] === "生年忌" && route[route.length - 1] === "自化忌" && route.length < 5)
+     let specialCaseIndex = routesGroup[i].findIndex((route) => route[0] === "生年忌" && route[route.length - 1] === "自化忌" && route.length < 5)
      if (specialCaseIndex !== -1) {
          finalRoutes.push([routesGroup[i][specialCaseIndex]]);
          continue;
-     } */
+     }
 
 
          routesGroup[i] = routesGroup[i].flatMap((route) => {
