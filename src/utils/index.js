@@ -66,7 +66,7 @@ export function getMostFrequentStarPalace(routesGroup, starPalaceMap) {
     return  starsWithMaxCount
 }
 
-export function getPalaceGroup(sample) {
+export function getPalaceGroup(sample, extendRoutes) {
     //const chart = getChart(chartNumber);
     let chart = sample;
     const palacesGroup = [];
@@ -103,32 +103,57 @@ export function getPalaceGroup(sample) {
             }
             // A -> B
             if (index > 0 && index < route.length - 1) {
+
+                /* if (extendRoutes.find((exRoute) => exRoute[exRoute.length - 1] === item)) {
+                    return [route[index - 2]]
+                } */
                 return [route[index - 2], item]
             }
             // B -> C, B is another route A
             if (index === route.length - 1) {
-                if (chart.find((r) => r[0] === route[index - 2])) {
+                console.log(route.toString(),item)
+
+                /* if (extendRoutes.find((exRoute) => exRoute[exRoute.length - 1] === route[index - 2])) {
+                    return []
+                } */
+
+                if (extendRoutes.find((exRoute) => exRoute[0] === route[index - 2] && exRoute[exRoute.length - 1] === item)) {
                     return [route[index - 2], item]
                 }
-                let t1 = chart.find((r) => r.length > 5 && r[r.length - 5] === item);
+
+                if (chart.find((r) => r[0] === route[index - 2])) {
+                    console.log("-- testing --")
+
+                   
+
+                    return [route[index - 2]]
+                    //return [route[index - 2], item]
+                }
+/*                 let t1 = chart.find((r) => r.length > 5 && r[r.length - 5] === item);
                 if (t1) {
+
+                    console.log("-- testing --")
+                    return [t1[t1.length - 5]]
                     return [t1[t1.length - 5], item]
                 }
                 let t2 = chart.find((r) => r.length > 3 && r[r.length - 3] === item);
                 if (t2) {
+                    console.log("-- testing --", t2.toString())
+                    return [t2[t2.length - 3]]
                     return [t2[t2.length - 3], item]
                 }
+                console.log("-- testing --") */
             }
 
             // C is another route C
-            if (index === route.length - 1) {
+           /*  if (index === route.length - 1) {
                 //console.log(item);
                 let tIndex = chart.findIndex((r) => r[r.length - 1] === item && r[0] !== route[0] && r[0] !== "生年忌" && route[0] !== "生年忌");
                 //console.log(chart[tIndex]);
                 if (tIndex !== -1 && tIndex !== index) {
                     return [item]
                 }
-            }
+            } */
 
 
 
@@ -143,12 +168,29 @@ export function getPalaceGroup(sample) {
             //return [item];
         });
 
+        console.log("--------------------------------");
+        console.log(filteredRoute);
+        console.log("--------------------------------");
+
         if (palacesGroup.length === 0) {
             palacesGroup.push(filteredRoute);
         } else {
             let found = false;
             for (const palaces of palacesGroup) {
                 if (palaces.some((palace) => filteredRoute.includes(palace) && palace !== "自化忌")) {
+/* 
+                    console.log("--------------------------------");
+                    console.log(extendRoutes);
+                    console.log(palacesGroup)
+                    console.log(filteredRoute);
+                    console.log("--------------------------------"); */
+                
+                    let isExtend = extendRoutes.find((exRoute) => exRoute[exRoute.length - 1] === filteredRoute[filteredRoute.length - 1]);
+                    if (isExtend) {
+                        break;
+                    }
+                    
+                     
                     palaces.push(...filteredRoute);
                     found = true;
                     break;
@@ -239,21 +281,62 @@ export function mergeSample(sample, extendRoutes) {
     
     if (extendRoutes && extendRoutes.length > 0) {
         for (let j = 0; j < extendRoutes.length; j++) {
-            
-            /* if (sample_.map((route) => route[0]).find((head) => head === extendRoutes[j][0])) {
+            /* 
+            if (sample_.map((route) => route[0]).find((head) => head === extendRoutes[j][0])) {
                 continue;
-            }
- */
+            } */
+
             for (let k = 0; k < sample_.length; k++) {
-                if (sample_[k].length > 2 &&sample_[k][sample_[k].length - 1] === extendRoutes[j][2] && sample_[k][sample_[k].length - 3] === extendRoutes[j][0]) {
+                /* if (sample_[k].length > 2 &&sample_[k][sample_[k].length - 1] === extendRoutes[j][2] && sample_[k][sample_[k].length - 3] === extendRoutes[j][0]) {
                     sample_[k] = sample_[k].slice(0, sample_[k].length - 2);
+                } */
+
+               /* if (sample_[k][0] === extendRoutes[j][0]) {
+                sample_[k] = extendRoutes[j];
+               } */
+                if (sample_[k][sample_[k].length - 1] === extendRoutes[j][0]) {
+                    sample_[k] = [...sample_[k], ...extendRoutes[j].slice(1)];
+                   }
+                    
+            
+            }
+
+            for (let k = 0; k < sample_.length; k++) {
+                   
+               let targetIndex = sample_[k].findLastIndex((item) => item === extendRoutes[j][extendRoutes[j].length - 1]);
+               if (targetIndex >= 2) {
+                /* console.log("LOOK HERE -------------------------------- ", targetIndex)
+                console.log(sample_[k].toString())
+                console.log("--------------------------------") */
+
+
+                if (sample_[k][targetIndex - 2] !== extendRoutes[j][0] && sample_[k][targetIndex - 2] !== "生年忌") {
+                    sample_[k] = sample_[k].slice(0, targetIndex + 1);
+                    console.log(sample_[k])
                 }
+               }
+            //if (targetIndex > 2 && sample_[k][targetIndex - 2] === extendRoutes[j][0]) {
+            /* f (targetIndex > 2 ) {
+               if (sample_.find((item) => item[0] === extendRoutes[j][extendRoutes[j].length - 1]) && sample_.find((item) => item[item.length - 1] === extendRoutes[j][extendRoutes[j].length - 1])) {
+                if (sample_[k][targetIndex - 2] !== extendRoutes[j][0]) {
+                sample_[k] = sample_[k].slice(0, targetIndex + 1);
+                console.log(sample_[k])
+                }
+               }
+            } else if (targetIndex === 2) {
+                sample_[k] = sample_[k].slice(0, targetIndex + 1);
+                console.log(sample_[k])
+            } */
+                    
+              
             }
         }
     }
 
-    const palacesGroup = getPalaceGroup(sample_)
-    console.log(palacesGroup);
+    //console.log(sample_);
+
+    const palacesGroup = getPalaceGroup(sample_, extendRoutes)
+    //console.log(palacesGroup);
 
 
     const routesGroup = palacesGroup.map((palaces) => {

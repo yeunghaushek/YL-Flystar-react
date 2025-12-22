@@ -572,6 +572,9 @@ function generateRoutes(allRoutes, rawRoutes) {
     // handle pairs
     let nodes = [];
     let edges = [];
+
+    const { pairs, extendRoutes } = findOppositePalaceRoutes(rawRoutes);
+
     for (let i = 0; i < allRoutes.length; i++) {
         const routes = allRoutes[i];
         let startY = nodes.length > 0 ? Math.max(...nodes.map((node) => node.position.y)) + ROW_OFFSET * 2 : 0;
@@ -586,7 +589,7 @@ function generateRoutes(allRoutes, rawRoutes) {
             let nextMaskK = '';
 
             for (let k = 0; k < routes[j].length; k++) {
-                
+                console.log("--------------------", routes[j], " => ", routes[j][k], j,",", k)
                 const comingNodeId = `g${i}r${j}-${k < 10 ? `0${k}` : k}-${routes[j][k]}`;
                 const comingNodeType = routes[j][k].startsWith("自化") ? "dashedBlue" : STARS.includes(routes[j][k]) ? "star" : "palace";
                 let existedNodeIndex = nodes.findLastIndex((node) => node.data.label === routes[j][k] && node.id.split("-")[0] !== comingNodeId.split("-")[0] && node.id.split("-")[1] !== "00");
@@ -609,6 +612,10 @@ function generateRoutes(allRoutes, rawRoutes) {
                     }
 
 
+                    if (j ===0 && k === 4) {
+                        console.log(existedNodeIndex)
+                        console.log(nodes[existedNodeIndex])
+                    }
                 if (existedNodeIndex > -1 && k !== 0 && comingNodeType !== "dashedBlue") {
                     const existedNode = nodes[existedNodeIndex];
 
@@ -621,10 +628,12 @@ function generateRoutes(allRoutes, rawRoutes) {
 
                     const previousExistedNode = nodes[existedNodeIndex - 1];
                     const previousNode = nodes.findLast((node) => node.id.startsWith(comingNodeId.split("-")[0]));
+                    console.log(previousNode)
+                    console.log(previousExistedNode)
 
                     // existedNodeIndex may be 0? so previousExistedNode may be undefined
                     
-                    if (previousNode.type === "star"  && previousExistedNode.type === "star" && previousNode.data.label !== previousExistedNode.data.label ) {
+                    if ((previousNode.type === "star" || previousNode.data.label === "生年忌") && previousExistedNode.type === "star" && previousNode.data.label !== previousExistedNode.data.label ) {
 
                         // set the star to the bottom of the another star of the same palace.
                         // adjust the y-position of other following nodes
@@ -915,7 +924,7 @@ function generateRoutes(allRoutes, rawRoutes) {
 
 
 
-    const { pairs, extendRoutes } = findOppositePalaceRoutes(rawRoutes);
+    
 
     // handle pairs
     for (let i = 0; i < pairs.length; i++) {
@@ -979,7 +988,7 @@ function generateRoutes(allRoutes, rawRoutes) {
     }
 
     // handle extend
-    for (let i = 0; i < allRoutes.length; i++) {
+    /* for (let i = 0; i < allRoutes.length; i++) {
         let groupNodes = nodes.filter((node) => node.id.startsWith(`g${i}r`));
         let clonedNodes = [...groupNodes];
         clonedNodes.sort((a, b) => b.position.x - a.position.x);
@@ -1016,7 +1025,7 @@ function generateRoutes(allRoutes, rawRoutes) {
         edges.push({ id: `ex-g${i}-e${nodes[targetOriginalNodeIndex].data.label}-${finalToExtend[0].data.label}`, source: nodes[targetOriginalNodeIndex].id, target: finalToExtend[0].id, targetHandle: "left" });
             nodes.push(...finalToExtend);
         }
-    }
+    } */
 
 
     // handle extendRoutes
@@ -1117,6 +1126,49 @@ function generateRoutes(allRoutes, rawRoutes) {
         } 
      }
 
+
+     // handle extend routes existed in the middle of the routes
+     for (let i = 0; i < nodes.length; i++) {
+        for (let j = 0; j < extendRoutes.length; j++) {
+            if ( i < nodes.length - 2 && nodes[i].data.label === extendRoutes[j][0] && nodes[i+1].data.label === extendRoutes[j][1] && nodes[i+2].data.label === extendRoutes[j][2]) {
+                //if (nodes[i].id.split("-")[1] !== "00") {
+                if (nodes[i].id.split("-")[1] !== "00" && nodes[i].position.y === nodes[i+1].position.y) {
+                    let targetEdgeIndex = edges.findIndex((edge) => edge.source === nodes[i].id && edge.target === nodes[i+1].id);
+                    if (targetEdgeIndex > -1) {
+                        edges[targetEdgeIndex].type = "straightBlue";
+                    }
+
+                    let k = i+1;
+                    while (k < nodes.length && nodes[k].id.split("-")[0] === nodes[i+1].id.split("-")[0]) {
+                        nodes[k].position.y = nodes[k].position.y + Math.floor(PALACE_HEIGHT / 2);
+                        k++;
+                    }
+                }
+            } else if (nodes[i].data.label === extendRoutes[j][0]) {
+                if (nodes[i].id.split("-")[1] !== "00") {
+                let targetEdgeIndex = edges.findIndex((edge) => edge.source === nodes[i].id);
+          
+                if (targetEdgeIndex > -1) {
+                    let targetNode = nodes.find((node) => node.id === edges[targetEdgeIndex].target);
+                 
+                    if (targetNode && targetNode.data.label === extendRoutes[j][1]) {
+                        edges[targetEdgeIndex].type = "straightBlue";
+                        let k = i;
+                        while (k > 0 && nodes[k].id.split("-")[0] === nodes[i].id.split("-")[0]) {
+                            nodes[k].position.y = targetNode.position.y - PALACE_STAR_OFFSET -  Math.floor(ROW_OFFSET/2) + Math.floor(PALACE_HEIGHT / 2);
+                            nodes[k].position.x = nodes[k].position.x - PALACE_STAR_OFFSET;
+                            k--;
+                        }
+                    }
+                }
+                }
+            }
+        }
+     }
+
+
+
+     // i think no more ex cases?
      for (let i = 0; i < nodes.length; i++) {
         if (nodes[i].id.startsWith("ex")) {
             let targetGroupId = nodes[i].id.split("-")[0] + "-" + nodes[i].id.split("-")[1];
