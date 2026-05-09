@@ -142,6 +142,123 @@ a {
       }
     }
   }
+
+  .mobile-menu-toggle {
+    display: none;
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    z-index: 103;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+
+    span {
+      display: block;
+      width: 18px;
+      height: 2px;
+      border-radius: 999px;
+      background: #0b3ea8;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    &.open {
+      background: rgba(11, 62, 168, 0.08);
+
+      span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+      }
+      span:nth-child(2) {
+        opacity: 0;
+      }
+      span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+      }
+    }
+  }
+
+  .mobile-menu-panel {
+    display: none;
+    position: fixed;
+    top: 58px;
+    right: 12px;
+    z-index: 102;
+    width: min(290px, calc(100vw - 20px));
+    border: 1px solid rgba(11, 62, 168, 0.18);
+    border-radius: 16px;
+    background: rgba(255, 255, 248, 0.98);
+    box-shadow: 0 14px 36px rgba(11, 62, 168, 0.16);
+    padding: 8px;
+    transform: translateY(-8px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+
+    a {
+      display: block;
+    }
+
+    button {
+      width: 100%;
+      margin: 0;
+      border: 0;
+      border-radius: 10px;
+      padding: 11px 12px;
+      background: transparent;
+      color: #0b3ea8;
+      text-align: left;
+      font-size: 15px;
+      letter-spacing: 0.4px;
+      cursor: pointer;
+      transition: background-color 0.2s ease, color 0.2s ease;
+
+      &:hover {
+        background: rgba(11, 62, 168, 0.08);
+        color: #072d7a;
+      }
+    }
+
+    &.open {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  .mobile-menu-backdrop {
+    display: none;
+  }
+
+  @media only screen and (max-width: 991px) {
+    .mobile-menu-toggle {
+      display: inline-flex;
+      flex-direction: column;
+    }
+
+    .mobile-menu-panel {
+      display: block;
+    }
+
+    .mobile-menu-backdrop {
+      display: block;
+      position: fixed;
+      top: 55px;
+      left: 0;
+      width: 100vw;
+      height: calc(100vh - 55px);
+      z-index: 101;
+      border: 0;
+      background: rgba(15, 23, 42, 0.14);
+      cursor: pointer;
+    }
+  }
 }
 
 .footer {

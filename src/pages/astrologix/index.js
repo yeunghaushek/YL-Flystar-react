@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { Header } from "@/components/header";
 
 import { astro } from "iztro";
 import { useEffect, useMemo, useState } from "react";
@@ -967,42 +968,7 @@ export default function Astrolabe() {
                 <meta property="og:image" content={`https://yl-flystar.pro/og.png`} />
                 <meta property="og:site_name" content="星軌堂" />
       </Head>
-      <div className={`header show`}>
-        <div className="left info-header">
-          <Link href="/">
-            <div className="logo">
-              <img src={"logo.png"} alt="logo" />
-              <div className="name">星軌堂</div>
-            </div>
-          </Link>
-          <Link href="/chart">
-            <button>線上排盤</button>
-          </Link>
-          <Link href="/info#begin">
-            <button>遇見命理師</button>
-          </Link>
-          {/* <Link href="/info#analysis">
-            <button>命理分析</button>
-          </Link>
-          <Link href="/info#course">
-            <button>教學課程</button>
-          </Link>
-          <Link href="/info#question">
-            <button>常見問題</button>
-          </Link>
-          <Link href="/info#contact">
-            <button>立即預約</button>
-          </Link> */}
-          <Link href="/blog">
-            <button>網誌</button>
-          </Link>
-        </div>
-        {/* <div className="right">
-          <a target="_blank" href="https://buy.stripe.com/cN2cPsa6XaLMauQ001">
-            支持我們
-          </a>
-        </div> */}
-      </div>
+      <Header />
 
       <div className="container">
         <Modal open={showSearch} onClose={toggleSearch} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
@@ -2150,7 +2116,7 @@ export default function Astrolabe() {
             <img src={"logo.png"} alt="logo" />
             <div className={astrolabeStyle.name}>星軌堂</div>
           </div>
-          <button>線上排盤</button>
+          <button>紫微斗數排盤</button>
         </div>
         <div className={astrolabeStyle.right}>
           <a target="_blank" href="https://buy.stripe.com/cN2cPsa6XaLMauQ001">

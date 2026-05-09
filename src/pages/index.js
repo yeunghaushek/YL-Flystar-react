@@ -1,5 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
+import { Header } from "@/components/header";
 
 import aboutStyle from "@/styles/About.module.scss";
 
@@ -225,42 +226,7 @@ export default function About() {
                 <meta property="og:site_name" content="星軌堂" />
         <meta name="google-site-verification" content="GgRiozFx3jLZsdTn2Tqpxhao0v52utKt4__I2Je4csY" />
       </Head>
-      <div className={`header ${scrollTop && scrollTop >= bannerOffset - 120 ? `show` : ``}`}>
-        <div className="left info-header">
-          <Link href="/">
-            <div className="logo">
-              <img src={"logo.png"} alt="logo" />
-              <div className="name">星軌堂</div>
-            </div>
-          </Link>
-          <Link href="/chart">
-            <button>線上排盤</button>
-          </Link>
-          <Link href="#begin">
-            <button>遇見命理師</button>
-          </Link>
-          {/* <Link href="#analysis">
-            <button>命理分析</button>
-          </Link>
-          <Link href="#course">
-            <button>教學課程</button>
-          </Link>
-          <Link href="#question">
-            <button>常見問題</button>
-          </Link>
-          <Link href="#contact">
-            <button>立即預約</button>
-          </Link> */}
-          <Link href="/blog">
-            <button>網誌</button>
-          </Link>
-        </div>
-        {/* <div className="right">
-          <a target="_blank" href="https://buy.stripe.com/cN2cPsa6XaLMauQ001">
-            支持我們
-          </a>
-        </div> */}
-      </div>
+      <Header show={Boolean(scrollTop && scrollTop >= bannerOffset - 120)} />
       <div className={aboutStyle.bg}>
         <div className={aboutStyle.banner} id="banner1">
           <div className={aboutStyle.left}></div>
@@ -277,7 +243,7 @@ export default function About() {
             {/* <a href="#begin">瞭解更多</a> */}
             <div className={aboutStyle.link}>
               <Link href="/chart">
-                <button>線上排盤</button>
+                <button>紫微斗數排盤</button>
               </Link>{" "}
             </div>
             <div className={aboutStyle.link}>
@@ -662,7 +628,7 @@ export default function About() {
             <IconButton>
               <CallIcon />
             </IconButton>
-            {`+852 9478 0643`}
+            <a href="tel:+85294780643">{`+852 9478 0643`}</a>
           </div>
 
           <Divider light variant="middle" sx={{ margin: "20px 0" }} />
