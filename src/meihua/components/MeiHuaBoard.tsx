@@ -131,7 +131,7 @@ export function MeiHuaBoard() {
           <div className={MEIHUA_BOARD_CARD}>
             <div className="flex w-full min-w-0 flex-nowrap items-end justify-between gap-1 sm:gap-2 md:gap-4 lg:gap-5">
               {!ready ? (
-                <div className="flex w-full justify-center py-1">
+                <div className="flex flex-1 basis-0 justify-center py-1">
                   <BenGuaColumn
                     upperId={upperId}
                     lowerId={lowerId}
@@ -153,30 +153,26 @@ export function MeiHuaBoard() {
                   onPickLower={() => setWheelFor("lower")}
                 />
               ) : null}
-              {ready ? (
-                <>
-                  <HexColumn
-                    compoundTitle={
-                      mutualLines ? kingWenCompoundTitle(mutualLines) : "—"
-                    }
-                    lines={mutualLines}
-                    movingLine={null}
-                    tag="互"
-                    inBoardShell
-                    empty={!ready}
-                  />
-                  <HexColumn
-                    compoundTitle={
-                      changedLines ? kingWenCompoundTitle(changedLines) : "—"
-                    }
-                    lines={changedLines}
-                    movingLine={null}
-                    tag="變"
-                    inBoardShell
-                    empty={!ready}
-                  />
-                </>
-              ) : null}
+              <HexColumn
+                compoundTitle={
+                  mutualLines ? kingWenCompoundTitle(mutualLines) : "—"
+                }
+                lines={mutualLines}
+                movingLine={null}
+                tag="互"
+                inBoardShell
+                empty={!ready}
+              />
+              <HexColumn
+                compoundTitle={
+                  changedLines ? kingWenCompoundTitle(changedLines) : "—"
+                }
+                lines={changedLines}
+                movingLine={null}
+                tag="變"
+                inBoardShell
+                empty={!ready}
+              />
             </div>
           </div>
         </div>
@@ -295,30 +291,30 @@ export function MeiHuaBoard() {
       </section>
 
       {ready ? (
-        <section className="mx-auto mt-2 w-full min-w-0 max-w-2xl rounded-2xl border border-amber-900/25 bg-amber-50/60 p-3 shadow-inner sm:mt-3 sm:p-4 md:mt-4 md:p-6">
+        <section className="mx-auto mt-0.5 w-full min-w-0 max-w-5xl rounded-2xl border border-amber-900/25 bg-amber-50/60 p-3 shadow-inner sm:mt-1 sm:p-4 md:mt-1.5 md:p-6">
           {originalText ? (
             <div className="space-y-3 md:space-y-5">
               <article className="rounded-xl border border-amber-900/20 bg-white/55 p-3 sm:p-4 md:p-5">
-                <p className="text-sm font-semibold text-stone-900 sm:text-base md:text-lg">
-                  本卦（{originalText.id} {originalText.name}）卦辭原文
+                <p className="text-sm font-semibold text-stone-900 sm:text-base md:text-xl lg:text-2xl">
+                  {kingWenCompoundTitle(originalLines)}
                 </p>
-                <p className="mt-1 text-base leading-relaxed text-stone-900 sm:text-lg md:text-xl md:leading-relaxed">
+                <p className="mt-1 text-base leading-relaxed text-stone-900 sm:text-lg md:text-2xl md:leading-relaxed lg:text-[1.75rem]">
                   {originalText.scripture}
                 </p>
-                <p className="mt-2 text-sm leading-relaxed text-stone-700 md:text-base md:leading-relaxed">
-                  白話翻譯：{getGuaciTranslation(originalText.id) ?? "（待補）"}
+                <p className="mt-2 text-sm leading-relaxed text-stone-700 md:text-lg md:leading-relaxed lg:text-xl">
+                  白話翻譯（只供參考）：{getGuaciTranslation(originalText.id) ?? "（待補）"}
                 </p>
               </article>
 
               <article className="rounded-xl border border-amber-900/20 bg-white/55 p-3 sm:p-4 md:p-5">
-                <p className="text-sm font-semibold text-stone-900 sm:text-base md:text-lg">
+                <p className="text-sm font-semibold text-stone-900 sm:text-base md:text-xl lg:text-2xl">
                   動爻（{movingLineText?.name ?? `第${movingLine}爻`}）爻辭原文
                 </p>
-                <p className="mt-1 text-base leading-relaxed text-stone-900 sm:text-lg md:text-xl md:leading-relaxed">
+                <p className="mt-1 text-base leading-relaxed text-stone-900 sm:text-lg md:text-2xl md:leading-relaxed lg:text-[1.75rem]">
                   {movingLineText?.scripture ?? "此卦無對應爻辭資料。"}
                 </p>
                 {movingLineText ? (
-                  <p className="mt-2 text-sm leading-relaxed text-stone-700 md:text-base md:leading-relaxed">
+                  <p className="mt-2 text-sm leading-relaxed text-stone-700 md:text-lg md:leading-relaxed lg:text-xl">
                     白話翻譯：
                     {getYaoTranslation(originalText.id, movingLine) ??
                       "（待你提供該卦該爻翻譯原文）"}

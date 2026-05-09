@@ -101,9 +101,17 @@ export function HexagramFigure({
           className={cn(
             "flex items-center justify-center rounded-lg py-[1px]",
             barWrapClass,
-            isMoving &&
-              "rounded-md border-2 border-[#8b5a3c] bg-amber-50/35 px-0.5 py-0.5 shadow-none sm:rounded-lg sm:px-1 sm:py-1",
+            isMoving && "px-0.5 py-0.5 sm:px-1 sm:py-1",
           )}
+          style={
+            isMoving
+              ? {
+                  border: "2px solid #7a3b15",
+                  borderRadius: "0.6rem",
+                  backgroundColor: "transparent",
+                }
+              : undefined
+          }
         >
           {line === "yang" ? (
             <div className={cn(barH, segClass)} />
