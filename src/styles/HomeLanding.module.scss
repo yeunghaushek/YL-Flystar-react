@@ -196,6 +196,7 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: shimmer 6s linear infinite;
+  color: #daa520; /* Fallback */
 }
 
 .container {
@@ -247,18 +248,25 @@
 }
 
 /* Specifically target the logo/title in the header to make it gold */
+.headerWrapper :global(.header .logo) {
+  margin-left: 24px !important;
+  height: 100% !important;
+  align-items: flex-end !important;
+  padding-bottom: 12px !important;
+}
+
 .headerWrapper :global(.header .logo .name),
 .headerWrapper :global(.header .title),
 .headerWrapper :global(.header h1) {
-  background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c) !important;
+  background-image: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c) !important;
   background-size: 200% auto !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
-  animation: shimmer 6s linear infinite !important;
+  animation: shimmerGlobal 6s linear infinite !important;
   font-weight: 900 !important;
   font-size: 26px !important; /* ~1.5x of nav links */
   line-height: 1 !important;
-  padding-top: 4px !important; /* Adjust vertical alignment to ground it */
+  color: #daa520; /* Fallback */
 }
 
 /* Mobile Menu Panel Dark Theme Override */

@@ -10,6 +10,7 @@ export default function MeiHuaPage() {
       <Head>
         <title>星軌堂 · 梅花易數排盤</title>
       </Head>
+      
       <Header />
 
       {/* Original Beige Background for Meihua */}

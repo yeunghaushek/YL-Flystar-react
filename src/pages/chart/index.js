@@ -969,6 +969,7 @@ export default function Astrolabe() {
                 <meta property="og:image" content={`https://yl-flystar.pro/og.png`} />
                 <meta property="og:site_name" content="星軌堂" />
       </Head>
+      
       <Header />
 
       {/* Animated Background Elements from Landing (Grayscale & Custom Opacity for Chart Page) */}

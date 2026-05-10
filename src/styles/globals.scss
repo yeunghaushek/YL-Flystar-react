@@ -9,6 +9,11 @@
   src: URL("/EBAS_Medium.ttf") format("truetype");
 }
 
+@keyframes shimmerGlobal {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
 :root {
 }
 
@@ -76,6 +81,8 @@ a {
       font-size: 16px;
       letter-spacing: 1px;
       cursor: pointer;
+      font-family: 'Noto Serif TC', "PMingLiU", serif;
+      font-weight: 600;
     }
 
     &.info-header {
@@ -117,24 +124,34 @@ a {
   .logo {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-end;
+    height: 100%;
+    padding-bottom: 12px;
+    margin-left: 24px;
 
     img {
-      height: 48px;
-      margin: 4px;
+      display: none; /* Hide logo image globally */
     }
 
     .name {
       margin-right: 16px;
-      font-family: "Kaisei HarunoUmi", serif;
-      font-size: 32px;
-      font-weight: bold;
-      color: #009;
+      font-family: 'Noto Serif TC', "PMingLiU", serif;
+      font-size: 26px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #1e3a8a, #3b82f6, #1e40af, #60a5fa, #1d4ed8);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmerGlobal 6s linear infinite;
+      line-height: 1;
+      /* Add explicit color for browsers that don't support background-clip */
+      color: #1e40af;
     }
 
     @media only screen and (max-width: 767px) {
+      margin-left: 16px;
       .name {
-        font-size: 24px;
+        font-size: 22px;
       }
     }
   }

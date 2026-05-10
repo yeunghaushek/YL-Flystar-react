@@ -56,6 +56,7 @@ export const Header = ({ show = true }) => {
   const navItems = [
     { href: "/chart", label: "紫微斗數排盤" },
     { href: "/meihua", label: "梅花易數排盤" },
+    { href: "/theory", label: "星軌理數" },
     { href: "/blog", label: "網誌" },
   ];
 
@@ -67,7 +68,6 @@ export const Header = ({ show = true }) => {
         <div className="left info-header">
           <Link href="/" onClick={closeMenu}>
             <div className="logo">
-              <img src={"/logo.png"} alt="logo" />
               <div className="name">星軌堂</div>
             </div>
           </Link>
