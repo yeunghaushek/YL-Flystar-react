@@ -1,12 +1,61 @@
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export const Header = ({ show = true }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(show);
+  const lastScrollY = useRef(0);
+  const idleTimer = useRef(null);
+
+  useEffect(() => {
+    const handleScroll = (e) => {
+      // Capture scroll from any container (body, html, or window)
+      const target = e.target === document ? document.documentElement : e.target;
+      const currentScrollY = target.scrollTop || window.scrollY || 0;
+      
+      // Show if scrolling up, hide if scrolling down
+      if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
+        setIsVisible(false);
+      } else if (currentScrollY < lastScrollY.current) {
+        setIsVisible(true);
+      }
+      
+      lastScrollY.current = currentScrollY;
+      resetIdleTimer(target);
+    };
+
+    const handleMouseMove = (e) => {
+      if (e.clientY < 80) {
+        setIsVisible(true);
+      }
+      resetIdleTimer(document.documentElement);
+    };
+
+    const resetIdleTimer = (target) => {
+      if (idleTimer.current) clearTimeout(idleTimer.current);
+      idleTimer.current = setTimeout(() => {
+        const currentScrollY = target?.scrollTop || window.scrollY || 0;
+        if (currentScrollY > 50) { // Don't hide if at the very top
+          setIsVisible(false);
+        }
+      }, 10000); // 10 seconds
+    };
+
+    // Use capture: true to catch scroll events from any scrollable container
+    window.addEventListener("scroll", handleScroll, { passive: true, capture: true });
+    window.addEventListener("mousemove", handleMouseMove);
+    resetIdleTimer(document.documentElement);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll, { capture: true });
+      window.removeEventListener("mousemove", handleMouseMove);
+      if (idleTimer.current) clearTimeout(idleTimer.current);
+    };
+  }, []);
+
   const navItems = [
     { href: "/chart", label: "紫微斗數排盤" },
     { href: "/meihua", label: "梅花易數排盤" },
-    { href: "/info#begin", label: "遇見命理師" },
     { href: "/blog", label: "網誌" },
   ];
 
@@ -14,7 +63,7 @@ export const Header = ({ show = true }) => {
 
   return (
     <>
-      <div className={`header ${show ? "show" : ""}`}>
+      <div className={`header ${isVisible ? "show" : ""}`}>
         <div className="left info-header">
           <Link href="/" onClick={closeMenu}>
             <div className="logo">

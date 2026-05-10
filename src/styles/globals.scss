@@ -24,12 +24,8 @@ body {
   width: 100svw;
   height: 100svh;
   overflow: auto;
-  background: #eee;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)), url("/bg.png");
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-position: center;
+  background: #f8fafc;
+  background-image: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
   scroll-behavior: smooth;
 
   display: flex;
