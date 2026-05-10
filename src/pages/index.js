@@ -22,11 +22,28 @@ export default function Home() {
   return (
     <div className={landing.page}>
       <Head>
-        <title>星軌堂 - 命格導航與商業增長</title>
+        <title>星軌堂 - 命格導航與商業增長 | 梁氏飛星紫微斗數</title>
         <meta
           name="description"
-          content="用工程師的邏輯做命格導航，幫企業主避開燒錢坑位，精準卡位商業藍海。線上排盤、即時起卦、1對1增長諮詢。"
+          content="用工程師的邏輯做命格導航，幫企業主避開燒錢坑位，精準卡位商業藍海。星軌堂提供專業飛星紫微斗數線上排盤、梅花易數即時起卦、以及1對1商業增長諮詢。"
         />
+        <meta name="keywords" content="紫微斗數, 飛星紫微斗數, 梁氏飛星, 命理諮詢, 商業導航, 梅花易數, 排盤, 算命, 星軌堂" />
+        <link rel="canonical" href="https://yl-flystar.pro/" />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://yl-flystar.pro/" />
+        <meta property="og:title" content="星軌堂 - 命格導航與商業增長 | 梁氏飛星紫微斗數" />
+        <meta property="og:description" content="用工程師的邏輯做命格導航，幫企業主避開燒錢坑位，精準卡位商業藍海。星軌堂提供專業飛星紫微斗數線上排盤、梅花易數即時起卦、以及1對1商業增長諮詢。" />
+        <meta property="og:image" content="https://yl-flystar.pro/og.png" />
+        <meta property="og:site_name" content="星軌堂" />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content="https://yl-flystar.pro/" />
+        <meta name="twitter:title" content="星軌堂 - 命格導航與商業增長 | 梁氏飛星紫微斗數" />
+        <meta name="twitter:description" content="用工程師的邏輯做命格導航，幫企業主避開燒錢坑位，精準卡位商業藍海。星軌堂提供專業飛星紫微斗數線上排盤、梅花易數即時起卦、以及1對1商業增長諮詢。" />
+        <meta name="twitter:image" content="https://yl-flystar.pro/og.png" />
       </Head>
       
       {/* Animated Background Elements */}

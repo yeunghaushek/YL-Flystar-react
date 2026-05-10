@@ -8,7 +8,28 @@ export default function MeiHuaPage() {
   return (
     <>
       <Head>
-        <title>星軌堂 · 梅花易數排盤</title>
+        <title>梅花易數即時起卦 | 卜卦排盤 - 星軌堂</title>
+        <meta
+          name="description"
+          content="免費梅花易數線上即時起卦工具。決策不再擲硬幣，針對當下困境起一卦，透過邏輯推理分析局勢，減少決策損耗。星軌堂為您提供專業卜卦排盤。"
+        />
+        <meta name="keywords" content="梅花易數, 起卦, 卜卦, 線上排盤, 決策, 算命, 星軌堂" />
+        <link rel="canonical" href="https://yl-flystar.pro/meihua" />
+
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://yl-flystar.pro/meihua" />
+        <meta property="og:title" content="梅花易數即時起卦 | 卜卦排盤 - 星軌堂" />
+        <meta property="og:description" content="免費梅花易數線上即時起卦工具。決策不再擲硬幣，針對當下困境起一卦，透過邏輯推理分析局勢，減少決策損耗。星軌堂為您提供專業卜卦排盤。" />
+        <meta property="og:image" content="https://yl-flystar.pro/og.png" />
+        <meta property="og:site_name" content="星軌堂" />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content="https://yl-flystar.pro/meihua" />
+        <meta name="twitter:title" content="梅花易數即時起卦 | 卜卦排盤 - 星軌堂" />
+        <meta name="twitter:description" content="免費梅花易數線上即時起卦工具。決策不再擲硬幣，針對當下困境起一卦，透過邏輯推理分析局勢，減少決策損耗。星軌堂為您提供專業卜卦排盤。" />
+        <meta name="twitter:image" content="https://yl-flystar.pro/og.png" />
       </Head>
       
       <Header />

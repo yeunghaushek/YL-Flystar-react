@@ -18,8 +18,25 @@ export default function TheoryPage() {
         <title>星軌理數 / 梁氏飛星 - 星軌堂</title>
         <meta
           name="description"
-          content="不敢說是最精準的命理學，只敢說是最具邏輯的命理學。在星軌堂，我們不談玄學靈感，只談穩定、精密的命運演算法。"
+          content="不敢說是最精準的命理學，只敢說是最具邏輯的命理學。在星軌堂，我們不談玄學靈感，只談穩定、精密的命運演算法。了解梁氏飛星紫微斗數的核心優勢。"
         />
+        <meta name="keywords" content="星軌理數, 梁氏飛星, 紫微斗數, 命運演算法, 邏輯命理, 命理學, 星軌堂" />
+        <link rel="canonical" href="https://yl-flystar.pro/theory" />
+
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://yl-flystar.pro/theory" />
+        <meta property="og:title" content="星軌理數 / 梁氏飛星 - 星軌堂" />
+        <meta property="og:description" content="不敢說是最精準的命理學，只敢說是最具邏輯的命理學。在星軌堂，我們不談玄學靈感，只談穩定、精密的命運演算法。了解梁氏飛星紫微斗數的核心優勢。" />
+        <meta property="og:image" content="https://yl-flystar.pro/og.png" />
+        <meta property="og:site_name" content="星軌堂" />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content="https://yl-flystar.pro/theory" />
+        <meta name="twitter:title" content="星軌理數 / 梁氏飛星 - 星軌堂" />
+        <meta name="twitter:description" content="不敢說是最精準的命理學，只敢說是最具邏輯的命理學。在星軌堂，我們不談玄學靈感，只談穩定、精密的命運演算法。了解梁氏飛星紫微斗數的核心優勢。" />
+        <meta name="twitter:image" content="https://yl-flystar.pro/og.png" />
       </Head>
 
       {/* Animated Background Elements from Landing */}

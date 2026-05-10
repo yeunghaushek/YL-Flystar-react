@@ -2,7 +2,7 @@ import { Html, Head, Main, NextScript } from "next/document";
 
 export default function Document() {
   return (
-    <Html lang="en">
+    <Html lang="zh-HK">
       <Head>
         <meta name="format-detection" content="telephone=no, date=no, email=no, address=no" />
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-4MMYDCCZSK"></script>

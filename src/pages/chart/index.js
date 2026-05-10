@@ -957,17 +957,28 @@ export default function Astrolabe() {
   return (
     <>
       <Head>
-        <title>排盤 - 飛星紫微斗數</title>
+        <title>紫微斗數排盤 | 梁氏飛星 - 星軌堂</title>
         <meta
           name="description"
-          content="發掘您的人生地圖！我們提供專業命理分析，助您預見未來趨勢與機遇，規劃事業與人生策略。立即探索，打造成功的人生藍圖。"
+          content="免費且專業的飛星紫微斗數線上排盤工具。輸入您的出生資料，立即獲取專屬命盤，發掘您的人生地圖與財富潛能。星軌堂為您提供精準的命理分析。"
         />
-                        <meta property="og:type" content="website" />
-                <meta property="og:url" content={`https://yl-flystar.pro/`} />
-                <meta property="og:title" content="星軌堂 - 您的智能人生定位系統" />
-                <meta property="og:description" content="發掘您的人生地圖！我們提供專業命理分析，助您預見未來趨勢與機遇，規劃事業與人生策略。立即探索，打造成功的人生藍圖。" />
-                <meta property="og:image" content={`https://yl-flystar.pro/og.png`} />
-                <meta property="og:site_name" content="星軌堂" />
+        <meta name="keywords" content="紫微斗數排盤, 飛星紫微斗數, 線上排盤, 命盤, 算命, 梁氏飛星, 星軌堂" />
+        <link rel="canonical" href="https://yl-flystar.pro/chart" />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://yl-flystar.pro/chart" />
+        <meta property="og:title" content="紫微斗數排盤 | 梁氏飛星 - 星軌堂" />
+        <meta property="og:description" content="免費且專業的飛星紫微斗數線上排盤工具。輸入您的出生資料，立即獲取專屬命盤，發掘您的人生地圖與財富潛能。星軌堂為您提供精準的命理分析。" />
+        <meta property="og:image" content="https://yl-flystar.pro/og.png" />
+        <meta property="og:site_name" content="星軌堂" />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content="https://yl-flystar.pro/chart" />
+        <meta name="twitter:title" content="紫微斗數排盤 | 梁氏飛星 - 星軌堂" />
+        <meta name="twitter:description" content="免費且專業的飛星紫微斗數線上排盤工具。輸入您的出生資料，立即獲取專屬命盤，發掘您的人生地圖與財富潛能。星軌堂為您提供精準的命理分析。" />
+        <meta name="twitter:image" content="https://yl-flystar.pro/og.png" />
       </Head>
       
       <Header />

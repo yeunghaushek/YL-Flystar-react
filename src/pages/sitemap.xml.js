@@ -11,7 +11,13 @@ function generateSiteMap() {
        <loc>https://yl-flystar.pro</loc>
      </url>
      <url>
+       <loc>https://yl-flystar.pro/theory</loc>
+     </url>
+     <url>
        <loc>https://yl-flystar.pro/chart</loc>
+     </url>
+     <url>
+       <loc>https://yl-flystar.pro/meihua</loc>
      </url>
      <url>
        <loc>https://yl-flystar.pro/blog</loc>
