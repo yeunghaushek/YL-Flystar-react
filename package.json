@@ -15,7 +15,6 @@
     "@mui/material": "^5.14.16",
     "@mui/x-data-grid": "^6.18.2",
     "@mui/x-date-pickers": "^6.18.0",
-    "@types/node": "^25.6.2",
     "@types/react": "^18.3.28",
     "dayjs": "^1.11.10",
     "iztro": "^2.0.2",
@@ -32,6 +31,7 @@
     "typescript": "^6.0.3"
   },
   "devDependencies": {
+    "@types/node": "25.9.1",
     "autoprefixer": "^10.5.0",
     "eslint": "^8",
     "eslint-config-next": "14.0.1",

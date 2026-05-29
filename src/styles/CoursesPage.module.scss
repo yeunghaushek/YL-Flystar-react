@@ -1,0 +1,519 @@
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page {
+  position: relative;
+  min-height: 100vh;
+  color: #e2e8f0;
+}
+
+.main {
+  position: relative;
+  z-index: 1;
+  padding: 140px 0 100px;
+}
+
+.container {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 56px;
+
+  h1 {
+    margin-top: 20px;
+    width: 100%;
+    text-align: center;
+    color: #ffffff;
+    font-size: clamp(28px, 4.2vw, 46px);
+    line-height: 1.45;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+  }
+}
+
+.kicker {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #fcf6ba;
+  font-size: 13px;
+  letter-spacing: 0.22em;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 8px 20px;
+  border-left: 3px solid #daa520;
+  background: linear-gradient(90deg, rgba(218, 165, 32, 0.18), transparent);
+}
+
+.subtitle {
+  margin-top: 16px;
+  width: 100%;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 17px;
+  line-height: 1.85;
+  letter-spacing: 0.04em;
+}
+
+.trackSection {
+  margin-bottom: 48px;
+}
+
+.trackTitle {
+  font-size: clamp(22px, 3vw, 32px);
+  color: #f1f5f9;
+  letter-spacing: 0.08em;
+  margin-bottom: 22px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(218, 165, 32, 0.2);
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 72px;
+    height: 2px;
+    background: linear-gradient(90deg, #daa520, transparent);
+  }
+}
+
+.trackAdvanced .trackTitle::after {
+  width: 120px;
+  background: linear-gradient(90deg, #bf953f, #fcf6ba, transparent);
+}
+
+.gradeStack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Grade card (accordion) ── */
+.gradeCard {
+  scroll-margin-top: 88px;
+  border-radius: 6px;
+  border: 1px solid rgba(218, 165, 32, 0.12);
+  background: linear-gradient(165deg, rgba(15, 23, 42, 0.92) 0%, rgba(4, 7, 12, 0.96) 100%);
+  box-shadow: 0 20px 50px -30px rgba(0, 0, 0, 0.85);
+  transition:
+    border-color 0.35s ease,
+    box-shadow 0.35s ease,
+    transform 0.35s ease;
+
+  &.open {
+    border-color: rgba(218, 165, 32, 0.38);
+    box-shadow:
+      0 0 0 1px rgba(252, 246, 186, 0.08) inset,
+      0 28px 60px -28px rgba(0, 0, 0, 0.9),
+      0 0 40px -12px rgba(218, 165, 32, 0.12);
+  }
+
+  &.pinnacle {
+    border-color: rgba(252, 246, 186, 0.28);
+    background: linear-gradient(
+      155deg,
+      rgba(191, 149, 63, 0.12) 0%,
+      rgba(15, 23, 42, 0.95) 45%,
+      rgba(4, 7, 12, 0.98) 100%
+    );
+  }
+
+  &.pinnacle.open {
+    box-shadow:
+      0 0 0 1px rgba(252, 246, 186, 0.2) inset,
+      0 32px 70px -30px rgba(218, 165, 32, 0.25);
+  }
+}
+
+.gradeTrigger {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 24px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.3s ease;
+
+  &:hover {
+    background: rgba(218, 165, 32, 0.04);
+  }
+}
+
+.open .gradeTrigger {
+  background: linear-gradient(90deg, rgba(218, 165, 32, 0.1), transparent 70%);
+  border-bottom: 1px solid rgba(218, 165, 32, 0.12);
+}
+
+.gradeNum {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  font-family: "Noto Serif TC", "PMingLiU", serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #fcf6ba;
+  background: rgba(218, 165, 32, 0.1);
+  border: 1px solid rgba(218, 165, 32, 0.35);
+}
+
+.titleWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.gradeLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.gradeTitle {
+  font-family: "Noto Serif TC", "PMingLiU", serif;
+  font-size: clamp(20px, 2.8vw, 26px);
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: 0.04em;
+}
+
+.gradeSubtitle {
+  font-size: 0.82em;
+  font-weight: 500;
+  opacity: 0.85;
+  -webkit-text-fill-color: #cbd5e1;
+  color: #cbd5e1;
+}
+
+.chevronWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(218, 165, 32, 0.25);
+  background: rgba(4, 7, 12, 0.6);
+  color: #daa520;
+}
+
+.chevron {
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.open .chevron {
+  transform: rotate(180deg);
+}
+
+/* Collapsed: fully hidden — no content peek */
+.gradeBody {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+  overflow: hidden;
+  transition:
+    grid-template-rows 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.28s ease,
+    visibility 0s linear 0.42s;
+}
+
+.open .gradeBody {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    grid-template-rows 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.32s ease 0.08s,
+    visibility 0s;
+}
+
+.gradeBodyInner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.gradeContent {
+  padding: 0 24px 28px 90px;
+  animation: fadeSlideIn 0.4s ease both;
+
+  @media (max-width: 640px) {
+    padding: 0 20px 24px 20px;
+  }
+}
+
+/* ── Content typography ── */
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.metaChip {
+  display: inline-flex;
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #e2e8f0;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.earlyBird {
+  color: #fcf6ba;
+  border-color: rgba(218, 165, 32, 0.35);
+  background: rgba(218, 165, 32, 0.1);
+}
+
+.sectionLabel {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #daa520;
+  margin-bottom: 12px;
+}
+
+.list {
+  margin: 0;
+  padding-left: 1.1em;
+  color: #cbd5e1;
+  font-size: 15px;
+  line-height: 1.85;
+  letter-spacing: 0.02em;
+
+  li {
+    margin-bottom: 10px;
+
+    &::marker {
+      color: rgba(218, 165, 32, 0.6);
+    }
+  }
+}
+
+.inlineNote {
+  color: #94a3b8;
+  font-size: 15px;
+  margin-bottom: 16px;
+  letter-spacing: 0.03em;
+}
+
+.phaseCard {
+  margin-bottom: 16px;
+  padding: 18px 20px;
+  border-radius: 4px;
+  background: rgba(4, 7, 12, 0.55);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.phaseTitle {
+  font-family: "Noto Serif TC", "PMingLiU", serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #f8fafc;
+  margin-bottom: 4px;
+}
+
+.phaseFee {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fcf6ba;
+  margin-bottom: 12px;
+  letter-spacing: 0.05em;
+}
+
+.unlockNote {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #94a3b8;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  padding-left: 12px;
+  border-left: 2px solid rgba(218, 165, 32, 0.4);
+}
+
+.moduleGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+
+  @media (max-width: 720px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.moduleCard {
+  padding: 16px 18px;
+  border-radius: 4px;
+  background: rgba(4, 7, 12, 0.5);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  transition: border-color 0.25s ease;
+
+  &:hover {
+    border-color: rgba(218, 165, 32, 0.25);
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: #94a3b8;
+    line-height: 1.6;
+  }
+}
+
+.moduleCode {
+  font-size: 12px !important;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #daa520 !important;
+  margin-bottom: 6px !important;
+}
+
+.moduleName {
+  font-size: 15px !important;
+  color: #e2e8f0 !important;
+  margin-bottom: 6px !important;
+  line-height: 1.5 !important;
+}
+
+.ctaButton {
+  margin-top: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 32px;
+  border-radius: 4px;
+  border: 1px solid #fcf6ba;
+  background: linear-gradient(135deg, #bf953f, #b38728);
+  color: #0a0a0a;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  box-shadow: 0 12px 32px -10px rgba(218, 165, 32, 0.55);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 40px -8px rgba(218, 165, 32, 0.65);
+  }
+}
+
+.alert,
+.alertStrong {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  line-height: 1.65;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+
+  svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+}
+
+.alert {
+  color: #fef3c7;
+  background: rgba(161, 98, 7, 0.15);
+  border: 1px solid rgba(217, 119, 6, 0.35);
+}
+
+.alertStrong {
+  color: #fecaca;
+  background: rgba(127, 29, 29, 0.2);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+}
+
+.certBadge {
+  margin-top: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 16px 18px;
+  border-radius: 4px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #fef3c7 !important;
+  background: linear-gradient(135deg, rgba(191, 149, 63, 0.18), rgba(15, 23, 42, 0.6));
+  border: 1px solid rgba(252, 246, 186, 0.35);
+  box-shadow: 0 0 24px -8px rgba(218, 165, 32, 0.3);
+
+  svg {
+    flex-shrink: 0;
+    color: #daa520;
+  }
+}
+
+@media (max-width: 768px) {
+  .main {
+    padding: 120px 0 72px;
+  }
+
+  .container {
+    padding: 0 16px;
+  }
+
+  .gradeTrigger {
+    gap: 12px;
+    padding: 18px 16px;
+  }
+
+  .gradeNum {
+    width: 42px;
+    height: 42px;
+    font-size: 13px;
+  }
+
+  .chevronWrap {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gradeBody,
+  .chevron,
+  .gradeCard,
+  .gradeContent {
+    animation: none;
+    transition: none;
+  }
+}

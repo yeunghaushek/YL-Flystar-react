@@ -56,6 +56,7 @@ export const Header = ({ show = true }) => {
   const navItems = [
     { href: "/chart", label: "紫微斗數排盤" },
     { href: "/meihua", label: "梅花易數排盤" },
+    { href: "/courses", label: "課程資訊" },
     { href: "/theory", label: "星軌理數" },
     { href: "/blog", label: "網誌" },
   ];
