@@ -1,69 +1,105 @@
 import Head from "next/head";
-
-import { useRouter } from "next/router";
-import { useEffect } from "react";
-
+import Link from "next/link";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
 import { Header } from "@/components/header";
+import landing from "@/styles/HomeLanding.module.scss";
+import blogStyles from "@/styles/BlogPages.module.scss";
+import { getCategories, getCategoryBySlug, getCategorySlugs } from "@/lib/blog";
 
-import aboutStyle from "@/styles/About.module.scss";
-import blogStyle from "@/styles/Blog.module.scss";
+const SITE_URL = "https://yl-flystar.pro";
 
-import { myBlogs } from "@/constants/blogs";
-
-const BlogCate = () => {
-  const router = useRouter();
-  const { blogCate } = router.query;
-
-  useEffect(() => {
-    if (blogCate) {
-      const myBlogCate = myBlogs.find((cate) => cate.blogCate == blogCate);
-      if (!myBlogCate) {
-        router.push("/error");
-      }
-    }
-  }, [blogCate]);
-
+export default function BlogCategoryPage({ categories, category }) {
   return (
-    <>
+    <div className={`${landing.page} ${blogStyles.page}`}>
       <Head>
-        <title>星軌堂 - 您的智能人生定位系統</title>
+        <title>{`${category.title}｜星軌堂 Blog`}</title>
         <meta
           name="description"
-          content="發掘您的人生地圖！我們提供專業命理分析，助您預見未來趨勢與機遇，規劃事業與人生策略。立即探索，打造成功的人生藍圖。"
+          content={`${category.title}，共 ${category.posts.length} 篇文章，完整掌握飛星紫微斗數知識脈絡。`}
         />
-                        <meta property="og:type" content="website" />
-                <meta property="og:url" content={`https://yl-flystar.pro/`} />
-                <meta property="og:title" content="星軌堂 - 您的智能人生定位系統" />
-                <meta property="og:description" content="發掘您的人生地圖！我們提供專業命理分析，助您預見未來趨勢與機遇，規劃事業與人生策略。立即探索，打造成功的人生藍圖。" />
-                <meta property="og:image" content={`https://yl-flystar.pro/og.png`} />
-                <meta property="og:site_name" content="星軌堂" />
-        <meta name="robots" content="noindex" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${SITE_URL}/blog/${encodeURIComponent(category.slug)}`} />
+        <meta property="og:title" content={`${category.title}｜星軌堂 Blog`} />
+        <meta
+          property="og:description"
+          content={`${category.title}，共 ${category.posts.length} 篇文章，完整掌握飛星紫微斗數知識脈絡。`}
+        />
+        <meta property="og:image" content={`${SITE_URL}/og.png`} />
+        <link rel="canonical" href={`${SITE_URL}/blog/${encodeURIComponent(category.slug)}`} />
       </Head>
-      <Header />
-      <div className={aboutStyle.bg}>
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <div className={`${blogStyle.blogContent}`}>
-          {myBlogs.map((cate, cIndex) => (
-            <div key={`cate${cIndex}`}>
-              <a href={`/blog/${cate.blogCate}/${cate.blogs[0].blogId}`}>{`${cate.cateTitle}`}</a>
-              {cate.blogCate === blogCate
-                ? cate.blogs.map((blog, bIndex) => (
-                    <div key={`blog${bIndex}`}>
-                      <a href={`/blog/${cate.blogCate}/${blog.blogId}`}>{`${blog.blogTitle}`}</a>
-                    </div>
-                  ))
-                : null}
-            </div>
-          ))}
-        </div>
-      </div>
-    </>
-  );
-};
 
-export default BlogCate;
+      <div className={landing.headerWrapper}>
+        <Header show />
+      </div>
+
+      <main className={blogStyles.main}>
+        <div className={blogStyles.container}>
+          <header className={blogStyles.header}>
+            <span className={blogStyles.kicker}>
+              <MenuBookIcon fontSize="small" /> Blog Category
+            </span>
+            <h1 className={landing.serif}>{category.title}</h1>
+          </header>
+
+          <div className={blogStyles.grid}>
+            <aside className={blogStyles.sidebar}>
+              <div className={blogStyles.sidebarTitle}>分類導覽</div>
+              <div className={blogStyles.categoryList}>
+                {categories.map((item) => (
+                  <Link
+                    key={item.slug}
+                    href={`/blog/${encodeURIComponent(item.slug)}`}
+                    className={`${blogStyles.categoryLink} ${
+                      item.slug === category.slug ? blogStyles.active : ""
+                    }`}
+                  >
+                    {item.title}
+                  </Link>
+                ))}
+              </div>
+            </aside>
+
+            <section className={blogStyles.panel}>
+              <div className={blogStyles.posts}>
+                {category.posts.map((post) => (
+                  <Link
+                    key={post.id}
+                    className={blogStyles.cardLink}
+                    href={`/blog/${encodeURIComponent(post.categorySlug)}/${encodeURIComponent(
+                      post.slug
+                    )}`}
+                  >
+                    <article className={blogStyles.card}>
+                      <h3>{post.title}</h3>
+                      <p>{post.excerpt}</p>
+                      <span className={blogStyles.readMore}>閱讀全文 →</span>
+                    </article>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+export async function getStaticPaths() {
+  const paths = getCategorySlugs().map((blogCate) => ({
+    params: { blogCate },
+  }));
+  return { paths, fallback: false };
+}
+
+export async function getStaticProps({ params }) {
+  const categories = getCategories();
+  const category = getCategoryBySlug(params.blogCate);
+  if (!category) return { notFound: true };
+  return {
+    props: {
+      categories,
+      category,
+    },
+  };
+}

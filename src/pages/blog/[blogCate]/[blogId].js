@@ -1,145 +1,148 @@
 import Head from "next/head";
-
-import { notFound } from "next/navigation";
-import { useRouter } from "next/router";
-import { useState, useEffect } from "react";
-
+import Link from "next/link";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
 import { Header } from "@/components/header";
-import { Divider } from "@mui/material";
+import landing from "@/styles/HomeLanding.module.scss";
+import blogStyles from "@/styles/BlogPages.module.scss";
+import {
+  getAllPostParams,
+  getCategories,
+  getCategoryBySlug,
+  getPostBySlug,
+} from "@/lib/blog";
 
-import aboutStyle from "@/styles/About.module.scss";
-import blogStyle from "@/styles/Blog.module.scss";
+const SITE_URL = "https://yl-flystar.pro";
+const sanitizeHtml = (html = "") =>
+  html
+    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "")
+    .replace(/\son\w+="[^"]*"/gi, "")
+    .replace(/\son\w+='[^']*'/gi, "");
 
-import { myBlogs } from "@/constants/blogs";
-
-const BlogContent = ({ blogCate, blogId }) => {
-  try {
-    const myBlogCate = myBlogs.find((cate) => cate.blogCate == blogCate);
-    if (!myBlogCate) throw new Error("<blogCate> not found");
-    const blog = myBlogCate.blogs.find((blog) => blog.blogId == blogId);
-    if (!blog) throw new Error("<blogId> not found");
-
-    return (
-      <>
-        <div className={`${blogStyle.container}`}>
-          <br />
-          <br />
-          <br />
-          <br />
-
-          <div>
-            <span>
-              <a href={`/blog`}>網誌</a>
-            </span>
-            <span>{`>>`}</span>
-
-            <span>
-              {" "}
-              <a href={`/blog/${myBlogCate.blogCate}/${myBlogCate.blogs[0].blogId}`}>{myBlogCate.cateTitle}</a>
-            </span>
-
-            <span> {`>>`}</span>
-
-            <span>{blog.blogTitle}</span>
-          </div>
-          <br />
-          <div className={aboutStyle.pageTitle}>{blog.blogTitle}</div>
-          <div className={aboutStyle.pageText}>
-            {blog.contentHtmls && blog.contentHtmls.length > 0
-              ? blog.contentHtmls.map((contentHtml, cIndex) => (
-                  <div key={`${blog.blogTitle}content${cIndex}`}>
-                    <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
-                    <br />
-                  </div>
-                ))
-              : null}
-          </div>
-          <br />
-          <br />
-          <Divider light variant="middle" sx={{ margin: "20px 0" }} />
-          <br />
-          <div className={aboutStyle.pageText}>
-            如果想瞭解更多？ <a href={"/#contact"}>聯絡我們</a>
-          </div>
-        </div>
-      </>
-    );
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-const BlogCate = () => {
-  const router = useRouter();
-  const { blogCate, blogId } = router.query;
-  const [myBlog, setMyBlog] = useState(null);
-
-  useEffect(() => {
-    if (blogCate && blogId) {
-      const myBlogCate = myBlogs.find((cate) => cate.blogCate == blogCate);
-      if (!myBlogCate) {
-        router.push("/error");
-      } else {
-        const blog = myBlogCate.blogs.find((blog) => blog.blogId == blogId);
-        if (!blog) {
-          router.push("/error");
-        } else {
-          setMyBlog(blog);
-        }
-      }
-    }
-  }, [blogCate, blogId]);
+export default function BlogArticlePage({ categories, category, post }) {
+  const articleUrl = `${SITE_URL}/blog/${encodeURIComponent(post.categorySlug)}/${encodeURIComponent(
+    post.slug
+  )}`;
 
   return (
-    <>
+    <div className={`${landing.page} ${blogStyles.page}`}>
       <Head>
-        <title>星軌堂 - 您的智能人生定位系統</title>
-        <meta
-          name="description"
-          content="發掘您的人生地圖！我們提供專業命理分析，助您預見未來趨勢與機遇，規劃事業與人生策略。立即探索，打造成功的人生藍圖。"
-        />
-                        <meta property="og:type" content="website" />
-                <meta property="og:url" content={`https://yl-flystar.pro/`} />
-                <meta property="og:title" content="星軌堂 - 您的智能人生定位系統" />
-                <meta property="og:description" content="發掘您的人生地圖！我們提供專業命理分析，助您預見未來趨勢與機遇，規劃事業與人生策略。立即探索，打造成功的人生藍圖。" />
-                <meta property="og:image" content={`https://yl-flystar.pro/og.png`} />
-                <meta property="og:site_name" content="星軌堂" />
-        <link rel="canonical" href={`https://yl-flystar.pro/blog/${blogCate}/${blogId}`} />
+        <title>{`${post.title}｜星軌堂 Blog`}</title>
+        <meta name="description" content={post.excerpt} />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={articleUrl} />
+        <meta property="og:title" content={`${post.title}｜星軌堂 Blog`} />
+        <meta property="og:description" content={post.excerpt} />
+        <meta property="og:image" content={`${SITE_URL}/og.png`} />
+        <link rel="canonical" href={articleUrl} />
       </Head>
-      <Header />
-      <div className={aboutStyle.bg}>
-        <div className={`${blogStyle.split} ${blogStyle.left}`}>
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <div className={`${blogStyle.content}`}>
-            {myBlogs.map((cate, cIndex) => (
-              <div key={`cate${cIndex}`}>
-                <a href={`/blog/${cate.blogCate}/${cate.blogs[0].blogId}`}>{`${cate.cateTitle}`}</a>
-                {cate.blogCate === blogCate
-                  ? cate.blogs.map((blog, bIndex) => (
-                      <div key={`blog${bIndex}`}>
-                        <a href={`/blog/${cate.blogCate}/${blog.blogId}`}>{`${blog.blogTitle}`}</a>
+
+      <div className={landing.headerWrapper}>
+        <Header show />
+      </div>
+
+      <main className={blogStyles.main}>
+        <div className={blogStyles.container}>
+          <header className={blogStyles.header}>
+            <span className={blogStyles.kicker}>
+              <MenuBookIcon fontSize="small" /> 星軌堂 Blog
+            </span>
+            <h1 className={landing.serif}>{post.title}</h1>
+          </header>
+
+          <div className={blogStyles.grid}>
+            <aside className={blogStyles.sidebar}>
+              <div className={blogStyles.sidebarTitle}>分類導覽</div>
+              <div className={blogStyles.categoryList}>
+                {categories.map((item) => (
+                  <div key={item.slug}>
+                    <Link
+                      href={`/blog/${encodeURIComponent(item.slug)}`}
+                      className={`${blogStyles.categoryLink} ${
+                        item.slug === category.slug ? blogStyles.active : ""
+                      }`}
+                    >
+                      {item.title}
+                    </Link>
+                    {item.slug === category.slug ? (
+                      <div className={blogStyles.nested}>
+                        {item.posts.map((nestedPost) => (
+                          <Link
+                            key={nestedPost.id}
+                            href={`/blog/${encodeURIComponent(
+                              nestedPost.categorySlug
+                            )}/${encodeURIComponent(nestedPost.slug)}`}
+                            className={`${blogStyles.postLink} ${
+                              nestedPost.slug === post.slug ? blogStyles.active : ""
+                            }`}
+                          >
+                            {nestedPost.title}
+                          </Link>
+                        ))}
                       </div>
-                    ))
-                  : null}
+                    ) : null}
+                  </div>
+                ))}
               </div>
-            ))}
+            </aside>
+
+            <article className={blogStyles.panel}>
+              <nav className={blogStyles.breadcrumbs} aria-label="breadcrumb">
+                <Link href="/blog">網誌</Link>
+                <span>/</span>
+                <Link href={`/blog/${encodeURIComponent(category.slug)}`}>{category.title}</Link>
+              </nav>
+
+              <h2 className={blogStyles.articleTitle}>{post.title}</h2>
+              <p className={blogStyles.articleMeta}>{category.title}</p>
+              <p className={blogStyles.readingMeta}>
+                全篇字數：{post.wordCount.toLocaleString()} 字 · 預估閱讀時間：約 {post.readingMinutes} 分鐘
+              </p>
+              <div className={blogStyles.articleBody}>
+                {post.contentHtmls.map((contentHtml, index) => (
+                  <div key={`${post.id}-${index}`} dangerouslySetInnerHTML={{ __html: sanitizeHtml(contentHtml) }} />
+                ))}
+              </div>
+            </article>
           </div>
         </div>
-        <div className={`${blogStyle.split} ${blogStyle.right}`}>
-          <BlogContent blogCate={blogCate} blogId={blogId} />
-          <br />
-          <br />
-          <br />
-          <br />
-        </div>{" "}
-      </div>
-    </>
+      </main>
+    </div>
   );
-};
+}
 
-export default BlogCate;
+export async function getStaticPaths() {
+  const paths = getAllPostParams().map((params) => ({ params }));
+  return { paths, fallback: false };
+}
+
+export async function getStaticProps({ params }) {
+  const categories = getCategories();
+  const category = getCategoryBySlug(params.blogCate);
+  const post = getPostBySlug(params.blogCate, params.blogId);
+
+  if (!category || !post) {
+    return { notFound: true };
+  }
+
+  const plainText = post.contentHtmls
+    .join(" ")
+    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "")
+    .replace(/<style[\s\S]*?>[\s\S]*?<\/style>/gi, "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  const wordCount = plainText.replace(/\s/g, "").length;
+  const readingMinutes = Math.max(1, Math.ceil(wordCount / 450));
+
+  return {
+    props: {
+      categories,
+      category,
+      post: {
+        ...post,
+        wordCount,
+        readingMinutes,
+      },
+    },
+  };
+}
