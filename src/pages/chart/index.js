@@ -949,7 +949,7 @@ export default function Astrolabe() {
         <meta name="twitter:image" content="https://yl-flystar.pro/og.png" />
       </Head>
       
-      <Header />
+      <Header collapsedLogo />
 
       {/* Animated Background Elements from Landing (Grayscale & Custom Opacity for Chart Page) */}
       <div className={landing.bgDecoration} style={{ opacity: 0.06, filter: 'grayscale(100%)' }}>

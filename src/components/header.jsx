@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 
-export const Header = ({ show = true, alwaysShow = false }) => {
+export const Header = ({
+  show = true,
+  alwaysShow = false,
+  /** When idle-hidden: keep a floating logo (chart page only). */
+  collapsedLogo = false,
+}) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(show || alwaysShow);
   const lastScrollY = useRef(0);
@@ -66,9 +71,12 @@ export const Header = ({ show = true, alwaysShow = false }) => {
 
   const closeMenu = () => setMenuOpen(false);
 
+  const visibilityClass =
+    menuOpen || isVisible ? "show" : collapsedLogo ? "collapsed" : "";
+
   return (
     <>
-      <div className={`header ${menuOpen || isVisible ? "show" : "collapsed"}`}>
+      <div className={`header ${visibilityClass}`.trim()}>
         <div className="left info-header">
           <Link href="/" onClick={closeMenu}>
             <div className="logo">
