@@ -3,7 +3,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { Header } from "@/components/header";
 
-import { astro } from "iztro";
+import { createAstrolabe } from "@/lib/iztroConfig";
+import { toLocalDate } from "@/lib/toLocalDate";
 import { useEffect, useMemo, useState } from "react";
 
 import astrolabeStyle from "@/styles/Astrolabe.module.scss";
@@ -42,16 +43,6 @@ import MobiledataOffIcon from "@mui/icons-material/MobiledataOff";
 import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import AssignmentIcon from "@mui/icons-material/Assignment";
-
-Date.prototype.toLocalDate = function () {
-  let tzoffset = this.getTimezoneOffset() * 60000; //offset in milliseconds
-  let formattedDateStr = new Date(this.getTime() - tzoffset).toISOString();
-  return {
-    year: formattedDateStr.substring(0, 4),
-    month: parseInt(formattedDateStr.substring(5, 7)),
-    day: parseInt(formattedDateStr.substring(8, 10)),
-  };
-};
 
 const modalStyle = {
   position: "absolute",
@@ -518,7 +509,7 @@ export default function Astrolabe() {
     setIsLeapMonth(event.target.checked);
   };
 
-  const today = new Date().toLocalDate();
+  const today = toLocalDate();
   const [year, setYear] = useState(today.year);
   const [month, setMonth] = useState(today.month);
   const [day, setDay] = useState(today.day);
@@ -551,19 +542,7 @@ export default function Astrolabe() {
   }, [calendar]);
 
   const generateAstrolabe = () => {
-    let astrolabe;
-    if (calendar == 0) {
-      astrolabe = astro.astrolabeBySolarDate(`${year}-${month}-${day}`, birthTime, gender == 0 ? "male" : "female", true, "zh-TW");
-    } else {
-      astrolabe = astro.astrolabeByLunarDate(
-        `${year}-${month}-${day}`,
-        birthTime,
-        gender == 0 ? "male" : "female",
-        isLeapMonth,
-        true,
-        "zh-TW"
-      );
-    }
+    const astrolabe = createAstrolabe({ calendar, year, month, day, birthTime, gender, isLeapMonth });
     let lifePalaceIndex = astrolabe.palaces.findIndex((pItem) => pItem.name === "命宮");
     let lifePalaceMutagenStars = heavenlyStemToStarIndex[astrolabe.palaces[lifePalaceIndex].decadal.heavenlyStem].map(
       (item) => starList[item]
@@ -682,8 +661,8 @@ export default function Astrolabe() {
 
     let currentDecadalIndex = myAstrolabe.palaces.findIndex(
       (palace) =>
-        new Date().toLocalDate().year - myAstrolabe.lunarYear + 1 >= palace.decadal.range[0] &&
-        new Date().toLocalDate().year - myAstrolabe.lunarYear + 1 <= palace.decadal.range[1]
+        toLocalDate().year - myAstrolabe.lunarYear + 1 >= palace.decadal.range[0] &&
+        toLocalDate().year - myAstrolabe.lunarYear + 1 <= palace.decadal.range[1]
     );
 
     if (currentDecadalIndex > -1 && currentDecadalIndex !== lifePalaceIndex) clickDecadal(currentDecadalIndex);
@@ -903,9 +882,6 @@ export default function Astrolabe() {
 
   const { n, g, c, y, m, d, bt, lm } = router.query;
   useEffect(() => {
-    console.log(n, g, c, y, m, d, bt, lm);
-    //console.log(router.pathname);
-    //console.log(router.query);
     if (g && c && y && m && d && bt && lm) {
       // c == 0 ? "陽曆" : "農曆"
       // g == 0 ? "男" : "女"

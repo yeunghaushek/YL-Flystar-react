@@ -4,23 +4,13 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
-import { astro } from "iztro";
+import { createAstrolabe } from "@/lib/iztroConfig";
+import { toLocalDate } from "@/lib/toLocalDate";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ReactFlow, { Controls, Handle, Position, MarkerType, BaseEdge, useNodesState, useEdgesState, addEdge, Background } from "reactflow";
 
 import { trimThenMergeWithMostFrequentTailThenFilterThenSort, findOppositePalaceRoutes } from "../../../../inauspicious-utils";
 import { mergeSample } from "../../../utils";
-
-Date.prototype.toLocalDate = function () {
-    let tzoffset = this.getTimezoneOffset() * 60000; //offset in milliseconds
-    let formattedDateStr = new Date(this.getTime() - tzoffset).toISOString();
-    return {
-        year: formattedDateStr.substring(0, 4),
-        month: parseInt(formattedDateStr.substring(5, 7)),
-        day: parseInt(formattedDateStr.substring(8, 10)),
-    };
-};
-
 
 const starList = [
     "廉貞",
@@ -88,18 +78,13 @@ export default function Astrolabe() {
     const [birthTime, setBirthTime] = useState(0);
 
 
-    const today = new Date().toLocalDate();
+    const today = toLocalDate();
     const [year, setYear] = useState(today.year);
     const [month, setMonth] = useState(today.month);
     const [day, setDay] = useState(today.day);
 
     const generateAstrolabe = () => {
-        let astrolabe;
-        if (calendar == 0) {
-            astrolabe = astro.astrolabeBySolarDate(`${year}-${month}-${day}`, birthTime, gender == 0 ? "male" : "female", true, "zh-TW");
-        } else {
-            astrolabe = astro.astrolabeByLunarDate(`${year}-${month}-${day}`, birthTime, gender == 0 ? "male" : "female", isLeapMonth, true, "zh-TW");
-        }
+        const astrolabe = createAstrolabe({ calendar, year, month, day, birthTime, gender, isLeapMonth });
         let lifePalaceIndex = astrolabe.palaces.findIndex((pItem) => pItem.name === "命宮");
         let lifePalaceMutagenStars = heavenlyStemToStarIndex[astrolabe.palaces[lifePalaceIndex].decadal.heavenlyStem].map((item) => starList[item]);
 

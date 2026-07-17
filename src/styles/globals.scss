@@ -66,6 +66,40 @@ a {
     transform: translateY(0px);
   }
 
+  &.collapsed {
+    opacity: 1;
+    transform: translateY(0);
+    height: auto;
+    min-height: 0;
+    border-bottom: 0;
+    background: transparent;
+    box-shadow: none;
+    pointer-events: none;
+
+    .left {
+      pointer-events: auto;
+
+      > a:not(:first-child) {
+        display: none;
+      }
+    }
+
+    .mobile-menu-toggle,
+    .mobile-menu-panel,
+    .mobile-menu-backdrop {
+      display: none !important;
+    }
+
+    .logo {
+      margin-left: 12px;
+      padding: 6px 12px 8px;
+      background: rgba(255, 255, 238, 0.94);
+      border: 1px solid rgba(221, 221, 221, 0.85);
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(11, 62, 168, 0.08);
+    }
+  }
+
   .left {
     display: flex;
     align-items: flex-end;

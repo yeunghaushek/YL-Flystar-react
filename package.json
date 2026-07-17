@@ -17,7 +17,7 @@
     "@mui/x-date-pickers": "^6.18.0",
     "@types/react": "^18.3.28",
     "dayjs": "^1.11.10",
-    "iztro": "^2.0.2",
+    "iztro": "^2.5.8",
     "lunar-javascript": "^1.7.7",
     "next": "14.0.1",
     "opencc-js": "^1.3.0",
