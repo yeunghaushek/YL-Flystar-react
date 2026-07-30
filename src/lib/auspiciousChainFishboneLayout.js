@@ -9,16 +9,21 @@ const SIDE_W = 76;
 const SIDE_H = 26;
 const SIDE_GAP = 8;
 const LINK_LEN = 14;
+const MERGE_LINK_LEN = 36;
 const SELF_LINK_LEN = Math.round(LINK_LEN * 1.5);
 const ABOVE_OFFSET = 26;
+const MERGE_ABOVE_OFFSET = 40;
 const SIDE_SPREAD = 14;
 const PADDING_X = 20;
 const PADDING_TOP = 16;
 const HEADER_H = 36;
 const JI_SOURCE_GAP = 8;
-const JI_CONNECTOR_GAP = 108;
+const JI_CONNECTOR_GAP = 120;
+const MERGE_APPROACH_GAP = 72;
+const MERGE_STUB_GAP = 28;
 const TERMINAL_JI_GAP = 44;
 const STRUCTURE_COL_SCALE = 1.2;
+const MERGE_COL_SCALE = 1.35;
 const NODE_BLOCK_H = STAR_H + STAR_PALACE_GAP + PALACE_RY * 2;
 const COL_GAP = 16;
 
@@ -62,7 +67,10 @@ function layerRowHeight(indices, graph) {
   return palaceBottomOffset + JI_CONNECTOR_GAP;
 }
 
-function layoutNodeStep(node, idx, cx, starY, nodes, edges, graphIdx) {
+function layoutNodeStep(node, idx, cx, starY, nodes, edges, graphIdx, options = {}) {
+  const mergeTarget = Boolean(options.mergeTarget);
+  const linkLen = mergeTarget ? MERGE_LINK_LEN : LINK_LEN;
+  const aboveOffset = mergeTarget ? MERGE_ABOVE_OFFSET : ABOVE_OFFSET;
   const starId = `star-${graphIdx}`;
   const palaceId = `palace-${graphIdx}`;
 
@@ -108,9 +116,9 @@ function layoutNodeStep(node, idx, cx, starY, nodes, edges, graphIdx) {
   greensAbove.forEach((label, i) => {
     const id = `green-${graphIdx}-${i}`;
     const anchorX = cx + STAR_W / 2;
-    const x = anchorX + LINK_LEN;
+    const x = anchorX + linkLen;
     const boxCx = x + SIDE_W / 2;
-    const y = starY - ABOVE_OFFSET - SIDE_H + greenOffsets[i] - SIDE_H / 2;
+    const y = starY - aboveOffset - SIDE_H + greenOffsets[i] - SIDE_H / 2;
     nodes.push({ id, type: "green", x, y, w: SIDE_W, h: SIDE_H, label, self: false });
     edges.push({
       id: `e-${id}-${starId}`,
@@ -128,9 +136,9 @@ function layoutNodeStep(node, idx, cx, starY, nodes, edges, graphIdx) {
   redsAbove.forEach((label, i) => {
     const id = `red-${graphIdx}-${i}`;
     const anchorX = cx - STAR_W / 2;
-    const x = anchorX - LINK_LEN - SIDE_W;
+    const x = anchorX - linkLen - SIDE_W;
     const boxCx = x + SIDE_W / 2;
-    const y = starY - ABOVE_OFFSET - SIDE_H + redOffsets[i] - SIDE_H / 2;
+    const y = starY - aboveOffset - SIDE_H + redOffsets[i] - SIDE_H / 2;
     nodes.push({ id, type: "red", x, y, w: SIDE_W, h: SIDE_H, label, self: false });
     edges.push({
       id: `e-${id}-${starId}`,
@@ -151,7 +159,7 @@ function layoutNodeStep(node, idx, cx, starY, nodes, edges, graphIdx) {
     const x = edgeX + SELF_LINK_LEN + i * (SIDE_W + 8);
     const y = upY - SIDE_H / 2;
     const targetX = x + SIDE_W / 2;
-    const targetY = y + SIDE_H;
+    const targetYSelf = y + SIDE_H;
     nodes.push({ id, type: "green", x, y, w: SIDE_W, h: SIDE_H, label, self: true });
     edges.push({
       id: `e-${palaceId}-${id}`,
@@ -160,7 +168,7 @@ function layoutNodeStep(node, idx, cx, starY, nodes, edges, graphIdx) {
       x1: edgeX,
       y1: palaceY,
       x2: targetX,
-      y2: targetY,
+      y2: targetYSelf,
       bendX: targetX,
     });
   });
@@ -172,7 +180,7 @@ function layoutNodeStep(node, idx, cx, starY, nodes, edges, graphIdx) {
     const x = edgeX - SELF_LINK_LEN - SIDE_W - i * (SIDE_W + 8);
     const y = upY - SIDE_H / 2;
     const targetX = x + SIDE_W / 2;
-    const targetY = y + SIDE_H;
+    const targetYSelf = y + SIDE_H;
     nodes.push({ id, type: "red", x, y, w: SIDE_W, h: SIDE_H, label, self: true });
     edges.push({
       id: `e-${palaceId}-${id}`,
@@ -181,7 +189,7 @@ function layoutNodeStep(node, idx, cx, starY, nodes, edges, graphIdx) {
       x1: edgeX,
       y1: palaceY,
       x2: targetX,
-      y2: targetY,
+      y2: targetYSelf,
       bendX: targetX,
     });
   });
@@ -193,6 +201,8 @@ function layoutNodeStep(node, idx, cx, starY, nodes, edges, graphIdx) {
     starY,
     starTop: starY,
     starBottom: starY + STAR_H,
+    mergeTarget,
+    labelBandTop: starY - aboveOffset - SIDE_H * Math.max(greensAbove.length, redsAbove.length, 1),
   };
 }
 
@@ -203,7 +213,7 @@ function layoutTerminal(node, graphIdx, cx, palaceBottom, nodes, edges, options 
 
   if (ob.name === "自化忌" || ob.name === "自化忌出" || ob.name === "忌出") {
     const ty = palaceBottom + TERMINAL_JI_GAP;
-    const terminalLabel = ob.name === "忌出" ? "自化忌出" : ob.name;
+    const terminalLabel = ob.name;
     const id = `terminal-${graphIdx}`;
     nodes.push({
       id,
@@ -306,7 +316,12 @@ function buildJiChannelY(indices, graph, posByIdx) {
     channelByTarget.set(tail, prev === undefined ? bottom : Math.max(prev, bottom));
   });
   channelByTarget.forEach((bottom, tail) => {
-    channelByTarget.set(tail, bottom + JI_SOURCE_GAP);
+    const target = posByIdx.get(tail);
+    // Keep the horizontal merge bar above chase-lu/quan labels on the target.
+    const labelClearY =
+      typeof target?.labelBandTop === "number" ? target.labelBandTop - 12 : bottom + JI_SOURCE_GAP;
+    const preferred = bottom + (target?.mergeTarget ? JI_SOURCE_GAP + 18 : JI_SOURCE_GAP);
+    channelByTarget.set(tail, Math.min(preferred, labelClearY));
   });
   return channelByTarget;
 }
@@ -325,8 +340,12 @@ function addBlueEdge(edges, id, source, target, channelY) {
     return;
   }
 
+  const stub = target.mergeTarget ? MERGE_STUB_GAP : 4;
+  const labelClearY =
+    typeof target.labelBandTop === "number" ? target.labelBandTop - 10 : y2 - stub;
   const midY = y1 + gap / 2;
-  const bendY = Math.max(y1 + 4, Math.min(typeof channelY === "number" ? channelY : midY, y2 - 4));
+  const rawBend = typeof channelY === "number" ? channelY : midY;
+  const bendY = Math.max(y1 + 4, Math.min(rawBend, labelClearY, y2 - stub));
   edges.push({ id, type: "ji", x1, y1, x2, y2, bendY });
 }
 
@@ -419,10 +438,12 @@ function findRoots(indices, graph) {
   return indices.filter((idx) => !incoming.has(idx)).sort((a, b) => a - b);
 }
 
-function buildRowYMap(sortedLayers, graph) {
+function buildRowYMap(sortedLayers, graph, incomingTails) {
   const yForLayer = new Map();
   let yCursor = PADDING_TOP + HEADER_H;
   sortedLayers.forEach(([layer, arr]) => {
+    const hasMerge = arr.some((idx) => (incomingTails?.get(idx) || []).length >= 2);
+    if (hasMerge) yCursor += MERGE_APPROACH_GAP;
     yForLayer.set(layer, yCursor);
     yCursor += layerRowHeight(arr, graph);
   });
@@ -440,6 +461,7 @@ export function layoutGraphComponent(component) {
   }
 
   const displayLayer = assignChainLayers(indices, graph);
+  const incomingTails = buildIncomingTails(indices, graph);
 
   const layerMap = new Map();
   indices.forEach((idx) => {
@@ -448,12 +470,13 @@ export function layoutGraphComponent(component) {
     layerMap.get(layer).push(idx);
   });
   const sortedLayers = Array.from(layerMap.entries()).sort((a, b) => a[0] - b[0]);
-  const yForLayer = buildRowYMap(sortedLayers, graph);
+  const yForLayer = buildRowYMap(sortedLayers, graph, incomingTails);
 
+  const hasAnyMerge = [...incomingTails.values()].some((parents) => parents.length >= 2);
+  const colScale = hasAnyMerge ? MERGE_COL_SCALE : STRUCTURE_COL_SCALE;
   const colWidth =
-    (Math.max(200, ...indices.map((idx) => colWidthForNode(graph[idx]))) + COL_GAP) * STRUCTURE_COL_SCALE;
+    (Math.max(200, ...indices.map((idx) => colWidthForNode(graph[idx]))) + COL_GAP) * colScale;
   const roots = findRoots(indices, graph);
-  const incomingTails = buildIncomingTails(indices, graph);
   const cxByIdx = assignColumnCx(indices, graph, roots, colWidth, incomingTails, displayLayer);
 
   const nodes = [];
@@ -464,7 +487,8 @@ export function layoutGraphComponent(component) {
     const layer = displayLayer.get(idx) || 0;
     const starY = yForLayer.get(layer) ?? PADDING_TOP + HEADER_H;
     const cx = cxByIdx.get(idx) ?? PADDING_X + colWidth / 2;
-    const placed = layoutNodeStep(graph[idx], idx, cx, starY, nodes, edges, idx);
+    const mergeTarget = (incomingTails.get(idx) || []).length >= 2;
+    const placed = layoutNodeStep(graph[idx], idx, cx, starY, nodes, edges, idx, { mergeTarget });
     posByIdx.set(idx, placed);
   });
 

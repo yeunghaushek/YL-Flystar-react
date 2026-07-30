@@ -154,7 +154,12 @@ function collectLuSources(palaces, targetPalaceIdx, targetStar, starToPalaceIdx)
     sources.push(p.name);
   });
 
-  return dedupeLabels(sources);
+  const deduped = dedupeLabels(sources);
+  // 已有自化祿時，不再重複標本宮名（命宮自化祿＝命宮干化祿，勿再標「命宮」）
+  if (deduped.includes("自化祿")) {
+    return deduped.filter((label) => label !== targetPalace.name);
+  }
+  return deduped;
 }
 
 function collectQuanSources(palaces, targetPalaceIdx, targetStar, starToPalaceIdx) {
@@ -189,12 +194,12 @@ function isZiHuaJi(palace, jiStar) {
   return palace.outsideMutagenIndexes.includes(3) && palace.mutagenStars[3] === jiStar;
 }
 
-function isJiChu(palace) {
-  if (palace.outsideMutagenIndexes.includes(3)) return { type: "自化忌出" };
-  if (palace.insideMutagenIndexes.includes(3)) return { type: "忌入對宮" };
-  return null;
-}
-
+/**
+ * 轉忌規則：
+ * - 當前星＝本宮干化忌且坐守本宮 → 自化忌出（停）
+ * - 否則一律轉忌到忌星落點（可同宮：如太陰祿@命 → 轉天機忌@命，再追祿後才自化忌出）
+ * - 忌入對宮不算終點，仍是轉忌
+ */
 function resolveTransfer(palace, starName, palaces, starToPalaceIdx) {
   const jiStar = palace.mutagenStars[3];
   if (!jiStar) return null;
@@ -202,20 +207,14 @@ function resolveTransfer(palace, starName, palaces, starToPalaceIdx) {
   const targetPalaceIdx = starToPalaceIdx.get(jiStar);
   if (targetPalaceIdx === undefined) return null;
 
+  // 只有「站在忌星本身」才算自化忌出；不可因本宮有自化忌而讓其他星（如太陰）提前停鏈
   if (isZiHuaJi(palace, jiStar) && jiStar === starName) {
-    return { type: "自化忌", name: "自化忌", star: "", targetPalaceIdx, targetStar: jiStar };
-  }
-
-  const jiChu = isJiChu(palace);
-  if (jiChu) {
-    const oppositePalace = palaces[(palace.index + 6) % 12];
     return {
-      type: "忌出",
-      name: jiChu.type === "自化忌出" ? "自化忌出" : "忌出",
-      star: jiStar,
+      type: "自化忌",
+      name: "自化忌出",
+      star: "",
       targetPalaceIdx,
       targetStar: jiStar,
-      oppositePalace: oppositePalace?.name,
     };
   }
 
@@ -456,6 +455,8 @@ export function buildStructuresInComponent(indices, graph) {
 
 /**
  * Assign vertical layers for a connected component (supports merge / tree convergence).
+ * Cycle-closing back-edges (e.g. 巨門→太陰 while 太陰→…→巨門) are ignored for layering
+ * so mid-chain nodes like 太陰 stay between 天同 and 貪狼 instead of sinking to the bottom.
  */
 export function assignChainLayers(indices, graphNodes) {
   const compSet = new Set(indices);
@@ -467,25 +468,64 @@ export function assignChainLayers(indices, graphNodes) {
     if (typeof t === "number" && compSet.has(t)) hasIncomingTail.add(t);
   });
 
-  indices.filter((idx) => !hasIncomingTail.has(idx)).forEach((r) => layerByIdx.set(r, 0));
+  let roots = indices.filter((idx) => !hasIncomingTail.has(idx));
+  if (roots.length === 0 && indices.length > 0) {
+    roots = [indices[0]];
+  }
+  roots.forEach((r) => layerByIdx.set(r, 0));
+
+  // DFS: edge u→v is a back-edge when v is still on the stack (GRAY)
+  const WHITE = 0;
+  const GRAY = 1;
+  const BLACK = 2;
+  const color = new Map(indices.map((i) => [i, WHITE]));
+  const backEdge = new Set();
+
+  const dfs = (u) => {
+    color.set(u, GRAY);
+    const v = graphNodes[u]?.tail;
+    if (typeof v === "number" && compSet.has(v)) {
+      const state = color.get(v);
+      if (state === GRAY) {
+        backEdge.add(`${u}->${v}`);
+      } else if (state === WHITE) {
+        dfs(v);
+      }
+    }
+    color.set(u, BLACK);
+  };
+
+  roots.forEach((r) => {
+    if (color.get(r) === WHITE) dfs(r);
+  });
+  indices.forEach((i) => {
+    if (color.get(i) === WHITE) dfs(i);
+  });
 
   let changed = true;
   let guard = 0;
-  while (changed && guard++ < 64) {
+  const maxLayer = indices.length + 1;
+  while (changed && guard++ < maxLayer) {
     changed = false;
     indices.forEach((idx) => {
-      const heads = (graphNodes[idx]?.heads || []).filter((h) => compSet.has(h));
+      if (!layerByIdx.has(idx)) return;
+
+      const heads = (graphNodes[idx]?.heads || []).filter((h) => {
+        if (!compSet.has(h) || !layerByIdx.has(h)) return false;
+        return !backEdge.has(`${h}->${idx}`);
+      });
       if (heads.length > 0) {
         const layer = Math.max(...heads.map((h) => layerByIdx.get(h) ?? 0)) + 1;
-        if ((layerByIdx.get(idx) ?? -1) < layer) {
+        if ((layerByIdx.get(idx) ?? -1) < layer && layer <= maxLayer) {
           layerByIdx.set(idx, layer);
           changed = true;
         }
       }
+
       const tail = graphNodes[idx]?.tail;
-      if (typeof tail === "number" && compSet.has(tail)) {
+      if (typeof tail === "number" && compSet.has(tail) && !backEdge.has(`${idx}->${tail}`)) {
         const layer = (layerByIdx.get(idx) ?? 0) + 1;
-        if ((layerByIdx.get(tail) ?? -1) < layer) {
+        if ((layerByIdx.get(tail) ?? -1) < layer && layer <= maxLayer) {
           layerByIdx.set(tail, layer);
           changed = true;
         }
