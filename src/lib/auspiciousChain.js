@@ -534,6 +534,296 @@ function attachHeads(nodes) {
   return nodes.map((item, idx) => ({ ...item, heads: headsByIndex[idx] }));
 }
 
+export function getLuZhuanJiEntries(palaces, rootPalaceName) {
+  const { starToPalaceIdx } = buildIndexes(palaces);
+  const rootIdx = palaces.findIndex((p) => p.name === rootPalaceName);
+  if (rootIdx < 0) {
+    return { entries: [], routes: [], hasLuOut: false, hasQuanOut: false, hasJiOut: false };
+  }
+
+  const palace = palaces[rootIdx];
+  const entryMap = new Map();
+  let hasLuOut = false;
+  let hasQuanOut = false;
+  let hasJiOut = false;
+  const routes = [];
+
+  // 落點一般不含本宮；A→A 停下、轉忌回歸本宮、或落點自化忌／忌出時，寫回中心
+  const addEntry = (palaceName, starName, { allowRoot = false } = {}) => {
+    if (!palaceName || !starName) return;
+    if (palaceName === rootPalaceName && !allowRoot) return;
+    entryMap.set(`${palaceName}|${starName}`, { palaceName, starName });
+  };
+
+  const luStar = palace.mutagenStars?.[0];
+  if (luStar) {
+    const luSitIdx = starToPalaceIdx.get(luStar);
+    if (luSitIdx !== undefined) {
+      const sitPalace = palaces[luSitIdx];
+      const route = [rootPalaceName, sitPalace.name];
+      // A → A（停下）要寫本宮
+      addEntry(sitPalace.name, luStar, {
+        allowRoot: sitPalace.name === rootPalaceName,
+      });
+      if (sitPalace.outsideMutagenIndexes?.includes(0)) hasLuOut = true;
+      if (sitPalace.outsideMutagenIndexes?.includes(1)) hasQuanOut = true;
+
+      const transfer = resolveTransfer(sitPalace, luStar, palaces, starToPalaceIdx);
+      if (transfer?.type === "转忌") {
+        const targetPalaceName = palaces[transfer.targetPalaceIdx]?.name;
+        addEntry(targetPalaceName, transfer.targetStar, { allowRoot: true });
+        if (targetPalaceName) route.push(targetPalaceName);
+      } else if (transfer?.type === "忌出" || transfer?.type === "自化忌") {
+        // 直接自化忌／忌出：確保落點（含本宮中心）有寫出
+        if (transfer.type === "忌出") hasJiOut = true;
+        addEntry(sitPalace.name, luStar, { allowRoot: true });
+      }
+      routes.push(route);
+    }
+  }
+
+  return {
+    entries: [...entryMap.values()],
+    routes,
+    hasLuOut,
+    hasQuanOut,
+    hasJiOut,
+  };
+}
+
+export function getQuanEntries(palaces, rootPalaceName) {
+  const { starToPalaceIdx } = buildIndexes(palaces);
+  const rootIdx = palaces.findIndex((p) => p.name === rootPalaceName);
+  if (rootIdx < 0) {
+    return { entries: [], routes: [], hasQuanOut: false };
+  }
+
+  const rootPalace = palaces[rootIdx];
+  const entryMap = new Map();
+  let hasQuanOut = rootPalace.outsideMutagenIndexes?.includes(1) || false;
+  const routes = [];
+
+  const quanStar = rootPalace.mutagenStars?.[1];
+  if (quanStar) {
+    const targetIdx = starToPalaceIdx.get(quanStar);
+    if (targetIdx !== undefined) {
+      const targetPalace = palaces[targetIdx];
+      // A → A（停下）亦寫本宮中心；自顯化時不可為空
+      entryMap.set(`${targetPalace.name}|${quanStar}`, {
+        palaceName: targetPalace.name,
+        starName: quanStar,
+      });
+      routes.push([rootPalaceName, targetPalace.name]);
+    }
+  }
+
+  return { entries: [...entryMap.values()], routes, hasQuanOut };
+}
+
+export function getJiZhuanJiEntries(palaces, rootPalaceName) {
+  const { starToPalaceIdx } = buildIndexes(palaces);
+  const rootIdx = palaces.findIndex((p) => p.name === rootPalaceName);
+  if (rootIdx < 0) {
+    return { entries: [], hasJiOut: false };
+  }
+
+  const rootPalace = palaces[rootIdx];
+  const jiStar = rootPalace.mutagenStars?.[3];
+  if (!jiStar) {
+    return { entries: [], routes: [], hasJiOut: false };
+  }
+
+  const entryMap = new Map();
+  let hasJiOut = false;
+  const routes = [];
+
+  // 落點一般不含本宮；A→A 停下、轉忌回歸本宮、或落點自化忌／忌出時，寫回中心
+  const addEntry = (palaceName, starName, { allowRoot = false } = {}) => {
+    if (!palaceName || !starName) return;
+    if (palaceName === rootPalaceName && !allowRoot) return;
+    entryMap.set(`${palaceName}|${starName}`, { palaceName, starName });
+  };
+
+  const palaceIdx = starToPalaceIdx.get(jiStar);
+
+  if (rootPalace.outsideMutagenIndexes?.includes(3)) {
+    hasJiOut = true;
+  }
+
+  if (palaceIdx !== undefined) {
+    const sitPalace = palaces[palaceIdx];
+    const route = [rootPalaceName, sitPalace.name];
+    // A → A（停下）要寫本宮；並視為自顯化（route[1] === root）
+    addEntry(sitPalace.name, jiStar, {
+      allowRoot: sitPalace.name === rootPalaceName,
+    });
+
+    const transfer = resolveTransfer(sitPalace, jiStar, palaces, starToPalaceIdx);
+    if (transfer?.type === "转忌") {
+      const targetPalaceName = palaces[transfer.targetPalaceIdx]?.name;
+      addEntry(targetPalaceName, transfer.targetStar, { allowRoot: true });
+      if (targetPalaceName) route.push(targetPalaceName);
+    } else if (transfer?.type === "忌出" || transfer?.type === "自化忌") {
+      // 直接自化忌／忌出：確保落點（含本宮中心）有寫出
+      if (transfer.type === "忌出") hasJiOut = true;
+      addEntry(sitPalace.name, jiStar, { allowRoot: true });
+    }
+    routes.push(route);
+  }
+
+  return { entries: [...entryMap.values()], routes, hasJiOut };
+}
+
+/**
+ * 人生課題：忌入目標宮的路徑宮位。
+ * - A → 命：A 是課題
+ * - A → B → 命：A、B 都是課題
+ * - 每個宮位只出現一次（不含路徑終點目標宮，除非該宮本身是出發點）
+ */
+export function getJiInboundEntries(palaces, targetPalaceName) {
+  const { starToPalaceIdx } = buildIndexes(palaces);
+  const targetIdx = palaces.findIndex((p) => p.name === targetPalaceName);
+  if (targetIdx < 0) return [];
+
+  const entryMap = new Map();
+  const addUnique = (palaceName, starName) => {
+    if (!palaceName || !starName) return;
+    if (entryMap.has(palaceName)) return;
+    entryMap.set(palaceName, { palaceName, starName });
+  };
+
+  palaces.forEach((fromPalace) => {
+    const jiStar = fromPalace.mutagenStars?.[3];
+    if (!jiStar) return;
+
+    const sitIdx = starToPalaceIdx.get(jiStar);
+    if (sitIdx === undefined) return;
+    const sitPalace = palaces[sitIdx];
+
+    // A → 目標：課題為 A
+    if (sitIdx === targetIdx) {
+      addUnique(fromPalace.name, jiStar);
+      return;
+    }
+
+    // A → B → 目標：課題為 A、B
+    const transfer = resolveTransfer(sitPalace, jiStar, palaces, starToPalaceIdx);
+    if (transfer?.type === "转忌" && transfer.targetPalaceIdx === targetIdx) {
+      addUnique(fromPalace.name, jiStar);
+      addUnique(sitPalace.name, jiStar);
+    }
+  });
+
+  return [...entryMap.values()];
+}
+
+export function analyzeLuZhuanJiFromPalace(palaces, rootPalaceName) {
+  const { starToPalaceIdx } = buildIndexes(palaces);
+  const rootIdx = palaces.findIndex((p) => p.name === rootPalaceName);
+  if (rootIdx < 0) {
+    return { palaceNames: [], hasJiOut: false };
+  }
+
+  const palace = palaces[rootIdx];
+  const stars = [
+    ...palace.majorStars.map((s) => s.name),
+    ...palace.minorStars.map((s) => s.name),
+  ];
+  const palaceNames = new Set();
+  let hasJiOut = false;
+
+  stars.forEach((star) => {
+    const lu = collectLuSources(palaces, rootIdx, star, starToPalaceIdx);
+    if (lu.length === 0) return;
+
+    const steps = traceChain(rootIdx, star, palaces, starToPalaceIdx);
+    steps.forEach((step) => {
+      if (step.name && step.name !== rootPalaceName) {
+        palaceNames.add(step.name);
+      }
+      if (step.transfer?.type === "忌出" || step.transfer?.type === "自化忌出") {
+        hasJiOut = true;
+      }
+    });
+  });
+
+  return { palaceNames: [...palaceNames], hasJiOut };
+}
+
+export function analyzeQuanFromPalace(palaces, rootPalaceName) {
+  const rootIdx = palaces.findIndex((p) => p.name === rootPalaceName);
+  if (rootIdx < 0) return { palaceNames: [], hasQuanOut: false };
+
+  const palace = palaces[rootIdx];
+  const quanStar = palace.mutagenStars?.[1];
+  const palaceNames = new Set();
+  let hasQuanOut = palace.outsideMutagenIndexes?.includes(1) || false;
+
+  if (quanStar) {
+    const target = palaces.find(
+      (p) =>
+        p.majorStars.some((s) => s.name === quanStar) ||
+        p.minorStars.some((s) => s.name === quanStar)
+    );
+    if (target && target.name !== rootPalaceName) {
+      palaceNames.add(target.name);
+    }
+  }
+
+  return { palaceNames: [...palaceNames], hasQuanOut };
+}
+
+export function analyzeJiFromPalace(palaces, rootPalaceName) {
+  const { starToPalaceIdx } = buildIndexes(palaces);
+  const rootIdx = palaces.findIndex((p) => p.name === rootPalaceName);
+  if (rootIdx < 0) return { palaceNames: [], hasJiOut: false };
+
+  const palace = palaces[rootIdx];
+  const jiStar = palace.mutagenStars?.[3];
+  const palaceNames = new Set();
+  let hasJiOut = false;
+
+  if (palace.outsideMutagenIndexes?.includes(3)) {
+    hasJiOut = true;
+  }
+
+  if (jiStar) {
+    const targetIdx = starToPalaceIdx.get(jiStar);
+    if (targetIdx !== undefined) {
+      const target = palaces[targetIdx];
+      if (target.name !== rootPalaceName) {
+        palaceNames.add(target.name);
+      }
+    }
+  }
+
+  return { palaceNames: [...palaceNames], hasJiOut };
+}
+
+export function analyzeJiInboundToPalace(palaces, targetPalaceName) {
+  const target = palaces.find((p) => p.name === targetPalaceName);
+  if (!target) return { palaceNames: [], hasInbound: false };
+
+  const palaceNames = new Set();
+  let hasInbound = false;
+
+  palaces.forEach((from) => {
+    const jiStar = from.mutagenStars?.[3];
+    if (!jiStar) return;
+    const lands =
+      target.majorStars.some((s) => s.name === jiStar) ||
+      target.minorStars.some((s) => s.name === jiStar);
+    if (lands) {
+      hasInbound = true;
+      if (from.name !== targetPalaceName) {
+        palaceNames.add(from.name);
+      }
+    }
+  });
+
+  return { palaceNames: [...palaceNames], hasInbound };
+}
+
 /**
  * Build auspicious-chain graph nodes from a normalized astrolabe.
  * Implements 梁派 化祿轉忌：有祿即可轉忌，命四化標為命宮，追祿/追權計數、忌出停止。
